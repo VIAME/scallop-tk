@@ -1,9 +1,15 @@
 
+WARNING: This repository is currently a large WIP as I haven't touched
+this code in a few years.
+
+
+
+
 Scallop-TK
 ==========
 
 The Scalable, Adaptive Localization, and Laplacian Object Proposal
-(SCALLOP) Toolkit is a brief port of some of my master's thesis code
+(Scallop) Toolkit is a brief port of some of my master's thesis code
 developed at RPI, described further in the paper:
 
 [Automatic Scallop Detection in Benthic Environments][1]
