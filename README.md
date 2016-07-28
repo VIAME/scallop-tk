@@ -1,6 +1,6 @@
 
 Scallop-TK
-----------
+==========
 
 The Scalable, Adaptive Localization, and Laplacian Object Proposal
 (SCALLOP) Toolkit is a brief port of some of my master's thesis code
@@ -17,3 +17,20 @@ in the repository is a frame level classifier aimed at detecting whether
 or not there are fish in the image.
 
 [1]: https://scholar.google.com/citations?user=ZaCEQN0AAAAJ
+
+Build Instructions
+------------------
+
+Requirements:
+
+Windows/Linux
+OpenCV
+CMake
+Caffe (optional)
+
+(1) TODO: Make build instructions
+
+Run Instructions
+----------------
+
+TODO: Make run instructions
