@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Title: helper.h
+// Title: HelperFunctions.h
 // Author: Matthew Dawkins
 // Description: This file contains various helper function declarations
 //------------------------------------------------------------------------------
@@ -19,10 +19,11 @@
 #include "highgui.h"
 
 // Scallop Includes
-#include "../Common/definitions.h"
+#include "ScallopTK/Utilities/Definitions.h"
 
 // Namespaces
 using namespace std;
+
 
 //------------------------------------------------------------------------------
 //                                 Prototypes

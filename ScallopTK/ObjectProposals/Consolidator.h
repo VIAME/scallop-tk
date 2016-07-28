@@ -27,10 +27,10 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/kdtree.h"
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
-#include "../Interest Point Detection/PriorStatistics.h"
+#include "ScallopTK/TPL/KDTree/kdtree.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/ObjectProposals/PriorStatistics.h"
 
 //------------------------------------------------------------------------------
 //                                Definitions

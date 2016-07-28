@@ -23,12 +23,12 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
 
 //Visual Debugger
 #ifdef VisualDebugger
-	#include "../Visual Debugger/visualDebugger.h"
+	#include "ScallopTK/Visual Debugger/visualDebugger.h"
 #endif
 
 //------------------------------------------------------------------------------

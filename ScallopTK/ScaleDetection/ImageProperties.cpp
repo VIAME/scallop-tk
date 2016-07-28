@@ -99,7 +99,7 @@ void ImageProperties::calculateProperties() {
 	pixelWidth = avgWidth / (float)imgCols;
 	avgPixelSize = ( pixelHeight + pixelWidth ) / 2;
 
-	//Calculate scallop related stats from constants in 'definitions.h'
+	//Calculate scallop related stats from constants in 'Definitions.h'
 	minScallopRadius = minRadius/avgPixelSize; 
 	maxScallopRadius = maxRadius/avgPixelSize;
 }

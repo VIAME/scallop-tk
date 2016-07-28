@@ -26,7 +26,9 @@ else( WIN32 )
 endif (WIN32)
 set( INCLUDE_INSTALL_PATH        ${CMAKE_INSTALL_PREFIX}/include )
 
-# Find required dependencies
+# Find required dependencies and add necessary source paths
+include_directories( SYSTEM ${CMAKE_SOURCE_DIR} )
+
 find_package( OpenCV REQUIRED )
 include_directories( SYSTEM ${OpenCV_INCLUDE_DIRS} )
 

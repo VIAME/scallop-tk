@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Title: definitions.h
+// Title: Definitions.h
 // Author: Matthew Dawkins
 // Description: This file contains declarations and constants used across 
 // many operations

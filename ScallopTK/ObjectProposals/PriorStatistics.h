@@ -26,8 +26,8 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
 
 //------------------------------------------------------------------------------
 //                             Function Prototypes

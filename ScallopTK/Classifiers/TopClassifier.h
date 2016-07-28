@@ -19,10 +19,10 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
-#include "../Classifiers/AdaBoost/BoostedCommittee.h"
-#include "../Common/threads.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/TPL/AdaBoost/BoostedCommittee.h"
+#include "ScallopTK/Utilities/Threads.h"
 
 //------------------------------------------------------------------------------
 //                            Constants / Typedefs

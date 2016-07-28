@@ -14,14 +14,14 @@
 #include <stdio.h>
 
 // Internal Include Files
-#include "../Config/SimpleIni.h"
-#include "../Common/definitions.h"
+#include "ScallopTK/TPL/Config/SimpleIni.h"
+#include "ScallopTK/Utilities/Definitions.h"
 
 //File system
 #ifdef WIN32
-  #include "Common/filesystem_win32.h"
+  #include "ScallopTK/Utilities/FilesystemWin32.h"
 #else
-  #include "Common/filesystem_unix.h"
+  #include "ScallopTK/Utilities/FilesystemUnix.h"
 #endif
 
 // Namespaces

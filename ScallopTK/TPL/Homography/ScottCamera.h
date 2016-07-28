@@ -12,7 +12,7 @@
 #include <math.h>
 #include <float.h>
 
-#include "../Common/definitions.h"
+#include "ScallopTK/Utilities/Definitions.h"
 
 #define sgFloat float
 #define SGfloat float

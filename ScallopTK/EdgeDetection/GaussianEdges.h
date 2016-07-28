@@ -17,9 +17,9 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
-#include "../Interest Point Detection/HistogramFiltering.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/ObjectProposals/HistogramFiltering.h"
 
 //------------------------------------------------------------------------------
 //                                Definitions

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Title: display.h
+// Title: Display.h
 // Author: Matthew Dawkins
 //------------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@
 #include "highgui.h"
 
 // Scallop Includes
-#include "../Common/definitions.h"
+#include "ScallopTK/Utilities/Definitions.h"
 
 // Namespaces
 using namespace std;

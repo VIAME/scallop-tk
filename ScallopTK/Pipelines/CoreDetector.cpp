@@ -6,7 +6,34 @@
 //------------------------------------------------------------------------------
 
 // Include Files
-#include "ScallopDetector.h"
+#include "CoreDetector.h"
+
+// Internal Scallop Includes
+#include "ScallopTK/Utilities/ConfigParsing.h"
+#include "ScallopTK/Utilities/Display.h"
+#include "ScallopTK/Utilities/Benchmarking.h"
+#include "ScallopTK/Utilities/Threads.h"
+
+#include "ScallopTK/ScaleDetection/ImageProperties.h"
+
+#include "ScallopTK/ObjectProposals/Consolidator.h"
+#include "ScallopTK/ObjectProposals/HistogramFiltering.h"
+#include "ScallopTK/ObjectProposals/PriorStatistics.h"
+#include "ScallopTK/ObjectProposals/AdaptiveThresholding.h"
+#include "ScallopTK/ObjectProposals/TemplateApproximator.h"
+#include "ScallopTK/ObjectProposals/CannyPoints.h"
+
+#include "ScallopTK/EdgeDetection/WatershedEdges.h"
+#include "ScallopTK/EdgeDetection/StableSearch.h"
+#include "ScallopTK/EdgeDetection/ExpensiveSearch.h"
+
+#include "ScallopTK/FeatureExtraction/ColorID.h"
+#include "ScallopTK/FeatureExtraction/HoG.h"
+#include "ScallopTK/FeatureExtraction/ShapeID.h"
+#include "ScallopTK/FeatureExtraction/Gabor.h"
+
+#include "ScallopTK/Classifiers/Training.h"
+#include "ScallopTK/Classifiers/TopClassifier.h"
 
 // Number of worker threads
 int THREADS;

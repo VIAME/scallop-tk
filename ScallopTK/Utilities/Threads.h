@@ -18,7 +18,7 @@
 #include "highgui.h"
 
 // Scallop Includes
-#include "definitions.h"
+#include "Definitions.h"
 
 //------------------------------------------------------------------------------
 //                             Globals and Consts

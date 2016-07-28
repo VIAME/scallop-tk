@@ -18,14 +18,14 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
-#include "../Edge Detection/GaussianEdges.h"
-#include "../Interest Point Detection/HistogramFiltering.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/EdgeDetection/GaussianEdges.h"
+#include "ScallopTK/ObjectProposals/HistogramFiltering.h"
 
 //Benchmarking
 #ifdef SS_BENCHMARKING
-	#include "../Common/benchmarking.h"
+	#include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 
 //------------------------------------------------------------------------------

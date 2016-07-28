@@ -3,7 +3,7 @@
 // Author: Matthew Dawkins
 //------------------------------------------------------------------------------
 
-#include "display.h"
+#include "Display.h"
 
 void initOutputDisplay() {
 	cvNamedWindow( "ScallopDisplayWindow", CV_WINDOW_AUTOSIZE );

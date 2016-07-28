@@ -4,7 +4,7 @@
 // Description: This file contains common helper functions
 //------------------------------------------------------------------------------
 
-#include "helper.h"
+#include "HelperFunctions.h"
 
 // Display an image and wait for user input
 void showImage( IplImage* img ) {

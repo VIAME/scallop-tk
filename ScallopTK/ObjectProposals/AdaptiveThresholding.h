@@ -19,10 +19,10 @@
 #include "cxcore.h"
 
 //Scallop Includes
-#include "../Interest Point Detection/HistogramFiltering.h"
-#include "../Edge Detection/EdgeLinking.h"
-#include "../Common/definitions.h"
-#include "../Common/helper.h"
+#include "ScallopTK/ObjectProposals/HistogramFiltering.h"
+#include "ScallopTK/EdgeDetection/EdgeLinking.h"
+#include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
 
 //------------------------------------------------------------------------------
 //                                 Constants
