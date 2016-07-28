@@ -24,8 +24,11 @@ Build Instructions
 Requirements:
 
 Windows/Linux
+
 OpenCV
+
 CMake
+
 Caffe (optional)
 
 (1) TODO: Make build instructions
