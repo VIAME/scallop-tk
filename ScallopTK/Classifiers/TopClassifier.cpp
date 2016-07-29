@@ -2,7 +2,7 @@
 #include "TopClassifier.h"
 
 // td; Use a binary file next time
-int classifyCandidate( candidate *cd, ClassifierSystem *Classifiers ) {
+int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
 
 	// Exit if inactive flag set
 	if( !cd->is_active )
@@ -81,7 +81,7 @@ int classifyCandidate( candidate *cd, ClassifierSystem *Classifiers ) {
 }
 
 // Sorting function 1 - based on major axis of ip
-bool compareCandidateSize( candidate* cd1, candidate* cd2  ) {
+bool compareCandidateSize( Candidate* cd1, Candidate* cd2  ) {
 	float avg1 = /*cd1->minor +*/ cd1->major;
 	float avg2 = /*cd2->minor +*/ cd2->major;
 	if( avg1 > avg2 ) 
@@ -90,7 +90,7 @@ bool compareCandidateSize( candidate* cd1, candidate* cd2  ) {
 }
 
 // Sorting function 2 - sort based on classification magnitude
-bool sortByMag( candidate* cd1, candidate* cd2 ) {
+bool sortByMag( Candidate* cd1, Candidate* cd2 ) {
 	if( cd1->class_magnitudes[cd1->classification] > cd2->class_magnitudes[cd2->classification] )
 		return true;
 	return false;
@@ -99,7 +99,7 @@ bool sortByMag( candidate* cd1, candidate* cd2 ) {
 // Returns 0 - no intersection, 1 - overlap, 2 - 2 submerged in 1, 3 - 1 submerged in 2
 
 // Simple Approximation
-int ellipseIntersectStatus( candidate* cd1, candidate *cd2 ) {
+int ellipseIntersectStatus( Candidate* cd1, Candidate *cd2 ) {
 
 	// Cirlce approx for simplicity for now (doesn't matter in this environment)
 	float xdif = (cd1->r - cd2->r);
@@ -111,7 +111,7 @@ int ellipseIntersectStatus( candidate* cd1, candidate *cd2 ) {
 	return 0;
 }
 
-float ellipseIntersectStatus2( candidate* cd1, candidate *cd2 ) {
+float ellipseIntersectStatus2( Candidate* cd1, Candidate *cd2 ) {
 
 	// Calculate area of overlap (assumes circles)
 	/*float xdif = (cd1->r - cd2->r);
@@ -168,18 +168,18 @@ float ellipseIntersectStatus2( candidate* cd1, candidate *cd2 ) {
 }
 
 // Clean up results for display
-void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int method ) {
+void scallopCleanUp( vector<Candidate*>& input, vector<Candidate*>& output, int method ) {
 
 	// Adjust elliptical ips
 	for( unsigned int i=0; i<input.size(); i++ ) {
 		input[i]->minor = (input[i]->major - input[i]->minor)*0.5 + input[i]->minor;
 	}
 
-	// Sort input vector by candidate size
+	// Sort input vector by Candidate size
 	sort( input.begin(), input.end(), compareCandidateSize);
 
 	// Create linked grouped structure
-	vector< vector< candidate* > > ol;
+	vector< vector< Candidate* > > ol;
 	for( unsigned int i=0; i<input.size(); i++ ) {
 		bool standalone = true;
 		for( unsigned int j=0; j<ol.size(); j++ ) {
@@ -190,7 +190,7 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 			}
 		}
 		if( standalone ) {
-			vector< candidate* > temp;
+			vector< Candidate* > temp;
 			temp.push_back( input[i] );
 			ol.push_back( temp );
 		}
@@ -209,7 +209,7 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 
 			// Sort entries by magnitude
 			sort( ol[i].begin(), ol[i].end(), sortByMag ); 
-			vector<candidate*> toadd;
+			vector<Candidate*> toadd;
 
 			// Take max non-overlapping entries
 			for( unsigned int j=0; j<ol[i].size(); j++ ) {
@@ -233,18 +233,18 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 	}
 }
 
-/*void removeInsidePoints( vector<candidate*>& input, vector<candidate*>& output ) {
+/*void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output ) {
 	
 	// Adjust elliptical ips
 	for( int i=0; i<input.size(); i++ ) {
 		input[i]->minor = (input[i]->major - input[i]->minor)*0.5 + input[i]->minor;
 	}
 
-	// Sort input vector by candidate size
+	// Sort input vector by Candidate size
 	sort( input.begin(), input.end(), compareCandidateSize);
 
 	// Create linked grouped structure
-	vector< vector< candidate* > > ol;
+	vector< vector< Candidate* > > ol;
 	for( int i=0; i<input.size(); i++ ) {
 		bool standalone = true;
 		for( int j=0; j<ol.size(); j++ ) {
@@ -255,7 +255,7 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 			}
 		}
 		if( standalone ) {
-			vector< candidate* > temp;
+			vector< Candidate* > temp;
 			temp.push_back( input[i] );
 			ol.push_back( temp );
 		}
@@ -267,7 +267,7 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 		// Sort entries by magnitude
 		//sort( ol[i].begin(), ol[i].end(), sortByFocus ); 
 		sort( ol[i].begin(), ol[i].end(), sortByMag ); 
-		vector<candidate*> toadd;
+		vector<Candidate*> toadd;
 
 		// Take max non-overlapping entries
 		for( int j=0; j<ol[i].size(); j++ ) {
@@ -292,14 +292,14 @@ void scallopCleanUp( vector<candidate*>& input, vector<candidate*>& output, int 
 	}
 }*/
 
-void removeInsidePoints( vector<candidate*>& input, vector<candidate*>& output ) {
+void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output ) {
 	
 	// Adjust elliptical ips
 	for( int i=0; i<input.size(); i++ ) {
 		input[i]->minor = (input[i]->major - input[i]->minor)*0.5 + input[i]->minor;
 	}
 
-	// Sort input vector by candidate size
+	// Sort input vector by Candidate size
 	sort( input.begin(), input.end(), sortByMag );
 
 	// Take local min overlapping maximas
@@ -433,7 +433,7 @@ inline void getSortedIDs( vector<int>& indices, vector<double> values )
 	}
 }
 
-bool appendInfoToFile( vector<detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor ) {
+bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor ) {
 	
 	// Get lock on file
 	get_ListLock();
@@ -445,7 +445,7 @@ bool appendInfoToFile( vector<detection*>& cds, const string& ListFilename, cons
 		return false;
 	}
 	
-	// print out all results for every candidate and every possible classification
+	// print out all results for every Candidate and every possible classification
 	for( unsigned int i=0; i<cds.size(); i++ ) {
 		
 		// Sort possible classifications in descending value based on classification values
@@ -474,7 +474,7 @@ bool appendInfoToFile( vector<detection*>& cds, const string& ListFilename, cons
 	return true;
 }
 
-void cullSimilarObjects( vector<candidate*>& input, bool clams, bool dollars, bool urchins, bool sacs, bool misc ) {
+void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bool urchins, bool sacs, bool misc ) {
 
 	// Suppress clam responses
 	if( clams ) {
@@ -532,7 +532,7 @@ void cullSimilarObjects( vector<candidate*>& input, bool clams, bool dollars, bo
 	}
 }
 
-void sandDollarSuppression( vector<candidate*>& input, bool& scallopMode ) {
+void sandDollarSuppression( vector<Candidate*>& input, bool& scallopMode ) {
 
 	int scallop_count = 0;
 	int sand_dollar_count = 0;
@@ -563,7 +563,7 @@ void sandDollarSuppression( vector<candidate*>& input, bool& scallopMode ) {
 		}
 	}
 
-	// adjust mode based on detections
+	// adjust mode based on Detections
 	if( scallop_count >= sand_dollar_count ) {
 		scallopMode = true;
 	} else {
@@ -571,7 +571,7 @@ void sandDollarSuppression( vector<candidate*>& input, bool& scallopMode ) {
 	}
 }
 
-void deallocateDetections( vector<detection*>& vec )
+void deallocateDetections( vector<Detection*>& vec )
 {
 	for( int i = 0; i < vec.size(); i++ )
 	{
@@ -579,16 +579,16 @@ void deallocateDetections( vector<detection*>& vec )
 	}
 }
 
-vector<detection*> interpolateResults( vector<candidate*>& input, ClassifierSystem* Classifiers, std::string Filename )
+vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSystem* Classifiers, std::string Filename )
 {
-	vector<detection*> output;
+	vector<Detection*> output;
 	
 	int MainSize = Classifiers->MainClassifiers.size();
 	int SuppSize = Classifiers->SuppressionClassifiers.size();
 
 	for( int i = 0; i < input.size(); i++ )
 	{
-		detection* obj = new detection;
+		Detection* obj = new Detection;
 		
 		obj->r = input[i]->r;
 		obj->c = input[i]->c;

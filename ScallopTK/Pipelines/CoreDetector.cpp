@@ -223,11 +223,11 @@ void *ProcessImage( void *InputArgs ) {
   IplImage *mask = cvCreateImage( cvGetSize( inputImg ), IPL_DEPTH_8U, 1 );
   cvSet( mask, cvScalar(255) );
 
-  // Records how many detections of each classification category we have
-  int detections[TOTAL_DESIG];
+  // Records how many Detections of each classification category we have
+  int Detections[TOTAL_DESIG];
   for( unsigned int i=0; i<TOTAL_DESIG; i++ )
   {
-    detections[i] = 0;
+    Detections[i] = 0;
   }
 
 #ifdef BENCHMARK
@@ -241,13 +241,13 @@ void *ProcessImage( void *InputArgs ) {
   //  - gs = Grayscale
   //  - rgb = sRGB (although beware OpenCV may load this as BGR in mem)
   IplImage *img_rgb_32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
-  IplImage *img_lab_32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
+  IplImage *ImgLab32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
   IplImage *img_gs_32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, 1 );  
   IplImage *img_gs_8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 1 );
   IplImage *img_rgb_8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 3 );
   float scalingFactor = 1 / (pow(2.0f, inputImg->depth)-1);
   cvConvertScale(inputImg, img_rgb_32f, scalingFactor );
-  cvCvtColor(img_rgb_32f, img_lab_32f, CV_RGB2Lab );
+  cvCvtColor(img_rgb_32f, ImgLab32f, CV_RGB2Lab );
   cvCvtColor(img_rgb_32f, img_gs_32f, CV_RGB2GRAY );
   cvScale( img_gs_32f, img_gs_8u, 255. );
   cvScale( img_rgb_32f, img_rgb_8u, 255. );
@@ -266,7 +266,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculate all required image gradients for later operations
-  GradientChain Gradients = createGradientChain( img_lab_32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRad, maxRad );
+  GradientChain Gradients = createGradientChain( ImgLab32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRad, maxRad );
 
 #ifdef BENCHMARK
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -280,7 +280,7 @@ void *ProcessImage( void *InputArgs ) {
   CandidateVector Template;
   CandidateVector Canny;
   
-  // Perform Difference of Gaussian blob detection on our color classifications
+  // Perform Difference of Gaussian blob Detection on our color classifications
   if( Stats->processed > 5 )
     detectColoredBlobs( color, ColorBlob ); //<-- Better for large # of images
   else 
@@ -336,18 +336,18 @@ void *ProcessImage( void *InputArgs ) {
       MIPParameters& Pt = (*Options->MIPData)[i];
       if( Pt.Name == Options->InputFilenameNoDir )
       {
-        candidate *cd1 = ConvertMIPToCandidate( Pt, resizeFactor );
+        Candidate *cd1 = ConvertMIPToCandidate( Pt, resizeFactor );
         MIPDetections.push_back( cd1 );
 
         if( true /*todo: paramatize double_import*/ )
         {
-          candidate *cd2 = ConvertMIPToCandidate( Pt, resizeFactor );
+          Candidate *cd2 = ConvertMIPToCandidate( Pt, resizeFactor );
           MIPDetections.push_back( cd2 );           
         }
       }
     }
     
-    // Remove any detected candidates which conflict with markups
+    // Remove any detected Candidates which conflict with markups
     RemoveOverlapAndMerge( UnorderedCandidates, MIPDetections, Options->MIPUnannotatedKeepPercentage );
   }
 
@@ -364,7 +364,7 @@ void *ProcessImage( void *InputArgs ) {
 
 //--------------------Extract Features---------------------------
 
-  // Initializes candidate stats used for classification
+  // Initializes Candidate stats used for classification
   initalizeCandidateStats( UnorderedCandidates, inputImg->height, inputImg->width );
 
 #ifdef BENCHMARK
@@ -372,7 +372,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Identifies edges around each IP
-  edgeSearch( Gradients, color, img_lab_32f, UnorderedCandidates, img_rgb_32f );
+  edgeSearch( Gradients, color, ImgLab32f, UnorderedCandidates, img_rgb_32f );
 
 #ifdef BENCHMARK
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -428,8 +428,8 @@ void *ProcessImage( void *InputArgs ) {
 
   if( Options->IsTrainingMode && !Options->UseMIPData )
   {
-    // If in training mode, have user enter candidate classifications
-    if (!getDesignationsFromUser(OrderedCandidates, img_rgb_32f, mask, detections, minRad, maxRad, Options->InputFilenameNoDir))
+    // If in training mode, have user enter Candidate classifications
+    if (!getDesignationsFromUser(OrderedCandidates, img_rgb_32f, mask, Detections, minRad, maxRad, Options->InputFilenameNoDir))
     {
       training_exit_flag = true;
     }
@@ -445,7 +445,7 @@ void *ProcessImage( void *InputArgs ) {
     for( unsigned int i=0; i<UnorderedCandidates.size(); i++ ) {
   
       // Classify ip
-      candidate *cur = UnorderedCandidates[i];
+      Candidate *cur = UnorderedCandidates[i];
       int interest = classifyCandidate( cur, Options->ClassifierGroup );
       
       // Update Scallop List
@@ -454,7 +454,7 @@ void *ProcessImage( void *InputArgs ) {
     }
   
     // Calculate expensive edges around each interesting point
-    expensiveEdgeSearch( Gradients, color, img_lab_32f, img_rgb_32f, Interesting );
+    expensiveEdgeSearch( Gradients, color, ImgLab32f, img_rgb_32f, Interesting );
   
     // Perform cleanup by removing interest points which are part of another interest point
     removeInsidePoints( Interesting, LikelyObjects );
@@ -462,7 +462,7 @@ void *ProcessImage( void *InputArgs ) {
     // Interpolate correct object categories
     Objects = interpolateResults( LikelyObjects, Options->ClassifierGroup, Options->InputFilename );
 
-    // Display detections
+    // Display Detections
     if( Options->ShowVideoDisplay ) {
       get_display_lock();
       displayResultsImage( img_rgb_32f, Objects, Options->InputFilenameNoDir );
@@ -472,28 +472,28 @@ void *ProcessImage( void *InputArgs ) {
 
 //-----------------------Update Stats----------------------------
 
-  // Update detection variables and mask
+  // Update Detection variables and mask
   if( !Options->IsTrainingMode && Options->ClassifierGroup->IsScallopDirected )
   {
     for( unsigned int i=0; i<Objects.size(); i++ ) {
-      detection *cur = Objects[i];
+      Detection *cur = Objects[i];
       if( cur->IsBrownScallop ) {
-        detections[SCALLOP_BROWN]++;
+        Detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
       } else if( cur->IsWhiteScallop ) {
-        detections[SCALLOP_WHITE]++;
+        Detections[SCALLOP_WHITE]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
       } else if( cur->IsBuriedScallop ) {
-        detections[SCALLOP_BURIED]++;
+        Detections[SCALLOP_BURIED]++;
         updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }
   else
   {
-    // Quick hack: If we're not trying to detect scallops, reuse scallop histogram for better ip detections
+    // Quick hack: If we're not trying to detect scallops, reuse scallop histogram for better ip Detections
     for( unsigned int i=0; i<Objects.size(); i++ ) {
-      detection *cur = Objects[i];
+      Detection *cur = Objects[i];
       updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
     }
   }
@@ -502,36 +502,36 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode )
   {
     for( unsigned int i=0; i<UnorderedCandidates.size(); i++ ) {
-      candidate *cur = UnorderedCandidates[i];
+      Candidate *cur = UnorderedCandidates[i];
       int id = cur->classification;
       if( id == 18028 || id == 18034 || id == 2 )
       {
-        detections[SCALLOP_WHITE]++;
+        Detections[SCALLOP_WHITE]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
       }
       else if( id >= 18004 && id <= 18035 || id == 1 )
       {
-        detections[SCALLOP_BROWN]++;
+        Detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
       }
       else if( id == 3 )
       {
-        detections[SCALLOP_BURIED]++;
+        Detections[SCALLOP_BURIED]++;
         updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }
 
-  // Update color classifiers from mask and detections matrix
-  CC->Update( img_rgb_32f, mask, detections );
+  // Update color classifiers from mask and Detections matrix
+  CC->Update( img_rgb_32f, mask, Detections );
 
   // Update statistics
-  Stats->Update( detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
+  Stats->Update( Detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
 
   // Output results to file(s)
   if( Options->EnableImageOutput )
   {
-    saveScallops( img_rgb_32f, Objects, Options->OutputFilename + ".detections.jpg" );
+    saveScallops( img_rgb_32f, Objects, Options->OutputFilename + ".Detections.jpg" );
   }
   if( Options->EnableListOutput && !Options->IsTrainingMode )
   {
@@ -552,7 +552,7 @@ void *ProcessImage( void *InputArgs ) {
   cvReleaseImage(&img_rgb_32f);
   cvReleaseImage(&img_rgb_8u);
   cvReleaseImage(&img_gs_32f);
-  cvReleaseImage(&img_lab_32f);
+  cvReleaseImage(&ImgLab32f);
   cvReleaseImage(&img_gs_8u);
   cvReleaseImage(&mask);
   

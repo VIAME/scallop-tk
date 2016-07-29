@@ -397,10 +397,10 @@ inline void InitializeDefault( SystemSettings& settings )
 }
 
 
-inline candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor )
+inline Candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor )
 {
-  // Convert a MIP point to a candidate with some random flux
-  candidate* output = new candidate;
+  // Convert a MIP point to a Candidate with some random flux
+  Candidate* output = new Candidate;
 
   // Calculate random adjustment factors
   double RAND_R = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
@@ -425,7 +425,7 @@ inline candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor
   C *= DownsizeFactor;
   DIST *= DownsizeFactor;
 
-  // Set candidate vals
+  // Set Candidate vals
   output->r = R + DIST * RAND_R;
   output->c = C + DIST * RAND_C;
   output->major = RAND_MAJOR * DIST / 2.0;
@@ -439,12 +439,12 @@ inline candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor
 }
 
 // Move this function to somplace better
-inline void RemoveOverlapAndMerge( vector<candidate*>& Base, vector<candidate*>& Truth, double percentage_keep = 0.10 )
+inline void RemoveOverlapAndMerge( vector<Candidate*>& Base, vector<Candidate*>& Truth, double percentage_keep = 0.10 )
 {
   // Top down greedy search - very slow but who cares its for training only
   for( int j = Base.size() - 1; j >= 0; j-- )
   {
-    // Determine if we should kill this candidate (too close to GT)
+    // Determine if we should kill this Candidate (too close to GT)
     bool RemoveCandidate = false;
 
     for( int i = 0; i < Truth.size(); i++ )

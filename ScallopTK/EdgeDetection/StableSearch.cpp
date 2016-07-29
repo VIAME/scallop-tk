@@ -69,10 +69,10 @@ inline float dirActFunc( const float& normalizedDirOffset ) {
 		return 0.4f;
 }
 
-void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_32f, vector<candidate*> cds, IplImage *rgb ) {
+void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f, vector<Candidate*> cds, IplImage *rgb ) {
 
 	// Debug Checks
-	assert( color->SaliencyMap->width == img_lab_32f->width );
+	assert( color->SaliencyMap->width == ImgLab32f->width );
 
 #ifdef SS_BENCHMARKING
 	ss_bm_output.open( ss_bm_fn.c_str(), fstream::out | fstream::app );
@@ -91,13 +91,13 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 		ss_exe_times.push_back( 0 );
 #endif
 
-	// For every candidate, search for edges
+	// For every Candidate, search for edges
 	const float SCAN_DIST = 1.33f;
 	int height = lab_mag->height;
 	int width = lab_mag->width;
 	for( unsigned int i = 0; i < cds.size(); i++ ) {
 
-		candidate* cd = cds[i];
+		Candidate* cd = cds[i];
 
 		int lr = cd->r - SCAN_DIST * cd->major;
 		int lc = cd->c - SCAN_DIST * cd->major;
@@ -388,12 +388,12 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 					pos++;				
 				}
 			}
-			CvBox2D32f* box = (CvBox2D32f*)malloc(sizeof(CvBox2D32f));
+			CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
 			cvFitEllipse( input, total_pts, box );
 
 #ifdef SS_DISPLAY 
 			IplImage *temp = cvCloneImage( rgb );
-			candidate *kp = new candidate;
+			Candidate *kp = new Candidate;
 			kp->angle = box->angle;
 			kp->r = box->center.y + lr;
 			kp->c = box->center.x + lc;
@@ -520,8 +520,8 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 				}
 
 				// Perform shifts
-				int labwidth = img_lab_32f->width;
-				int labheight = img_lab_32f->height;
+				int labwidth = ImgLab32f->width;
+				int labheight = ImgLab32f->height;
 				for( int s = -SHIFTS; s <= SHIFTS; s++ ) {
 					int index = s+SHIFTS;
 					avgL[index] = 0.0f;
@@ -532,7 +532,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 						int r = cntrs[best1]->pts[p].r + s*stepsr[p] + lr;
 						int c = cntrs[best1]->pts[p].c + s*stepsc[p] + lc;
 						if( r >= 0 && c >= 0 && r < labheight && c < labwidth ) {
-							float *pos = ((float*)(img_lab_32f->imageData + r*img_lab_32f->widthStep))+3*c;
+							float *pos = ((float*)(ImgLab32f->imageData + r*ImgLab32f->widthStep))+3*c;
 							avgL[index] += pos[0];
 							avgA[index] += pos[1];
 							avgB[index] += pos[2];
@@ -654,8 +654,8 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 				}
 
 				// Perform shifts
-				int labwidth = img_lab_32f->width;
-				int labheight = img_lab_32f->height;
+				int labwidth = ImgLab32f->width;
+				int labheight = ImgLab32f->height;
 				for( int s = -SHIFTS; s <= SHIFTS; s++ ) {
 					int index = s+SHIFTS;
 					avgL[index] = 0.0f;
@@ -666,7 +666,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_3
 						int r = cntrs[best2]->pts[p].r + s*stepsr[p] + lr;
 						int c = cntrs[best2]->pts[p].c + s*stepsc[p] + lc;
 						if( r >= 0 && c >= 0 && r < labheight && c < labwidth ) {
-							float *pos = ((float*)(img_lab_32f->imageData + r*img_lab_32f->widthStep))+3*c;
+							float *pos = ((float*)(ImgLab32f->imageData + r*ImgLab32f->widthStep))+3*c;
 							avgL[index] += pos[0];
 							avgA[index] += pos[1];
 							avgB[index] += pos[2];

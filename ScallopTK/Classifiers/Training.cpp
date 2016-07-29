@@ -2,7 +2,7 @@
 #include "Training.h"
 
 
-void printCandidateInfo( int desig, candidate *cd ) {
+void printCandidateInfo( int desig, Candidate *cd ) {
 
 	// Print desig
 	data_file << desig << " ";
@@ -76,8 +76,8 @@ void exitTrainingMode() {
 	data_file.close();
 }
 
-bool getDesignationsFromUser(vector<candidate*>& UnorderedCandidates, IplImage *display_img, IplImage *mask,
-								int *detections, float minRad, float maxRad, string img_name ) {
+bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *display_img, IplImage *mask,
+								int *Detections, float minRad, float maxRad, string img_name ) {
 	
 	// Variables								
 	string input;
@@ -90,10 +90,10 @@ bool getDesignationsFromUser(vector<candidate*>& UnorderedCandidates, IplImage *
 	bool allzero = false;
 	float lowp, highp;
 
-	// Cycle through all candidates
+	// Cycle through all Candidates
 	for( int i=0; i<UnorderedCandidates.size(); i++ ) {
 
-		candidate *cd = UnorderedCandidates[i];
+		Candidate *cd = UnorderedCandidates[i];
 
 		if( !cd->is_active )
 			continue;
@@ -190,16 +190,16 @@ bool getDesignationsFromUser(vector<candidate*>& UnorderedCandidates, IplImage *
 
 		//Update detect map
 		if( in_num == 1 || in_num == 2 || in_num == 4 ) {
-			detections[SCALLOP_BROWN]++;
+			Detections[SCALLOP_BROWN]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, SCALLOP_BROWN );
 		} else if( in_num == 8 ) {
-			detections[SCALLOP_WHITE]++;
+			Detections[SCALLOP_WHITE]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, SCALLOP_WHITE );
 		} else if( in_num == 3 ) {
-			detections[SCALLOP_BROWN]++;
+			Detections[SCALLOP_BROWN]++;
 			updateMaskRing( mask, cd->r, cd->c, cd->angle, cd->major*0.63, cd->minor*0.63, cd->major, SCALLOP_BROWN );
 		} else if( in_num == 10 ) {
-			detections[DOLLAR]++;
+			Detections[DOLLAR]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, DOLLAR );
 		}
 	}
@@ -226,7 +226,7 @@ bool getDesignationsFromUser(vector<candidate*>& UnorderedCandidates, IplImage *
 }
 
 bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *display_img, IplImage *mask,
-								int *detections, float minRad, float maxRad, string img_name) {
+								int *Detections, float minRad, float maxRad, string img_name) {
 
 	// Variables								
 	string input;
@@ -244,11 +244,11 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
 	int method;
 	int lc, lr, uc, ur;
 
-	// Cycle through all candidates
+	// Cycle through all Candidates
 	int cand_size = OrderedCandidates.size(); 
 	for( int i=0; i<cand_size; i++ ) {
 
-		candidate *cd = OrderedCandidates.top();
+		Candidate *cd = OrderedCandidates.top();
 		OrderedCandidates.pop();
 
 		if( !cd->is_active )
@@ -413,16 +413,16 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
 
 		//Update detect map
 		if( in_num == 1 || in_num == 2 || in_num == 11 || in_num == 12 ) {
-			detections[SCALLOP_BROWN]++;
+			Detections[SCALLOP_BROWN]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, SCALLOP_BROWN );
 		} else if( in_num == 31 || in_num == 32 ) {
-			detections[SCALLOP_WHITE]++;
+			Detections[SCALLOP_WHITE]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, SCALLOP_WHITE );
 		} else if( in_num == 21 || in_num == 22 ) {
-			detections[SCALLOP_BROWN]++;
+			Detections[SCALLOP_BROWN]++;
 			updateMaskRing( mask, cd->r, cd->c, cd->angle, cd->major*0.75, cd->minor*0.75, cd->major, SCALLOP_BROWN );
 		} else if( in_num == 51 || in_num == 52 || in_num == 61 || in_num == 62 ) {
-			detections[DOLLAR]++;
+			Detections[DOLLAR]++;
 			updateMask( mask, cd->r, cd->c, cd->angle, cd->major, cd->minor, DOLLAR );
 		}
 #ifdef SAVE_INTEREST_POINTS
@@ -445,7 +445,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
 	return true;
 }
 
-void dumpCandidateFeatures( string file_name, vector<candidate*>& cd )
+void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd )
 {
 	// Open stream
 	ofstream ip_out( file_name.c_str(), ios::app );

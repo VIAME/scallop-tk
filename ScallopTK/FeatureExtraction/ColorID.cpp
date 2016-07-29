@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 
 
-void createOrientedSummaryImages( IplImage *base, vector<candidate*>& cds ) {
+void createOrientedSummaryImages( IplImage *base, vector<Candidate*>& cds ) {
 	int n = 64;
 	for( int i=0; i<cds.size(); i++ ) {
 
@@ -88,7 +88,7 @@ void createOrientedSummaryImages( IplImage *base, vector<candidate*>& cds ) {
 	}
 }
 
-void createColorQuadrants( IplImage *base, vector<candidate*>& cds ) {
+void createColorQuadrants( IplImage *base, vector<Candidate*>& cds ) {
 
 	// Constants
 	float R1_RATIO = 0.74f;
@@ -157,7 +157,7 @@ void createColorQuadrants( IplImage *base, vector<candidate*>& cds ) {
 	}
 }
 
-void calculateColorFeatures( IplImage* color_img, hfResults *color_class, candidate *cd ) {
+void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd ) {
 	if( !cd->is_active )
 		return;
 	assert( color_img->width == color_class->NetScallops->width );

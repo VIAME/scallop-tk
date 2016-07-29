@@ -29,38 +29,42 @@ using namespace std;
 //                                 Prototypes
 //------------------------------------------------------------------------------
 
-// Good luck!
+// Display Functions
 void showImage( IplImage* img );
 void showImageNW( IplImage* img );
 void showImages( IplImage* img1, IplImage *img2 );
-void deallocateCandidates( vector<candidate*> &kps );
-candidate *copyCandidate( candidate* kp );
+void showCandidates( IplImage *img, vector<Candidate*>& kps, float min = 0.0f, float max = INF );
+void showScallops( IplImage *img, vector<Candidate*>& kps );
+void saveScallops( IplImage *img, vector<Detection*>& kps, const string& fn );
+void showCandidatesNW( IplImage *img, vector<Candidate*>& kps, float min = 0.0f, float max = INF );
+void showScallopsNW( IplImage *img, vector<Candidate*>& kps );
+void saveCandidates( IplImage *img, vector<Candidate*>& kps, const string& fn );
+void saveImage( IplImage *img, const string &fn );
+void showIPNW( IplImage* img, Candidate *ip );
+
+// Memory Functions
+void deallocateCandidates( vector<Candidate*> &kps );
+Candidate *copyCandidate( Candidate* kp );
 int getImageType( const string& filename );
-void showCandidates( IplImage *img, vector<candidate*>& kps, float min = 0.0f, float max = INF );
-void showScallops( IplImage *img, vector<candidate*>& kps );
-void saveScallops( IplImage *img, vector<detection*>& kps, const string& fn );
-void showCandidatesNW( IplImage *img, vector<candidate*>& kps, float min = 0.0f, float max = INF );
+
 void saveMatrix( CvMat* mat, string filename );
 string intToString(const int& i);
 int stringToInt(const string& s);
 inline void rgb2gray( IplImage *src, IplImage *dst );
-void showIP( IplImage* img, IplImage *img2, candidate *ip );
+void showIP( IplImage* img, IplImage *img2, Candidate *ip );
 void PrintMat(CvMat *A);
 void showImageRange( IplImage* img );
 void calcMinMax( IplImage *img );
 void drawFilledEllipse( IplImage *input, float r, float c, float angle, float major, float minor );
 void drawEllipseRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2 );
 void drawColorRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2, float major3, int (&bins)[COLOR_BINS] );
-void showIPNW( IplImage* img, IplImage *img2, candidate *ip );
-void initalizeCandidateStats( vector<candidate*> cds, int imheight, int imwidth );
+void showIPNW( IplImage* img, IplImage *img2, Candidate *ip );
+void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth );
 void updateMaskRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2, tag obj );
 void updateMask( IplImage *input, float r, float c, float angle, float major, float minor, tag obj );
 float quickMedian( IplImage* img, int max_to_sample );
-void showScallopsNW( IplImage *img, vector<candidate*>& kps );
-void saveCandidates( IplImage *img, vector<candidate*>& kps, const string& fn );
-void saveImage( IplImage *img, const string &fn );
-void showIPNW( IplImage* img, candidate *ip );
-void RemoveBorderCandidates( vector<candidate*>& cds, IplImage *img );
+
+void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions
@@ -89,7 +93,7 @@ inline void rgb2gray( IplImage *src, IplImage *dst ) {
 	cvCvtColor( src, dst, CV_RGB2GRAY );
 }
 
-inline void scaleCD( candidate *cd, float sf ) {
+inline void scaleCD( Candidate *cd, float sf ) {
 	cd->r = cd->r * sf;
 	cd->c = cd->c * sf;
 	cd->major = cd->major * sf;

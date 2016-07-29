@@ -11,7 +11,7 @@ const float SIGMA1 = 1.25f;
 const int MASK_BORDER_SIZE = 2;
 
 /*
-void extractWatershedEdge( IplImage *img, candidate* kp, float scale ) {
+void extractWatershedEdge( IplImage *img, Candidate* kp, float scale ) {
 
 	// Calculate outer/inner axis lengths for watershed markers
 	float in_major = kp->major * R1_RATIO * scale;
@@ -111,7 +111,7 @@ void calcAvgMax( IplImage *img, float& avg, float& max, float& min ) {
 }
 
 // Extract contours from kps
-void extractScallopContours( GradientChain& Gradients, vector<candidate*> cds ) {
+void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds ) {
 
 	// Create base of pyramid (3-level incrementally scaled) if need to
 	float lvl_intvl = ( Gradients.maxRad - Gradients.minRad ) / 3;
@@ -163,8 +163,8 @@ void extractScallopContours( GradientChain& Gradients, vector<candidate*> cds ) 
 	start[2] = end[1] = (Gradients.minRad + lvl_intvl*2) / Gradients.scale;
 	end[2] = Gradients.maxRad / Gradients.scale;
 	
-	// Create temp candidate point for input (because we need to scale each kp)
-	candidate cd;
+	// Create temp Candidate point for input (because we need to scale each kp)
+	Candidate cd;
 
 	// Run watersheds
 	for( unsigned int i=0; i<cds.size(); i++ ) {

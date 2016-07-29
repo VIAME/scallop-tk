@@ -355,18 +355,18 @@ hfResults *ColorClassifier::classifiyImage( IplImage *img ) {
 	return ptr;
 }
 
-void ColorClassifier::Update( IplImage *img, IplImage *mask, int detections[] ) {
+void ColorClassifier::Update( IplImage *img, IplImage *mask, int Detections[] ) {
 
 	// Reset all secondary filters to 0	
 	Environment.flushSecondary();
 
-	if( detections[SCALLOP_WHITE] > 0 )
+	if( Detections[SCALLOP_WHITE] > 0 )
 		WhiteScallop.flushSecondary();
 
-	//if( detections[DOLLAR] > 0 )
+	//if( Detections[DOLLAR] > 0 )
 	//	SandDollars.flushSecondary();
 
-	if( detections[SCALLOP_BROWN] || detections[SCALLOP_BURIED] > 0 )
+	if( Detections[SCALLOP_BROWN] || Detections[SCALLOP_BURIED] > 0 )
 		BrownScallop.flushSecondary();
 
 	// Build secondary filters - TODO REWRITE OH GOD MY EYES
@@ -420,16 +420,16 @@ void ColorClassifier::Update( IplImage *img, IplImage *mask, int detections[] ) 
 	// Merge secondary filters into primary if change
 	Environment.mergeSecondary( DEFAULT_MERGE_RATIO, 1.0f/envi_count );
 
-	float WHITE_MR = detections[SCALLOP_WHITE]*0.004f;
-	if( detections[SCALLOP_WHITE] )
+	float WHITE_MR = Detections[SCALLOP_WHITE]*0.004f;
+	if( Detections[SCALLOP_WHITE] )
 		WhiteScallop.mergeSecondary( WHITE_MR, 1.0f/envi_count );
 
-	//float DOLLAR_MR = detections[DOLLAR]*0.004f;
-	//if( detections[DOLLAR] )
+	//float DOLLAR_MR = Detections[DOLLAR]*0.004f;
+	//if( Detections[DOLLAR] )
 	//	SandDollars.mergeSecondary( DOLLAR_MR, 1.0f/envi_count );
 
-	float BROWN_MR = (detections[SCALLOP_BROWN]+detections[SCALLOP_BURIED])*0.004f;
-	if( detections[SCALLOP_BROWN] )
+	float BROWN_MR = (Detections[SCALLOP_BROWN]+Detections[SCALLOP_BURIED])*0.004f;
+	if( Detections[SCALLOP_BROWN] )
 		BrownScallop.mergeSecondary( BROWN_MR, 1.0f/envi_count );
 }
 
@@ -508,7 +508,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
 	return results;
 }
 
-void detectColoredBlobs( hfResults* color, vector<candidate*>& cds ) {
+void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
 	
 	// Add border unto classification results and resize if needed
 	float resize_factor = MIN_RAD_COLOR_DOG/color->minRad;
@@ -531,7 +531,7 @@ void detectColoredBlobs( hfResults* color, vector<candidate*>& cds ) {
 	cvSmooth( input, input, 2, 3, 3 );
 
 	// Find DoG Candidates in image
-	findDoGcandidates( input, cds, minRad, maxRad, DOG_MAX );
+	findDoGCandidates( input, cds, minRad, maxRad, DOG_MAX );
 
 	// Adjust cds for scaling factor
 	float scaleFactor = 1.0 / (color->scale * resize_factor);
@@ -543,7 +543,7 @@ void detectColoredBlobs( hfResults* color, vector<candidate*>& cds ) {
 	cvReleaseImage( &input );
 }
 
-void detectSalientBlobs( hfResults* color, vector<candidate*>& cds ) {
+void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds ) {
 	
 	// Add border unto classification results and resize if needed
 	float resize_factor = MIN_RAD_COLOR_DOG/color->minRad;
@@ -566,7 +566,7 @@ void detectSalientBlobs( hfResults* color, vector<candidate*>& cds ) {
 	cvSmooth( input, input, 2, 3, 3 );
 
 	// Find DoG Candidates in image
-	findDoGcandidates( input, cds, minRad, maxRad, DOG_ALL );
+	findDoGCandidates( input, cds, minRad, maxRad, DOG_ALL );
 
 	// Adjust cds for scaling factor
 	float scaleFactor = 1 / (color->scale * resize_factor);

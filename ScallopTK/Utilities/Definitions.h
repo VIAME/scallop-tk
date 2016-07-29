@@ -1,8 +1,7 @@
 //------------------------------------------------------------------------------
 // Title: Definitions.h
-// Author: Matthew Dawkins
-// Description: This file contains declarations and constants used across 
-// many operations
+// Description: This file contains declarations, constants, and shared structs
+// used across many other operations within this toolkit
 //------------------------------------------------------------------------------
 
 #ifndef SCALLOP_TK_DEFINITIONS_H_
@@ -40,12 +39,12 @@
 //                                 Constants
 //------------------------------------------------------------------------------
 
-// Max search depth for reading metadata in JPEG files
-const int MAX_DEPTH_META = 10000;
-
 // Mathematical Constants
 const float PI = 3.14159265f;
 const float INF = 1E+37f;
+
+// Max search depth for reading metadata contained within JPEG files
+const int MAX_DEPTH_META = 10000;
 
 // Scallop Size Variables
 // (Pre-adjusted for given tolerances in size calc stage)
@@ -53,12 +52,12 @@ const float minRadius = 0.0145f; //in meters
 const float maxRadius = 0.1298f; //in meters
 
 // Input image type definitions
-const int UNKNOWN = 0x00; //.xxx
-const int JPEG = 0x01; //.jpg || .JPG
-const int RAW_TIF = 0x02; //.tif || .TIF
-const int RAW_TIFF = 0x03; //.tiff
-const int BMP = 0x04; //.bmp
-const int PNG = 0x05; //.png
+const int UNKNOWN = 0x00;   //.xxx
+const int JPEG = 0x01;      //.jpg || .JPG
+const int RAW_TIF = 0x02;   //.tif || .TIF
+const int RAW_TIFF = 0x03;  //.tiff
+const int BMP = 0x04;       //.bmp
+const int PNG = 0x05;       //.png
 
 // Image Resize factors for different stages of our algorithm
 // Controls the resolution of our detectors and feature extrc.
@@ -129,6 +128,7 @@ const unsigned int MIXED_CLASS = 0x03;
 // Internal tag designations for objects in mask
 //  - Why isn't this an enum? -
 typedef unsigned int tag;
+
 const tag UNCLASSIFIED = 0x00;
 const tag ENVIRONMENT = 0x01;
 const tag SCALLOP_WHITE = 0x02;
@@ -215,13 +215,13 @@ struct SystemSettings
   // Enable output display?
   bool EnableOutputDisplay;
   
-  // Output detection list?
+  // Output Detection list?
   bool OutputList;
   
   // If an IP falls into more than one category, output it multiple times?
   bool OutputDuplicateClass;
   
-  // Output images with detections in output directory?
+  // Output images with Detections in output directory?
   bool OutputDetectionImages;
 
   // Camera focal length
@@ -303,7 +303,7 @@ struct contour {
 
 // Candidate Point
 // Stores location, stats for classification, and classification results         
-struct candidate
+struct Candidate
 {
 
   // Initial ellipse Location
@@ -327,8 +327,8 @@ struct candidate
   double magnitude;
   unsigned int method_rank;
 
-  // Is the candidate a corner entry
-  bool is_corner; //is the candidate on an image boundary
+  // Is the Candidate a corner entry
+  bool is_corner; //is the Candidate on an image boundary
   bool is_side_border[8]; // which octants are outside the image
 
   // Features for classification  
@@ -355,7 +355,7 @@ struct candidate
   contour *best_cntr;
   contour *full_cntr;
 
-  // User entered designation, candidate filename if in training mode
+  // User entered designation, Candidate filename if in training mode
   int designation;
   std::string filename;
 
@@ -364,8 +364,8 @@ struct candidate
   double class_magnitudes[MAX_CLASSIFIERS];
 };
 
-// An actual detection according to our algorithm, used just for post processing
-struct detection
+// An actual Detection according to our algorithm, used just for post processing
+struct Detection
 {
   // Image name
   std::string img;
@@ -380,7 +380,7 @@ struct detection
   // Object Contour (if it exists)
   contour *cntr;
 
-  // Possible Object IDs and classification detection values
+  // Possible Object IDs and classification Detection values
   std::vector< std::string > IDs;
   std::vector< double > ClassificationValues;
   

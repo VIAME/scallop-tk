@@ -17,7 +17,7 @@ struct Corner {
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void cornerSearch( candidate *cd, vector<Corner>& cv );
+void cornerSearch( Candidate *cd, vector<Corner>& cv );
 void calculateTriangleFeatures( Corner& c1, Corner& c2, int index, float *arr );
 
 //------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ void calculateTriangleFeatures( Corner& c1, Corner& c2, int index, float *arr );
 
 /*
 
-void stemDetection( candidate *cd, IplImage* unused ) {
+void stemDetection( Candidate *cd, IplImage* unused ) {
 	if( !cd->stats->active ) 
 		return;
 	vector<Corner> cv;
@@ -59,7 +59,7 @@ bool compareCorners( const Corner& c1, const Corner& c2 ) {
 	return c2.mag < c1.mag;
 }
 
-void cornerSearch( candidate *cd, vector<Corner>& cv ) {
+void cornerSearch( Candidate *cd, vector<Corner>& cv ) {
 
 	// Perform harris filter
 	IplImage *harris = cvCreateImage( cvSize(64,64), IPL_DEPTH_32F, 1 );

@@ -25,7 +25,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void extractWatershedEdge( IplImage *img, candidate* kp );
-void extractScallopContours( GradientChain& Gradients, vector<candidate*> cds );
+void extractWatershedEdge( IplImage *img, Candidate* kp );
+void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds );
 
 #endif

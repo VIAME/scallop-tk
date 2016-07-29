@@ -32,6 +32,10 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *img_lab_32f, vector<candidate*> cds, IplImage *rgb );
+void edgeSearch( GradientChain& Gradients,
+                 hfResults* color,
+                 IplImage *ImgLab32f,
+                 vector<Candidate*> cds,
+                 IplImage *rgb );
 
 #endif

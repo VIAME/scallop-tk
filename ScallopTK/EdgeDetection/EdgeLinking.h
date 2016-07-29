@@ -1,5 +1,5 @@
-#ifndef SCALLOP_TK_EDGELINK_H_
-#define SCALLOP_TK_EDGELINK_H_
+#ifndef SCALLOP_TK_EDGE_LINKING_H_
+#define SCALLOP_TK_EDGE_LINKING_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files
@@ -14,7 +14,7 @@
 #include <vector>
 #include <cmath>
 
-//OpenCV 2.1
+//OpenCV
 #include "cv.h"
 #include "cxcore.h"
 
@@ -24,20 +24,11 @@
 #include "ScallopTK/ObjectProposals/DoG.h"
 
 //------------------------------------------------------------------------------
-//                                 Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<candidate*>& kps, IplImage* bin );
-
-//------------------------------------------------------------------------------
-//                              Filter Declaration
-//------------------------------------------------------------------------------
-
+int findStableMatches( CvSeq *seq,
+                       float minRad, float maxRad,
+                       vector<Candidate*>& kps, IplImage* bin );
 
 #endif

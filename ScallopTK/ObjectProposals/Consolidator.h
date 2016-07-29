@@ -38,7 +38,7 @@
 
 class CompareCandidates {
 public:
-	bool operator() ( const candidate* cd1, const candidate* cd2 ) {
+	bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
 		if( cd1->method < cd2->method )
 			return true;
 		if( cd1->method == cd2->method && cd1->magnitude > cd2->magnitude )
@@ -49,16 +49,16 @@ public:
 
 class CompareRank {
 public:
-	bool operator() ( const candidate* cd1, const candidate* cd2 ) {
+	bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
 		if( cd1->method_rank > cd2->method_rank )
 			return true;
 		return false;
 	}
 };
 
-typedef priority_queue<candidate*, vector<candidate*>, CompareRank> CandidateQueue;
-typedef vector<candidate*> CandidateVector;
-typedef vector<detection*> DetectionVector;
+typedef priority_queue<Candidate*, vector<Candidate*>, CompareRank> CandidateQueue;
+typedef vector<Candidate*> CandidateVector;
+typedef vector<Detection*> DetectionVector;
 
 //------------------------------------------------------------------------------
 //                             Function Prototypes

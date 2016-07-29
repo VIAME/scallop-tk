@@ -64,6 +64,6 @@ const int AT_SAMPLES = 1200;
 //                                Prototypes
 //------------------------------------------------------------------------------
 
-void performAdaptiveFiltering( hfResults* color, vector<candidate*>& cds, float minRad, bool doubleIntrp = false );
+void performAdaptiveFiltering( hfResults* color, vector<Candidate*>& cds, float minRad, bool doubleIntrp = false );
 
 #endif

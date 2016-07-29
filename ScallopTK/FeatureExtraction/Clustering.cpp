@@ -11,7 +11,7 @@
 //------------------------------------------------------------------------------
 
 /*
-void kmeansTextureClustering( candidate *cd, IplImage *deletethisargument ) {
+void kmeansTextureClustering( Candidate *cd, IplImage *deletethisargument ) {
 
 	if( !cd->stats->active )
 		return;

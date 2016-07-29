@@ -20,9 +20,9 @@ void showImageNW( IplImage* img ) {
 }
 
 //Copys an allocated kp
-candidate *copyCandidate( candidate* kp ) {
+Candidate *copyCandidate( Candidate* kp ) {
 
-	candidate *temp = new candidate;
+	Candidate *temp = new Candidate;
 	temp->r = kp->r;
 	temp->c = kp->c;
 	temp->angle = kp->angle;
@@ -47,8 +47,8 @@ int getImageType( const string& filename ) {
 	return UNKNOWN;
 }
 
-//Display candidates within some rdange
-void showCandidates( IplImage *img, std::vector<candidate*>& kps, float min, float max ) {	
+//Display Candidates within some rdange
+void showCandidates( IplImage *img, std::vector<Candidate*>& kps, float min, float max ) {	
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<kps.size(); i++ ) {	
 		if( kps[i]->major < min || kps[i]->major > max ) continue;
@@ -61,7 +61,7 @@ void showCandidates( IplImage *img, std::vector<candidate*>& kps, float min, flo
 	cvReleaseImage( &local );
 }
 
-void showCandidatesNW( IplImage *img, std::vector<candidate*>& kps, float min, float max ) {	
+void showCandidatesNW( IplImage *img, std::vector<Candidate*>& kps, float min, float max ) {	
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<kps.size(); i++ ) {
 		if( kps[i] == NULL ) continue;
@@ -159,7 +159,7 @@ void showImages( IplImage* img1, IplImage *img2 ) {
 	cvDestroyWindow( "image2" );
 }
 
-void showIP( IplImage* img, IplImage *img2, candidate *ip ) {
+void showIP( IplImage* img, IplImage *img2, Candidate *ip ) {
 
 	//Copy Image
 	IplImage *copy = cvCloneImage( img );
@@ -390,8 +390,8 @@ void drawColorRing( IplImage *input, float r, float c, float angle, float major1
 	}
 }
 
-//Deallocates candidate vector
-void deallocateCandidates( vector<candidate*> &kps ) {
+//Deallocates Candidate vector
+void deallocateCandidates( vector<Candidate*> &kps ) {
 	for( unsigned int i=0; i < kps.size(); i++ ) 
 		if( kps[i] != NULL ) {
 			
@@ -408,7 +408,7 @@ void deallocateCandidates( vector<candidate*> &kps ) {
 	kps.empty();
 }
 
-void showScallopsNW( IplImage *img, vector<candidate*>& kps ) {
+void showScallopsNW( IplImage *img, vector<Candidate*>& kps ) {
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<kps.size(); i++ ) {	
 		CvScalar color;
@@ -431,7 +431,7 @@ void showScallopsNW( IplImage *img, vector<candidate*>& kps ) {
 	cvReleaseImage( &local );
 }
 
-void showScallops( IplImage *img, vector<candidate*>& kps ) {
+void showScallops( IplImage *img, vector<Candidate*>& kps ) {
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<kps.size(); i++ ) {	
 		CvScalar color;
@@ -453,7 +453,7 @@ void showScallops( IplImage *img, vector<candidate*>& kps ) {
 	cvReleaseImage( &local );
 }
 
-void saveScallops( IplImage *img, vector<detection*>& kps, const string& fn ) {
+void saveScallops( IplImage *img, vector<Detection*>& kps, const string& fn ) {
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<kps.size(); i++ ) {	
 		CvScalar color;
@@ -492,7 +492,7 @@ void saveImage( IplImage *img, const string &fn ) {
 }
 
 
-void saveCandidates( IplImage *img, vector<candidate*>& cds, const string& fn ) {
+void saveCandidates( IplImage *img, vector<Candidate*>& cds, const string& fn ) {
 	IplImage* local = cvCloneImage( img );
 	for( unsigned int i=0; i<cds.size(); i++ ) {
 		if( cds[i] == NULL ) continue;
@@ -537,7 +537,7 @@ float quickMedian( IplImage* img, int max_to_sample ) {
 	return val_list[0.5f*sze/skippage];
 }
 
-void showIPNW( IplImage* img, IplImage *img2, candidate *ip ) {
+void showIPNW( IplImage* img, IplImage *img2, Candidate *ip ) {
 
 	//Copy Image
 	IplImage *copy = cvCloneImage( img );
@@ -556,7 +556,7 @@ void showIPNW( IplImage* img, IplImage *img2, candidate *ip ) {
 	cvReleaseImage( &copy );
 }
 
-void showIPNW( IplImage* img, candidate *ip ) {
+void showIPNW( IplImage* img, Candidate *ip ) {
 
 	//Copy Image
 	IplImage *copy = cvCloneImage( img );
@@ -578,7 +578,7 @@ void showIPNW( IplImage* img, candidate *ip ) {
 	cvReleaseImage( &copy );
 }
 
-void initalizeCandidateStats( vector<candidate*> cds, int imheight, int imwidth ) {
+void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth ) {
 	for( int i=0; i<cds.size(); i++ ) {
 
 		// Initialize Candidate Variables
@@ -590,7 +590,7 @@ void initalizeCandidateStats( vector<candidate*> cds, int imheight, int imwidth 
 		for( unsigned int j=0; j<NUM_HOG; j++ )
 			cds[i]->HoGResult[j] = NULL;
 
-		// Determine if candidate is on image border
+		// Determine if Candidate is on image border
 		const double ICS_MAJOR_INC_FACTOR = 1.33;
 		int lr = cds[i]->r - cds[i]->major * ICS_MAJOR_INC_FACTOR;
 		int ur = cds[i]->r + cds[i]->major * ICS_MAJOR_INC_FACTOR;
@@ -629,12 +629,12 @@ void initalizeCandidateStats( vector<candidate*> cds, int imheight, int imwidth 
 	}
 }
 
-void RemoveBorderCandidates( vector<candidate*>& cds, IplImage *img )
+void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img )
 {
   // Top down greedy search - very slow but who cares its for training only
   for( int j = cds.size() - 1; j >= 0; j-- )
   {
-    // Determine if we should kill this candidate (too close to border)
+    // Determine if we should kill this Candidate (too close to border)
     bool RemoveCandidate = false;
 
     if( cds[j]->r < 10 || cds[j]->c < 10 )

@@ -12,7 +12,7 @@ inline int determine8quad_sm( int& x, int&y );
 //------------------------------------------------------------------------------
 
 /*
-void calculateShapeFeatures( candidate *cd, IplImage *unused ) {
+void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
 
 	if( !cd->stats->active )
 		return;
@@ -42,8 +42,8 @@ void calculateShapeFeatures( candidate *cd, IplImage *unused ) {
 	}
 
 	// Fit ellipse on extracted contour
-	CvBox2D32f* box = (CvBox2D32f*)malloc(sizeof(CvBox2D32f));
-	cvFitEllipse( &contour_list[0], contour_list.size(), box );
+	CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
+	cv::fitEllipse( &contour_list[0], contour_list.size(), box );
 	double angle = stats->angle = box->angle;
 	double new_cr   = stats->r		= box->center.y + stats->wsOffset.y;
 	double new_cc   = stats->c		= box->center.x + stats->wsOffset.x;
@@ -112,7 +112,7 @@ void calculateShapeFeatures( candidate *cd, IplImage *unused ) {
 	 
 }*/
 
-void calculateSizeFeatures( candidate *cd, ImageProperties& ip, float initResize ) {
+void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
 
 	if( !cd->is_active )
 		return;

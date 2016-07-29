@@ -203,7 +203,7 @@ public:
 	hfResults *performColorClassification( IplImage* img, float minRad, float maxRad );
 
 	// Updates all of the filters after interest points have been classified
-	void Update( IplImage *img, IplImage *mask, int detections[] );
+	void Update( IplImage *img, IplImage *mask, int Detections[] );
 	
 private:
 
@@ -231,8 +231,8 @@ private:
 void hfDeallocResults( hfResults* res );
 
 // Detects blobs in our color-classification results
-void detectColoredBlobs( hfResults* color, vector<candidate*>& cds );
-void detectSalientBlobs( hfResults* color, vector<candidate*>& cds );
+void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds );
+void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds );
 
 // Quickly approximates the percentiles p1 and p2 in the single chan 32f image img
 void quickPercentiles( IplImage* img, float p1, float p2, float &op1, float& op2 );

@@ -40,7 +40,7 @@ public:
 	// Functions
 	ThreadStatistics();
 	~ThreadStatistics() {}
-	void Update( int detections[], float im_area );
+	void Update( int Detections[], float im_area );
 	float returnMaxMinRadRequired() { return global_min_rad; }
 
 	// Detected Densities - last 100
@@ -56,7 +56,7 @@ public:
 	float UrchinDensityPrev;
 
 	// Entries detected across all 
-	int thread_detections[TOTAL_DESIG];
+	int thread_Detections[TOTAL_DESIG];
 
 	// Images processed
 	int processed;

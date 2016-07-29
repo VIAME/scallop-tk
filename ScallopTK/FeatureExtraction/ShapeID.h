@@ -33,7 +33,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void calculateShapeFeatures( candidate *cd, IplImage *unused );
-void calculateSizeFeatures( candidate *cd, ImageProperties& ip, float initResize );
+void calculateShapeFeatures( Candidate *cd, IplImage *unused );
+void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize );
 
 #endif

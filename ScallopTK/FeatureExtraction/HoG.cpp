@@ -39,7 +39,7 @@ HoGFeatureGenerator::~HoGFeatureGenerator() {
 		cvReleaseImage(&integrals[k]);
 }
 
-void HoGFeatureGenerator::Generate( vector<candidate*>& cds ) {
+void HoGFeatureGenerator::Generate( vector<Candidate*>& cds ) {
 	for( unsigned int i=0; i<cds.size(); i++ ) {
 		if( !GenerateSingle( cds[i] ) ) {
 			cds[i]->is_active = false;
@@ -47,8 +47,8 @@ void HoGFeatureGenerator::Generate( vector<candidate*>& cds ) {
 	}
 }
 
-// Generates a HoG feature vector for the candidate point
-bool HoGFeatureGenerator::GenerateSingle( candidate* cd ) {
+// Generates a HoG feature vector for the Candidate point
+bool HoGFeatureGenerator::GenerateSingle( Candidate* cd ) {
 
 	// Check if NULL
 	if( cd == NULL )
@@ -79,7 +79,7 @@ bool HoGFeatureGenerator::GenerateSingle( candidate* cd ) {
 }
 
 // Old Methods
-/*void calculateRHoG( candidate *cd, IplImage *base ) {
+/*void calculateRHoG( Candidate *cd, IplImage *base ) {
 	if( !cd->stats->active )
 		return;
 	assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
@@ -89,7 +89,7 @@ bool HoGFeatureGenerator::GenerateSingle( candidate* cd ) {
 		cvReleaseImage(&integrals[k]);
 }
 
-void calculateRHoG16( candidate *cd, IplImage *base ) {
+void calculateRHoG16( Candidate *cd, IplImage *base ) {
 	if( !cd->stats->active )
 		return;
 	assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
@@ -99,7 +99,7 @@ void calculateRHoG16( candidate *cd, IplImage *base ) {
 		cvReleaseImage(&integrals[k]);
 }
 
-void calculateCHoG( candidate *cd, IplImage *base ) {
+void calculateCHoG( Candidate *cd, IplImage *base ) {
 	if( !cd->stats->active )
 		return;
 	assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
@@ -109,7 +109,7 @@ void calculateCHoG( candidate *cd, IplImage *base ) {
 		cvReleaseImage(&integrals[k]);
 }
 
-void HoGTest( IplImage *gs, vector<candidate*> cds ) {
+void HoGTest( IplImage *gs, vector<Candidate*> cds ) {
 	IplImage **integrals = calculateIntegralHOG(gs);
 	for( int i=0; i<cds.size(); i++ ) {		
 		calculateHOG_window(integrals, cvRect(-40, 0, 124, 64), -1, 8, 8);

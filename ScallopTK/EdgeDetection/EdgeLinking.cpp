@@ -1,7 +1,6 @@
 
 #include "EdgeLinking.h"
 
-
 //------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
@@ -124,7 +123,7 @@ inline double dist_squared( CvPoint p1, CvPoint p2 ) {
 }
 
 
-int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<candidate*>& kps, IplImage* bin ) {
+int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<Candidate*>& kps, IplImage* bin ) {
 
 	// Return value
 	int retVal = -1;
@@ -185,7 +184,7 @@ int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<candidate*
 		input[i].x = dsed[i].x;
 		input[i].y = dsed[i].y;
 	}
-	CvBox2D32f* box = (CvBox2D32f*)malloc(sizeof(CvBox2D32f));
+	CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
 	cvFitEllipse( input, newSize, box );
 
 	// Threshold size
@@ -193,7 +192,7 @@ int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<candidate*
 	if( esize < PI*maxRad*maxRad ) {
 
 		// Add
-		candidate *kp = new candidate;
+		Candidate *kp = new Candidate;
 		kp->angle = box->angle;
 		kp->r = box->center.y;
 		kp->c = box->center.x;

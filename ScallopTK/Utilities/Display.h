@@ -37,8 +37,8 @@ const int DISPLAY_HEIGHT = 345;
 void initOutputDisplay();
 void killOuputDisplay();
 void displayImage( IplImage* img, string wname = "SCALLOPS" );
-void displayInterestPointImage( IplImage* img, vector<candidate*>& cds );
-void displayResultsImage( IplImage* img, vector<candidate*>& Scallops );
-void displayResultsImage( IplImage* img, vector<detection*>& cds, string Filename );
+void displayInterestPointImage( IplImage* img, vector<Candidate*>& cds );
+void displayResultsImage( IplImage* img, vector<Candidate*>& Scallops );
+void displayResultsImage( IplImage* img, vector<Detection*>& cds, string Filename );
 
 #endif

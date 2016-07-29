@@ -29,7 +29,7 @@ struct t4cand {
 	float r, c, scl, mag;
 };
 
-typedef vector<t4cand> candidates;
+typedef vector<t4cand> Candidates;
 
 bool compareT4( const t4cand& cd1, const t4cand& cd2 ) {
 	if( cd1.mag > cd2.mag )
@@ -53,8 +53,8 @@ IplImage *gaussDerivVerticle( IplImage *input, double sigma );
 IplImage *gaussDerivHorizontal( IplImage *input, double sigma );
 IplImage *createT4Scale( IplImage *dx, IplImage *dy, float radius, float offset );
 IplImage *createT4ScaleC( IplImage *dx, IplImage *dy, float radius, int offset );
-void detectT4Extremum( IplImage** ss, candidates& cds, SSInfo& ssinfo );
-void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, float resize_factor,
+void detectT4Extremum( IplImage** ss, Candidates& cds, SSInfo& ssinfo );
+void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, float resize_factor,
 			float minRad, float maxRad, int height, int width, ImageProperties& imgProp, SSInfo& ssinfo );
 
 //------------------------------------------------------------------------------
@@ -408,7 +408,7 @@ int isT4Extremum( IplImage** imgChain, int intvl, int r, int c )
 	return true;
 }
 
-void detectT4Extremum( IplImage** ss, candidates& cds, SSInfo& ssinfo )
+void detectT4Extremum( IplImage** ss, Candidates& cds, SSInfo& ssinfo )
 {
 	//Optional Threshold
 	double threshold = 0;
@@ -475,7 +475,7 @@ void detectT4Extremum( IplImage** ss, candidates& cds, SSInfo& ssinfo )
 }
 
 //Todo: package arguments in imageProperties - cleanup function
-void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, float resize_factor,
+void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, float resize_factor,
 			float minRad, float maxRad, int height, int width, ImageProperties& imgProp, SSInfo& ssinfo ) {
 
 	// Constants
@@ -544,7 +544,7 @@ void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, flo
 	maxIP = maxIP + r_groups_s2*c_groups_s2*s2_ppg;
 	maxIP = maxIP + r_groups_s3*c_groups_s3*s3_ppg;
 
-	// Sort all t4 candidates based on magnitude
+	// Sort all t4 Candidates based on magnitude
 	sort( cds.begin(), cds.end(), compareT4 );
 
 	// For every interest point...
@@ -554,7 +554,7 @@ void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, flo
 		if( counter == MAX_T4_IP || counter == maxIP )
 			break;
 
-		candidate *kp = new candidate;
+		Candidate *kp = new Candidate;
 		bool add = false;
 
 		//Scales 1-3
@@ -566,7 +566,7 @@ void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, flo
 		kp->minor = kp->major;
 		kp->angle = 0;
 
-		//Check if we should add candidate - bin1
+		//Check if we should add Candidate - bin1
 		if( kp->major >= s1_lower && kp->major < s1_upper ) {
 			int b1 = ((int) kp->r / ( r_step_s1 ))%r_groups_s1;
 			int b2 = ((int) kp->c / ( c_step_s1 ))%c_groups_s1;
@@ -626,8 +626,8 @@ void interpolateIP( IplImage **ss, candidates& cds, vector<candidate*>& kps, flo
 }
 
 
-//Find Double-Donut candidate
-void findTemplateCandidates( GradientChain& grad, std::vector<candidate*>& kps, ImageProperties& imgProp, IplImage* mask ) {
+//Find Double-Donut Candidate
+void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, ImageProperties& imgProp, IplImage* mask ) {
 
 	// Normalize image scale
 	float resize_factor = MIN_RAD_TEMPLATE / grad.minRad;
@@ -662,14 +662,14 @@ void findTemplateCandidates( GradientChain& grad, std::vector<candidate*>& kps, 
 #endif
 
 	// Identify extrema in scale space (ordered by magnitude)
-	candidates cds;
+	Candidates cds;
 	detectT4Extremum( ss, cds, scaleSpaceInfo );
 
 #ifdef TEMPLATE_BENCHMARKING
 	tp_exe_times.push_back( getTimeSinceLastCall() );	
 #endif
 
-	// Interpolate and adjust candidates
+	// Interpolate and adjust Candidates
 	interpolateIP( ss, cds, kps, resize_factor, grad.minRad/grad.scale, grad.maxRad/grad.scale, 
 		grad.dx->height/grad.scale, grad.dx->width/grad.scale, imgProp, scaleSpaceInfo );
 
@@ -693,7 +693,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<candidate*>& kps, 
 }
 
 //Find quick hough kp
-void findQHCandidates( IplImage *img_gs, std::vector<candidate*>& kps, float minRad, float maxRad ) {
+void findQHCandidates( IplImage *img_gs, std::vector<Candidate*>& kps, float minRad, float maxRad ) {
 
 	// Normalize image scale
 	CvMemStorage* storage = cvCreateMemStorage(0);
@@ -710,7 +710,7 @@ void findQHCandidates( IplImage *img_gs, std::vector<candidate*>& kps, float min
 			cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );   */
 
 		float* p = (float*)cvGetSeqElem( circles, i );
-		candidate *kp = new candidate;
+		Candidate *kp = new Candidate;
 		kp->c = p[0];
 		kp->r = p[1];
 		kp->major = p[2];

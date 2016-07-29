@@ -19,14 +19,14 @@ const float radius_scaling_canny = 0.10f;
 //                            Function Prototypes
 //------------------------------------------------------------------------------
 
-bool insertTemplateIP( candidate* cd, struct kdtree* kd_tree );
-bool insertAdaptiveIP( candidate* cd, struct kdtree* kd_tree );
-bool insertColorBlobIP( candidate* cd, struct kdtree* kd_tree );
-bool insertCannyIP( candidate* cd, struct kdtree* kd_tree );
-bool compareAndMergeIPTemplate( candidate* cd1, candidate* cd2 );
-bool compareAndMergeIPDoG( candidate* cd1, candidate* cd2 );
-bool compareAndMergeIPAdaptive( candidate* cd1, candidate* cd2 );
-bool compareAndMergeIPCanny ( candidate* cd1, candidate* cd2 );
+bool insertTemplateIP( Candidate* cd, struct kdtree* kd_tree );
+bool insertAdaptiveIP( Candidate* cd, struct kdtree* kd_tree );
+bool insertColorBlobIP( Candidate* cd, struct kdtree* kd_tree );
+bool insertCannyIP( Candidate* cd, struct kdtree* kd_tree );
+bool compareAndMergeIPTemplate( Candidate* cd1, Candidate* cd2 );
+bool compareAndMergeIPDoG( Candidate* cd1, Candidate* cd2 );
+bool compareAndMergeIPAdaptive( Candidate* cd1, Candidate* cd2 );
+bool compareAndMergeIPCanny ( Candidate* cd1, Candidate* cd2 );
 int addStatus( const int& s1, const int& s2 );
 void AddDFS( struct kdnode *ptr, CandidateQueue& Ordered );
 
@@ -119,13 +119,13 @@ void AddDFS( struct kdnode *ptr, CandidateQueue& Ordered ) {
 	if( ptr == NULL )
 		return;
 
-	Ordered.push( (candidate*) ptr->data );
+	Ordered.push( (Candidate*) ptr->data );
 	AddDFS( ptr->left, Ordered );
 	AddDFS( ptr->right, Ordered );
 }
 
 // Inserts a template IP into the KD-tree
-bool insertTemplateIP( candidate* cd, struct kdtree* kd_tree ) {
+bool insertTemplateIP( Candidate* cd, struct kdtree* kd_tree ) {
 	// Check if there are any nearby neighbors
 	float range = radius_scaling_template * cd->major;
 	struct kdres *set = kd_nearest_range2f(kd_tree, cd->r, cd->c, range);
@@ -138,7 +138,7 @@ bool insertTemplateIP( candidate* cd, struct kdtree* kd_tree ) {
 	// Check nearest neighbors in set for conflicts
 	struct res_node *ptr = set->riter;
 	while( ptr != NULL ) {
-		candidate *nearby = (candidate*)ptr->item->data;
+		Candidate *nearby = (Candidate*)ptr->item->data;
 		if( compareAndMergeIPTemplate( cd, nearby ) ) {
 			kd_res_free(set);
 			return false;
@@ -151,7 +151,7 @@ bool insertTemplateIP( candidate* cd, struct kdtree* kd_tree ) {
 }
 
 // Inserts a Blob IP into the KD-tree
-bool insertColorBlobIP( candidate* cd, struct kdtree* kd_tree ) {
+bool insertColorBlobIP( Candidate* cd, struct kdtree* kd_tree ) {
 	float range = radius_scaling_colorblob * cd->major;
 	struct kdres *set = kd_nearest_range2f(kd_tree, cd->r, cd->c, range);
 	// If not add ip
@@ -163,7 +163,7 @@ bool insertColorBlobIP( candidate* cd, struct kdtree* kd_tree ) {
 	// Check nearest neighbors in set for conflicts
 	struct res_node *ptr = set->riter;
 	while( ptr != NULL ) {
-		candidate *nearby = (candidate*)ptr->item->data;
+		Candidate *nearby = (Candidate*)ptr->item->data;
 		if( compareAndMergeIPDoG( cd, nearby ) ) {
 			kd_res_free(set);
 			return false;
@@ -176,7 +176,7 @@ bool insertColorBlobIP( candidate* cd, struct kdtree* kd_tree ) {
 }
 
 // Inserts a Color IP into the KD-tree
-bool insertAdaptiveIP( candidate* cd, struct kdtree* kd_tree ) {
+bool insertAdaptiveIP( Candidate* cd, struct kdtree* kd_tree ) {
 	float range = radius_scaling_adaptive * cd->major;
 	struct kdres *set = kd_nearest_range2f(kd_tree, cd->r, cd->c, range);
 	// If not add ip
@@ -188,7 +188,7 @@ bool insertAdaptiveIP( candidate* cd, struct kdtree* kd_tree ) {
 	// Check nearest neighbors in set for conflicts
 	struct res_node *ptr = set->riter;
 	while( ptr != NULL ) {
-		candidate *nearby = (candidate*)ptr->item->data;
+		Candidate *nearby = (Candidate*)ptr->item->data;
 		if( compareAndMergeIPAdaptive( cd, nearby ) ) {
 			kd_res_free(set);
 			return false;
@@ -201,7 +201,7 @@ bool insertAdaptiveIP( candidate* cd, struct kdtree* kd_tree ) {
 }
 
 // Inserts a Canny IP into the KD-tree
-bool insertCannyIP( candidate* cd, struct kdtree* kd_tree ) {
+bool insertCannyIP( Candidate* cd, struct kdtree* kd_tree ) {
 	float range = radius_scaling_canny * cd->major;
 	struct kdres *set = kd_nearest_range2f(kd_tree, cd->r, cd->c, range);
 	// If not add ip
@@ -213,7 +213,7 @@ bool insertCannyIP( candidate* cd, struct kdtree* kd_tree ) {
 	// Check nearest neighbors in set for conflicts
 	struct res_node *ptr = set->riter;
 	while( ptr != NULL ) {
-		candidate *nearby = (candidate*)ptr->item->data;
+		Candidate *nearby = (Candidate*)ptr->item->data;
 		if( compareAndMergeIPCanny( cd, nearby ) ) {
 			kd_res_free(set);
 			return false;
@@ -225,8 +225,8 @@ bool insertCannyIP( candidate* cd, struct kdtree* kd_tree ) {
 	return true;
 }
 
-// Returns true if candidates mergerd, false if they are different
-bool compareAndMergeIPTemplate( candidate* cd1, candidate* cd2 ) {
+// Returns true if Candidates mergerd, false if they are different
+bool compareAndMergeIPTemplate( Candidate* cd1, Candidate* cd2 ) {
 
 	// Calculate difference in angle
 	float angle_dif = abs( cd1->angle - cd2->angle );
@@ -295,7 +295,7 @@ bool compareAndMergeIPTemplate( candidate* cd1, candidate* cd2 ) {
 	return false;
 }
 
-bool compareAndMergeIPDoG( candidate* cd1, candidate* cd2 ) {
+bool compareAndMergeIPDoG( Candidate* cd1, Candidate* cd2 ) {
 
 	// Calculate difference in angle
 	float angle_dif = abs( cd1->angle - cd2->angle );
@@ -346,7 +346,7 @@ bool compareAndMergeIPDoG( candidate* cd1, candidate* cd2 ) {
 	return false;
 }
 
-bool compareAndMergeIPAdaptive( candidate* cd1, candidate* cd2 ) {
+bool compareAndMergeIPAdaptive( Candidate* cd1, Candidate* cd2 ) {
 
 	// Calculate difference in angle
 	float angle_dif = abs( cd1->angle - cd2->angle );
@@ -397,7 +397,7 @@ bool compareAndMergeIPAdaptive( candidate* cd1, candidate* cd2 ) {
 	return false;
 }
 
-bool compareAndMergeIPCanny( candidate* cd1, candidate* cd2 ) {
+bool compareAndMergeIPCanny( Candidate* cd1, Candidate* cd2 ) {
 
 		// Calculate difference in angle
 	float angle_dif = abs( cd1->angle - cd2->angle );

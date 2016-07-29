@@ -40,18 +40,18 @@ ThreadStatistics::ThreadStatistics() {
 
 	// Detection mat
 	for( unsigned int i = 0; i < TOTAL_DESIG; i++ ) {
-		thread_detections[ i ] = 0;
+		thread_Detections[ i ] = 0;
 	}
 }
 
-void ThreadStatistics::Update( int detections[], float im_area ) {
+void ThreadStatistics::Update( int Detections[], float im_area ) {
 	
 	// Calculate Density Stats
-	float tot_scal = detections[SCALLOP_BROWN]+detections[SCALLOP_WHITE]+detections[SCALLOP_BURIED];
+	float tot_scal = Detections[SCALLOP_BROWN]+Detections[SCALLOP_WHITE]+Detections[SCALLOP_BURIED];
 	ScallopDensityPrev = tot_scal / im_area;
-	ClamDensityPrev = (float)detections[CLAM] / im_area;
-	SandDollarDensityPrev = (float)detections[DOLLAR] / im_area;
-	UrchinDensityPrev = (float)detections[URCHIN] / im_area;
+	ClamDensityPrev = (float)Detections[CLAM] / im_area;
+	SandDollarDensityPrev = (float)Detections[DOLLAR] / im_area;
+	UrchinDensityPrev = (float)Detections[URCHIN] / im_area;
 
 	// Update Avg Skewed Densities
 	if( processed < 100 ) {
@@ -69,8 +69,8 @@ void ThreadStatistics::Update( int detections[], float im_area ) {
 	// Increase image processed counters
 	processed++;
 
-	// Add detections
+	// Add Detections
 	for( unsigned int i=0; i < TOTAL_DESIG; i++ ) {
-		thread_detections[ i ] += detections[ i ];
+		thread_Detections[ i ] += Detections[ i ];
 	}
 }

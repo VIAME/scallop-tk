@@ -46,11 +46,11 @@ public:
 	// Sets any desired options
 	void SetOptions( float add_ratio, float bins_per_dim );
 
-	// Generates descriptors for all candidates
-	void Generate( vector<candidate*>& cds );
+	// Generates descriptors for all Candidates
+	void Generate( vector<Candidate*>& cds );
 
-	// Generates descriptors for a single candidate
-	bool GenerateSingle( candidate *cd );
+	// Generates descriptors for a single Candidate
+	bool GenerateSingle( Candidate *cd );
 
 private:
 
@@ -65,14 +65,14 @@ private:
 	float add_ratio;
 	float bins;
 
-	// Output index in candidate
+	// Output index in Candidate
 	int output_index;
 };
 
 //DEPRECATED
-//void calculateRHoG( candidate *cd, IplImage *base );
-//void calculateCHoG( candidate *cd, IplImage *base );
-//void calculateRHoG16( candidate *cd, IplImage *base );
-//void HoGTest( IplImage *gs, vector<candidate*> cds );
+//void calculateRHoG( Candidate *cd, IplImage *base );
+//void calculateCHoG( Candidate *cd, IplImage *base );
+//void calculateRHoG16( Candidate *cd, IplImage *base );
+//void HoGTest( IplImage *gs, vector<Candidate*> cds );
 
 #endif

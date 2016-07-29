@@ -11,7 +11,7 @@
 //------------------------------------------------------------------------------
 
 /*
-void calculateRFFT( candidate *cd, IplImage *base ) {
+void calculateRFFT( Candidate *cd, IplImage *base ) {
 	if( !cd->stats->active )
 		return;
 	IplImage *input = cd->stats->imgAdj64;
@@ -20,7 +20,7 @@ void calculateRFFT( candidate *cd, IplImage *base ) {
 	cd->stats->rfft = output;
 }
 
-void calculateCFFT( candidate *cd, IplImage *base ) {
+void calculateCFFT( Candidate *cd, IplImage *base ) {
 	if( !cd->stats->active )
 		return;
 	IplImage *input = cd->stats->imgAdjLogPolar;

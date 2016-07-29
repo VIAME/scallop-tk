@@ -41,6 +41,6 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void findCannyCandidates( GradientChain& grad, std::vector<candidate*>& cds );
+void findCannyCandidates( GradientChain& grad, std::vector<Candidate*>& cds );
 
 #endif

@@ -77,25 +77,25 @@ struct ClassifierSystem
 //------------------------------------------------------------------------------
 
 // Generate all raw classifier values for an interest point as required
-int classifyCandidate( candidate *cd, ClassifierSystem *Classifiers );
+int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers );
 
 // Suppress inside (duplicate) points which probably correspond to the same object
-void removeInsidePoints( vector<candidate*>& input, vector<candidate*>& output, int method );
-void removeInsidePoints( vector<candidate*>& input, vector<candidate*>& output );
+void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output, int method );
+void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output );
 
 // Load a new classifier system based on the loaded classifier config file
 ClassifierSystem* loadClassifiers( SystemSettings& sparams, ClassifierConfigParameters& cparams );
 
 // Perform suppression and interpolation
-vector<detection*> interpolateResults( vector<candidate*>& input, ClassifierSystem* Classifiers, std::string Filename );
+vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSystem* Classifiers, std::string Filename );
 
-// Deallocate detections
-void deallocateDetections( vector<detection*>& vec );
+// Deallocate Detections
+void deallocateDetections( vector<Detection*>& vec );
 
 // Append MIP training results to some file
-bool appendInfoToFile( vector<detection>& detections, const string& list_fn );
+bool appendInfoToFile( vector<Detection>& Detections, const string& list_fn );
 	
-// Append final detections to some file
-bool appendInfoToFile( vector<detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor );
+// Append final Detections to some file
+bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor );
 
 #endif

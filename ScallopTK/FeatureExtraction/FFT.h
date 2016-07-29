@@ -32,7 +32,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void calculateRFFT( candidate *cd, IplImage *base );
-void calculateCFFT( candidate *cd, IplImage *base );
+void calculateRFFT( Candidate *cd, IplImage *base );
+void calculateCFFT( Candidate *cd, IplImage *base );
 
 #endif

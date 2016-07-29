@@ -32,6 +32,6 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void stemDetection( candidate *cd, IplImage* unused );
+void stemDetection( Candidate *cd, IplImage* unused );
 
 #endif

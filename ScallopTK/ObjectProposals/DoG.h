@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // Title: dog.h
 // Author: 
-// Description: Difference of Gaussian candidate Detection
+// Description: Difference of Gaussian Candidate Detection
 //------------------------------------------------------------------------------
 
 #ifndef SCALLOP_TK_DOG_H_
@@ -64,7 +64,7 @@ const int DOG_MAX_INTERP_STEPS = 5;
 //Scale factor to compensate for size underestimation
 const float DOG_COMPENSATION = 1.55f;
 
-//Extrema detection modes for DoG detection
+//Extrema Detection modes for DoG Detection
 const int DOG_MIN = 0x00;
 const int DOG_MAX = 0x01;
 const int DOG_ALL = 0x02;
@@ -73,7 +73,7 @@ const int DOG_ALL = 0x02;
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-bool findDoGcandidates( IplImage* input, vector<candidate*>& kps, float minRad, float maxRad, int mode = DOG_ALL);
+bool findDoGCandidates( IplImage* input, vector<Candidate*>& kps, float minRad, float maxRad, int mode = DOG_ALL);
 
 //------------------------------------------------------------------------------
 //                             Required Structures

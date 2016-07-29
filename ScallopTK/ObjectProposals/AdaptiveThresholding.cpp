@@ -147,7 +147,7 @@ void calcFilterStats( IplImage *img, atStats& stats ) {
 
 }
 
-int hfBinaryClassify(IplImage *bin, float minRad, float maxRad, vector<candidate*>& kps ) {
+int hfBinaryClassify(IplImage *bin, float minRad, float maxRad, vector<Candidate*>& kps ) {
 
 	// Create OpenCV storage block
 	CvMemStorage *mem = cvCreateMemStorage(0);
@@ -179,7 +179,7 @@ int hfBinaryClassify(IplImage *bin, float minRad, float maxRad, vector<candidate
 	return 0;
 }
 
-int hfLowBinarySearch(hfResults* imgs, atStats* stats, std::vector<candidate*>& kps, float minRad, float maxRad, int position ) {
+int hfLowBinarySearch(hfResults* imgs, atStats* stats, std::vector<Candidate*>& kps, float minRad, float maxRad, int position ) {
 
 	// Recursive end condition
 	if( position >= AT_LOWER_SIZE )
@@ -205,7 +205,7 @@ int hfLowBinarySearch(hfResults* imgs, atStats* stats, std::vector<candidate*>& 
 	return position;
 }
 
-int hfHighBinarySearch(hfResults* imgs, atStats* stats, std::vector<candidate*>& kps, float minRad, float maxRad, int position ) {
+int hfHighBinarySearch(hfResults* imgs, atStats* stats, std::vector<Candidate*>& kps, float minRad, float maxRad, int position ) {
 
 	// Recursive end condition
 	if( position >= AT_UPPER_SIZE )
@@ -231,7 +231,7 @@ int hfHighBinarySearch(hfResults* imgs, atStats* stats, std::vector<candidate*>&
 	return position;
 }
 
-int hfSeedSearch(hfResults* imgs, atStats* stats, std::vector<candidate*>& kps, float minRad, float maxRad ) {
+int hfSeedSearch(hfResults* imgs, atStats* stats, std::vector<Candidate*>& kps, float minRad, float maxRad ) {
 
 	// Threshold image
 	IplImage *threshed = cvCreateImage( cvGetSize(imgs->NetScallops), IPL_DEPTH_8U, 1 );
@@ -253,7 +253,7 @@ int hfSeedSearch(hfResults* imgs, atStats* stats, std::vector<candidate*>& kps, 
 	return option;
 }
 
-void performAdaptiveFiltering( hfResults* color, vector<candidate*>& cds, float minRad, bool doubleIntrp ) {
+void performAdaptiveFiltering( hfResults* color, vector<Candidate*>& cds, float minRad, bool doubleIntrp ) {
 
 	// Resize and smooth image as desired
 	IplImage *img = color->NetScallops;
@@ -309,7 +309,7 @@ void performAdaptiveFiltering( hfResults* color, vector<candidate*>& cds, float 
 			intv_r = -2*intv_r/(ip_to_add-1);
 			intv_c = -2*intv_c/(ip_to_add-1);
 			for( int j=0; j < ip_to_add; j++ ) {
-				candidate *kp = new candidate;
+				Candidate *kp = new Candidate;
 				kp->angle = 0;
 				kp->r = start_r;
 				kp->c = start_c;

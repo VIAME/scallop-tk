@@ -46,20 +46,20 @@ inline float dirActFunc( const float& normalizedDirOffset ) {
 }
 
 void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color, 
-	IplImage *img_lab_32f, IplImage *img_rgb_32f, vector<candidate*> cds ) {
+	IplImage *ImgLab32f, IplImage *img_rgb_32f, vector<Candidate*> cds ) {
 
-	assert( color->SaliencyMap->width == img_lab_32f->width );
+	assert( color->SaliencyMap->width == ImgLab32f->width );
 
 	IplImage *lab_ori = Gradients.dLabOri;
 	IplImage *lab_mag = Gradients.dLabMag;
 
-	// For every candidate, search for edges
+	// For every Candidate, search for edges
 	const float SCAN_DIST = 1.33f;
 	int height = lab_mag->height;
 	int width = lab_mag->width;
 	for( unsigned int i = 0; i < cds.size(); i++ ) {
 
-		candidate* cd = cds[i];
+		Candidate* cd = cds[i];
 
 		int lr = cd->r - SCAN_DIST * cd->major;
 		int lc = cd->c - SCAN_DIST * cd->major;
@@ -434,7 +434,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 					pos++;				
 				}
 			}
-			CvBox2D32f* box = (CvBox2D32f*)malloc(sizeof(CvBox2D32f));
+			CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
 			cvFitEllipse( input, total_pts, box );
 
 			// Set new location

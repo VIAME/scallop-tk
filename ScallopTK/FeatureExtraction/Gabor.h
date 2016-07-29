@@ -32,7 +32,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-//void performGaborFiltering( candidate *cd );
-void calculateGaborFeatures( IplImage *img_gs_32f, vector<candidate*>& cds );
+//void performGaborFiltering( Candidate *cd );
+void calculateGaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds );
 
 #endif

@@ -19,7 +19,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 //------------------------------------------------------------------------------
 
 // DEPRECATED
-/*void performGaborFiltering( candidate *cd ) {
+/*void performGaborFiltering( Candidate *cd ) {
 
 	// Return if invalid
 	if( !cd->is_active )
@@ -66,7 +66,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 	}
 }*/
 
-void calculateGaborFeatures( IplImage *img_gs_32f, vector<candidate*>& cds ) {
+void calculateGaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds ) {
 
 	// Create linear filters
 	CvMat *filterBank[NUM_FILTERS];
@@ -103,7 +103,7 @@ void calculateGaborFeatures( IplImage *img_gs_32f, vector<candidate*>& cds ) {
 		if( !cds[i]->is_active )
 			continue;
 
-		candidate *cd = cds[i];
+		Candidate *cd = cds[i];
 		int index = 0;
 		const int entries = NUM_FILTERS * 5;
 		for( int j=0; j<NUM_FILTERS; j++ ) {
