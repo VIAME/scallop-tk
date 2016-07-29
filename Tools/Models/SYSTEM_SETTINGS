@@ -1,0 +1,25 @@
+
+; ------------------------- SYSTEM SETTINGS ----------------------------
+
+[options] ; Settings shared across all processing modes
+
+; The focal length of the utilized camera system
+focal_length = 0.02764
+
+; If training from MIPs files, the percentage of false points outside
+; of annotations to report, in range [0,1]
+training_false_keep_percentage = 0.10
+
+; For training and operating modes, should we look at interest points centered
+; around image bounds, or outside of it [true, false]
+look_at_border_points = true
+
+; The relative path w.r.t. the current path as to the root of where all of the 
+; classifiers are stored. Include a slash at the end. Leave as [DEFAULT].
+; for storing them in the default data/Classifiers directory
+root_classifier_dir=[DEFAULT]
+
+; The relative path w.r.t. the current path as to where the initial
+; seed histograms for all categories are stored. Leave as [DEFAULT]
+; for storing them in the default data/ColorFilterBanks directory
+root_histogram_dir=[DEFAULT]

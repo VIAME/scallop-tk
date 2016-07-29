@@ -1,0 +1,17 @@
+; Scallop Detector - Default Training Config File
+
+; -------------------------OUTPUT AND DISPLAY OPTIONS-----------------------------
+
+[options] ; all should be either {true, false}
+
+; Execution mode of algorithm {true,false}
+training_mode=true
+
+; Training style if in training mode
+load_mip_file=true
+
+; Is the input a list or a directory?
+is_list=false
+
+; Is the metadata stored in the list or within the images?
+is_metadata_in_image = true

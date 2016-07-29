@@ -1,0 +1,26 @@
+
+; -------------------------OUTPUT AND DISPLAY OPTIONS-----------------------------
+
+[options] ; all should be either {true, false} - case sensitive
+
+; Execution mode of algorithm
+training_mode = false
+
+; Is the input a list or a directory?
+is_list = true
+
+; Enable output window showing detections while processing?
+enable_display = true
+
+; Is the metadata stored in the list or within the images?
+is_metadata_in_image = true
+
+; Enable output list describing detections?
+output_list = true
+
+; Print out duplicate entries for the same IP if it may be in multiple categories?
+output_duplicate_classifications = true
+
+; Output images showing detections?
+output_images = false
+
