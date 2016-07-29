@@ -1,5 +1,5 @@
-#ifndef STABLE_SEARCH_H_
-#define STABLE_SEARCH_H_
+#ifndef SCALLOP_TK_STABLE_SEARCH_H_
+#define SCALLOP_TK_STABLE_SEARCH_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

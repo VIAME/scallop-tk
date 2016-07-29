@@ -4,8 +4,8 @@
 // Description: Double Donut Detection
 //------------------------------------------------------------------------------
 
-#ifndef TEMPLATE4_H_
-#define TEMPLATE4_H_
+#ifndef SCALLOP_TK_TEMPLATE4_H_
+#define SCALLOP_TK_TEMPLATE4_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

@@ -1,5 +1,5 @@
-#ifndef GABOR_H_
-#define GABOR_H_
+#ifndef SCALLOP_TK_GABOR_H_
+#define SCALLOP_TK_GABOR_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

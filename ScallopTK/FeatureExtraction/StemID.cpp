@@ -5,7 +5,7 @@
 //                                  Constants
 //------------------------------------------------------------------------------
 
-#define MAX_CORNERS 3
+#define SCALLOP_TK_MAX_CORNERS 3
 
 struct Corner {
 	float r_adj;

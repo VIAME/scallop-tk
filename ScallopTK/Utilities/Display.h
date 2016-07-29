@@ -3,8 +3,8 @@
 // Author: Matthew Dawkins
 //------------------------------------------------------------------------------
 
-#ifndef DISPLAY_SYS_H
-#define DISPLAY_SYS_H
+#ifndef SCALLOP_TK_DISPLAY_SYS_H
+#define SCALLOP_TK_DISPLAY_SYS_H
 
 // C/C++ Includes
 #include <iostream>

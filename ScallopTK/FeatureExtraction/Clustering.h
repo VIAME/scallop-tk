@@ -1,5 +1,5 @@
-#ifndef CLUSTERING_H_
-#define CLUSTERING_H_
+#ifndef SCALLOP_TK_CLUSTERING_H_
+#define SCALLOP_TK_CLUSTERING_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

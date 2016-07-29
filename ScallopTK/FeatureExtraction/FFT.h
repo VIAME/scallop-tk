@@ -1,5 +1,5 @@
-#ifndef FFT_FE_H_
-#define FFT_FE_H_
+#ifndef SCALLOP_TK_FFT_FE_H_
+#define SCALLOP_TK_FFT_FE_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

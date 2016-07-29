@@ -1,6 +1,6 @@
 
-#ifndef TIMERS_H
-#define TIMERS_H
+#ifndef SCALLOP_TK_TIMERS_H
+#define SCALLOP_TK_TIMERS_H
 
 // C/C++ Includes
 #include <iostream>

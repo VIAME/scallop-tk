@@ -1,5 +1,5 @@
-#ifndef COLORID_H_
-#define COLORID_H_
+#ifndef SCALLOP_TK_COLORID_H_
+#define SCALLOP_TK_COLORID_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

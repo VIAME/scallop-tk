@@ -4,8 +4,8 @@
 // Description: This file contains various helper function declarations
 //------------------------------------------------------------------------------
 
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef SCALLOP_TK_HELPER_H
+#define SCALLOP_TK_HELPER_H
 
 // C/C++ Includes
 #include <iostream>

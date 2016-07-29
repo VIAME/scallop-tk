@@ -1,5 +1,5 @@
-#ifndef GAUSSEDGE_H_
-#define GAUSSEDGE_H_
+#ifndef SCALLOP_TK_GAUSSEDGE_H_
+#define SCALLOP_TK_GAUSSEDGE_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

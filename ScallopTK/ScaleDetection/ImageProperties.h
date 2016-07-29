@@ -1,6 +1,6 @@
 
-#ifndef IMAGE_PROPER_H_
-#define IMAGE_PROPER_H_
+#ifndef SCALLOP_TK_IMAGE_PROPER_H_
+#define SCALLOP_TK_IMAGE_PROPER_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

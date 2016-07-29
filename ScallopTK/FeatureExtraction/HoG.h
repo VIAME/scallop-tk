@@ -1,5 +1,5 @@
-#ifndef HOG_H_
-#define HOG_H_
+#ifndef SCALLOP_TK_HOG_H_
+#define SCALLOP_TK_HOG_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

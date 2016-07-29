@@ -5,8 +5,8 @@
 // many operations
 //------------------------------------------------------------------------------
 
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#ifndef SCALLOP_TK_DEFINITIONS_H_
+#define SCALLOP_TK_DEFINITIONS_H_
 
 // C++ Includes
 #include <string>
@@ -24,17 +24,17 @@
 
 // Define if compiling on a windows based platform
 //  - this should already be defined by your compiler so it doesnt matter -
-//#define WIN32 1
+//#define SCALLOP_TK_WIN32 1
 
 // Enables pthread support (linux only)
-//#define USE_PTHREADS 1
+//#define SCALLOP_TK_USE_PTHREADS 1
 
 // Benchmarks main function while processing (single thread only)
-//#define BENCHMARK 1
+//#define SCALLOP_TK_BENCHMARK 1
 
 // Enables automatic reading of metadata from image file
 //  - For any HabCam data this should be on -
-#define AUTO_READ_METADATA 1
+#define SCALLOP_TK_AUTO_READ_METADATA 1
 
 //------------------------------------------------------------------------------
 //                                 Constants

@@ -1,5 +1,5 @@
-#ifndef HISTFILTER_H_
-#define HISTFILTER_H_
+#ifndef SCALLOP_TK_HISTFILTER_H_
+#define SCALLOP_TK_HISTFILTER_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

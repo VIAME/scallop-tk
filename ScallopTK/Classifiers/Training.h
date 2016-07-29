@@ -1,5 +1,5 @@
-#ifndef CLASS_TRAINING_H_
-#define CLASS_TRAINING_H_
+#ifndef SCALLOP_TK_CLASS_TRAINING_H_
+#define SCALLOP_TK_CLASS_TRAINING_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

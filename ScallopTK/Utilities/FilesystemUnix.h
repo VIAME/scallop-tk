@@ -1,8 +1,8 @@
 
-#ifndef FS_UNIX
-#define FS_UNIX
+#ifndef SCALLOP_TK_FS_UNIX
+#define SCALLOP_TK_FS_UNIX
 
-#ifndef WIN32
+#ifndef SCALLOP_TK_WIN32
 
 #include <stdio.h>
 #include <stdlib.h>

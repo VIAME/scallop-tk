@@ -4,8 +4,8 @@
 // Description: 
 //------------------------------------------------------------------------------
 
-#ifndef PRIORSTATS_H_
-#define PRIORSTATS_H_
+#ifndef SCALLOP_TK_PRIORSTATS_H_
+#define SCALLOP_TK_PRIORSTATS_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

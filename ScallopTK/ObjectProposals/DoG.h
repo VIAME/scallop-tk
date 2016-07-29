@@ -4,8 +4,8 @@
 // Description: Difference of Gaussian candidate Detection
 //------------------------------------------------------------------------------
 
-#ifndef DOG_H_
-#define DOG_H_
+#ifndef SCALLOP_TK_DOG_H_
+#define SCALLOP_TK_DOG_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

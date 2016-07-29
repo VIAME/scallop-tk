@@ -289,7 +289,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
 		//Show interest point
 		showIPNW( display_img, cd );
 
-#ifndef TRAINING_MODE_READ_IP_FROM_FILE
+#ifndef SCALLOP_TK_TRAINING_MODE_READ_IP_FROM_FILE
 		//Get User input
 		std::cout << "INFO: " << i << " of " << cand_size << " ";
 		std::cout << cd->method << " " << cd->magnitude << "\n";

@@ -1,5 +1,5 @@
-#ifndef TOP_CLASSIFIERS_H_
-#define TOP_CLASSIFIERS_H_
+#ifndef SCALLOP_TK_TOP_CLASSIFIERS_H_
+#define SCALLOP_TK_TOP_CLASSIFIERS_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

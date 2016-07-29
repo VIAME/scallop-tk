@@ -1,5 +1,5 @@
-#ifndef EXPENSIVE_SEARCH_H_
-#define EXPENSIVE_SEARCH_H_
+#ifndef SCALLOP_TK_EXPENSIVE_SEARCH_H_
+#define SCALLOP_TK_EXPENSIVE_SEARCH_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

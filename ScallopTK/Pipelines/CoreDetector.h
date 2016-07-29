@@ -1,5 +1,5 @@
-#ifndef SCALLOP_DETECTOR_H_
-#define SCALLOP_DETECTOR_H_
+#ifndef SCALLOP_TK_SCALLOP_DETECTOR_H_
+#define SCALLOP_TK_SCALLOP_DETECTOR_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

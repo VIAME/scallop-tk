@@ -1,5 +1,5 @@
-#ifndef EDGELINK_H_
-#define EDGELINK_H_
+#ifndef SCALLOP_TK_EDGELINK_H_
+#define SCALLOP_TK_EDGELINK_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

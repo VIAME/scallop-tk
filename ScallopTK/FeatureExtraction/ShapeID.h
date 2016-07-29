@@ -1,5 +1,5 @@
-#ifndef SHAPEID_H_
-#define SHAPEID_H_
+#ifndef SCALLOP_TK_SHAPEID_H_
+#define SCALLOP_TK_SHAPEID_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

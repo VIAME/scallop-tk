@@ -1,6 +1,6 @@
 
-#ifndef FS_WIN32
-#define FS_WIN32
+#ifndef SCALLOP_TK_FS_WIN32
+#define SCALLOP_TK_FS_WIN32
 
 #ifdef WIN32
 
