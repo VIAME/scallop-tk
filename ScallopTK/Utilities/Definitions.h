@@ -23,17 +23,17 @@
 
 // Define if compiling on a windows based platform
 //  - this should already be defined by your compiler so it doesnt matter -
-//#define SCALLOP_TK_WIN32 1
+//#define WIN32 1
 
 // Enables pthread support (linux only)
-//#define SCALLOP_TK_USE_PTHREADS 1
+//#define USE_PTHREADS 1
 
 // Benchmarks main function while processing (single thread only)
-//#define SCALLOP_TK_BENCHMARK 1
+//#define BENCHMARK 1
 
 // Enables automatic reading of metadata from image file
 //  - For any HabCam data this should be on -
-#define SCALLOP_TK_AUTO_READ_METADATA 1
+#define AUTO_READ_METADATA 1
 
 //------------------------------------------------------------------------------
 //                                 Constants

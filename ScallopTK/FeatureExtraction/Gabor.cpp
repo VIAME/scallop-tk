@@ -11,7 +11,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 //                                  Constants
 //------------------------------------------------------------------------------
 
-#define SCALLOP_TK_NUM_FILTERS 6
+#define NUM_FILTERS 6
 //int samppos[5][2] = { {32, 32}, {32, 17}, {17, 32}, {46, 32}, {32, 46} };
 
 //------------------------------------------------------------------------------
