@@ -18,7 +18,7 @@
 namespace ScallopTK
 {
 
-// Standalone detection function
+// Standalone detection function, returns total number of detections
 int runDetector( const SystemSettings& settings );
 
 // Streaming class definition, for use by external libraries

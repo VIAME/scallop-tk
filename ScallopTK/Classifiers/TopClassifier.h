@@ -84,7 +84,7 @@ void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output, 
 void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output );
 
 // Load a new classifier system based on the loaded classifier config file
-ClassifierSystem* loadClassifiers( SystemSettings& sparams, ClassifierConfigParameters& cparams );
+ClassifierSystem* loadClassifiers( const SystemSettings& sparams, ClassifierConfigParameters& cparams );
 
 // Perform suppression and interpolation
 vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSystem* Classifiers, std::string Filename );

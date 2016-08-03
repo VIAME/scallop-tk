@@ -50,6 +50,9 @@
 // Number of worker threads
 int THREADS;
 
+namespace ScallopTK
+{
+
 // Variables for benchmarking tests
 #ifdef BENCHMARK
   const string BenchmarkingFilename = "BenchmarkingResults.dat";
@@ -576,13 +579,13 @@ void *ProcessImage( void *InputArgs ) {
 
 //--------------File system manager / algorithm caller------------------
 
-int runDetector( SystemSettings& settings )
+int runDetector( const SystemSettings& settings )
 {
   // Retrieve some contents from input
-  string& inputDir = settings.InputDirectory;
-  string& inputFile = settings.InputFilename;
-  string& outputDir = settings.OutputDirectory;
-  string& outputFile = settings.OutputFilename;
+  string inputDir = settings.InputDirectory;
+  string inputFile = settings.InputFilename;
+  string outputDir = settings.OutputDirectory;
+  string outputFile = settings.OutputFilename;
 
   // Compile a vector of all files to process with related info
   vector<string> inputFilenames; // filenames (full or relative path)
@@ -660,7 +663,7 @@ int runDetector( SystemSettings& settings )
     input.close();
 
     // Set input dir to 0 because the list should have the full or relative path
-    settings.InputDirectory = "";
+    inputDir = "";
   }
   // We're in list training mode
   else if( settings.IsTrainingMode && !settings.IsInputDirectory )
@@ -717,7 +720,7 @@ int runDetector( SystemSettings& settings )
     input.close();
 
     // Set input dir to 0 because the list should have the full or relative path
-    settings.InputDirectory = "";
+    inputDir = "";
   }
 
   // Read MIPs file if necessary
@@ -993,4 +996,41 @@ int runDetector( SystemSettings& settings )
   }
 
   return 0;
+}
+
+// Streaming class definition, for use by external libraries
+class CoreDetector::priv
+{
+public:
+
+  int lol;
+};
+
+CoreDetector::CoreDetector( std::string configFile )
+{
+  
+}
+
+CoreDetector::CoreDetector( const SystemSettings& settings )
+{
+  
+}
+
+CoreDetector::~CoreDetector()
+{
+  
+}
+
+std::vector< Detection >
+CoreDetector::processFrame( const cv::Mat& image )
+{
+  
+}
+
+std::vector< Detection >
+CoreDetector::processFrame( std::string filename )
+{
+  
+}
+
 }

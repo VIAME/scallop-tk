@@ -320,7 +320,7 @@ void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output )
 }
 
 // Loads classifiers from given folder
-ClassifierSystem* loadClassifiers( SystemSettings& sparams, ClassifierConfigParameters& cparams )
+ClassifierSystem* loadClassifiers( const SystemSettings& sparams, ClassifierConfigParameters& cparams )
 {
 	ClassifierSystem* output = new ClassifierSystem;
 	string dir = sparams.RootClassifierDIR + cparams.ClassifierSubdir;
