@@ -5,14 +5,26 @@
 // description: Processes all of the images within a folder
 //------------------------------------------------------------------------------
 
-// Include Files
 #include "CoreDetector.h"
+
+// Standard C/C++
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// OpenCV
+#include "highgui.h"
 
 // Internal Scallop Includes
 #include "ScallopTK/Utilities/ConfigParsing.h"
 #include "ScallopTK/Utilities/Display.h"
 #include "ScallopTK/Utilities/Benchmarking.h"
 #include "ScallopTK/Utilities/Threads.h"
+#include "ScallopTK/Utilities/Filesystem.h"
 
 #include "ScallopTK/ScaleDetection/ImageProperties.h"
 
@@ -564,7 +576,7 @@ void *ProcessImage( void *InputArgs ) {
 
 //--------------File system manager / algorithm caller------------------
 
-int DETECT_SCALLOPS( SystemSettings& settings )
+int runDetector( SystemSettings& settings )
 {
   // Retrieve some contents from input
   string& inputDir = settings.InputDirectory;
