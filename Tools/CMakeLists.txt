@@ -36,14 +36,19 @@ function( AddTool BinName SourceFile InstallProp )
     RUNTIME DESTINATION bin )
 endfunction()
 
+# Install files contained in some data directory
+function( AddDataDir DirName )
+  install( DIRECTORY ${DirName} ${ScallopTK_BINARY_PREFIX}
+    DESTINATION bin FILES_MATCHING PATTERN "*" )
+endfunction()
 
-# Add all individual tools
-AddTool(
-  FishOrNoFish
-  FishOrNoFish.cpp
-  ScallopTK )
+# =================================================================
+# Add All Tools and Data Directories
+# =================================================================
 
-AddTool(
-  ScallopDetector
-  ScallopDetector.cpp
-  ScallopTK )
+AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
+
+AddDataDir( Models )
+
+AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
+
