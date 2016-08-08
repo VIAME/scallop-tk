@@ -44,8 +44,8 @@
 #include "ScallopTK/FeatureExtraction/ShapeID.h"
 #include "ScallopTK/FeatureExtraction/Gabor.h"
 
-#include "ScallopTK/Classifiers/Training.h"
-#include "ScallopTK/Classifiers/TopClassifier.h"
+#include "ScallopTK/Classifiers/TrainingUtils.h"
+#include "ScallopTK/Classifiers/AdaClassifier.h"
 
 // Number of worker threads
 int THREADS;

@@ -1,5 +1,5 @@
 
-#include "TopClassifier.h"
+#include "AdaClassifier.h"
 
 // td; Use a binary file next time
 int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
