@@ -1,6 +1,8 @@
 project( ScallopTK )
 cmake_minimum_required( VERSION 2.8 )
 
+option( BUILD_SHARED_LIBS "Build shared libraries." OFF )
+
 # Configure version number options
 set( ScallopTK_MAJOR_VER 0 )
 set( ScallopTK_MINOR_VER 9 )
