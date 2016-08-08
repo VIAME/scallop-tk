@@ -21,13 +21,6 @@
 //                           Compile/Build Parameters
 //------------------------------------------------------------------------------
 
-// Define if compiling on a windows based platform
-//  - this should already be defined by your compiler so it doesnt matter -
-//#define WIN32 1
-
-// Enables pthread support (linux only)
-//#define USE_PTHREADS 1
-
 // Benchmarks main function while processing (single thread only)
 //#define BENCHMARK 1
 

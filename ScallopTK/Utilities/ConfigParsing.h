@@ -1,6 +1,6 @@
 
-#ifndef SCALLOP_TK__SC_CONFIG_PARSING_
-#define SCALLOP_TK__SC_CONFIG_PARSING_
+#ifndef SCALLOP_TK_CONFIG_PARSING_H_
+#define SCALLOP_TK_CONFIG_PARSING_H_
 
 // Helper Functions for Parsing Config Files (csv, ini)
 
