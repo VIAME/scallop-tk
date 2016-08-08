@@ -27,39 +27,39 @@
 
 struct GradientChain {
 
-	// Size Properties shared for all images
-	float scale;
-	float minRad;
-	float maxRad;
+  // Size Properties shared for all images
+  float scale;
+  float minRad;
+  float maxRad;
 
-	// Lab color space edges
-	IplImage *dxColorSig1;
-	IplImage *dyColorSig1;
-	IplImage *dxMergedSig1;
-	IplImage *dyMergedSig1;
-	IplImage *dMergedSig1;
+  // Lab color space edges
+  IplImage *dxColorSig1;
+  IplImage *dyColorSig1;
+  IplImage *dxMergedSig1;
+  IplImage *dyMergedSig1;
+  IplImage *dMergedSig1;
 
-	// Lab approx edges
-	IplImage *dLabMag;
-	IplImage *dLabOri;
+  // Lab approx edges
+  IplImage *dLabMag;
+  IplImage *dLabOri;
 
-	// Color Classifier Edges
-	IplImage *dxCCGrad;
-	IplImage *dyCCGrad;
-	IplImage *netCCGrad;
+  // Color Classifier Edges
+  IplImage *dxCCGrad;
+  IplImage *dyCCGrad;
+  IplImage *netCCGrad;
 
-	// Gray-scale edges
-	IplImage *gsEdge;
+  // Gray-scale edges
+  IplImage *gsEdge;
 
-	// Template matching inputs
-	IplImage *dx;
-	IplImage *dy;
+  // Template matching inputs
+  IplImage *dx;
+  IplImage *dy;
 
-	// Misc
-	IplImage *cannyEdges;
+  // Misc
+  IplImage *cannyEdges;
 
-	// Watershed inputs
-	IplImage *WatershedInput;
+  // Watershed inputs
+  IplImage *WatershedInput;
 };
 
 //------------------------------------------------------------------------------

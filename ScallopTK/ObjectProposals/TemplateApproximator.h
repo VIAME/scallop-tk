@@ -33,7 +33,7 @@
 
 //Benchmarking
 #ifdef TEMPLATE_BENCHMARKING
-	#include "ScallopTK/Utilities/Benchmarking.h"
+  #include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 
 //------------------------------------------------------------------------------

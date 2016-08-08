@@ -37,36 +37,36 @@ class HoGFeatureGenerator {
 
 public:
 
-	// Calculates required integral images
-	HoGFeatureGenerator( IplImage *img_gs, float minR, float maxR, int index );
+  // Calculates required integral images
+  HoGFeatureGenerator( IplImage *img_gs, float minR, float maxR, int index );
 
-	// Performs necessary deallocations
-	~HoGFeatureGenerator();
+  // Performs necessary deallocations
+  ~HoGFeatureGenerator();
 
-	// Sets any desired options
-	void SetOptions( float add_ratio, float bins_per_dim );
+  // Sets any desired options
+  void SetOptions( float add_ratio, float bins_per_dim );
 
-	// Generates descriptors for all Candidates
-	void Generate( vector<Candidate*>& cds );
+  // Generates descriptors for all Candidates
+  void Generate( vector<Candidate*>& cds );
 
-	// Generates descriptors for a single Candidate
-	bool GenerateSingle( Candidate *cd );
+  // Generates descriptors for a single Candidate
+  bool GenerateSingle( Candidate *cd );
 
 private:
 
-	// Integral image chain for feature generation
-	IplImage **integrals;
+  // Integral image chain for feature generation
+  IplImage **integrals;
 
-	// Internal Stats for integral images
-	float minRad;
-	float maxRad;
+  // Internal Stats for integral images
+  float minRad;
+  float maxRad;
 
-	// Calculation Options
-	float add_ratio;
-	float bins;
+  // Calculation Options
+  float add_ratio;
+  float bins;
 
-	// Output index in Candidate
-	int output_index;
+  // Output index in Candidate
+  int output_index;
 };
 
 //DEPRECATED

@@ -28,7 +28,7 @@
 
 //Visual Debugger
 #ifdef VisualDebugger
-	#include "ScallopTK/Visual Debugger/visualDebugger.h"
+  #include "ScallopTK/Visual Debugger/visualDebugger.h"
 #endif
 
 //------------------------------------------------------------------------------
@@ -80,10 +80,10 @@ bool findDoGCandidates( IplImage* input, vector<Candidate*>& kps, float minRad, 
 //------------------------------------------------------------------------------
 
 struct DoG_Candidate {
-	int r, c;
-	int octv, intvl;
-	float x, y;
-	float subintvl;
+  int r, c;
+  int octv, intvl;
+  float x, y;
+  float subintvl;
 };
 
 #endif

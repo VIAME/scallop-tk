@@ -37,34 +37,34 @@ class ThreadStatistics {
 
 public:
 
-	// Functions
-	ThreadStatistics();
-	~ThreadStatistics() {}
-	void Update( int Detections[], float im_area );
-	float returnMaxMinRadRequired() { return global_min_rad; }
+  // Functions
+  ThreadStatistics();
+  ~ThreadStatistics() {}
+  void Update( int Detections[], float im_area );
+  float returnMaxMinRadRequired() { return global_min_rad; }
 
-	// Detected Densities - last 100
-	float ScallopDensity;
-	float ClamDensity;
-	float SandDollarDensity;
-	float UrchinDensity;
+  // Detected Densities - last 100
+  float ScallopDensity;
+  float ClamDensity;
+  float SandDollarDensity;
+  float UrchinDensity;
 
-	// Detected Densities - last 1
-	float ScallopDensityPrev;
-	float ClamDensityPrev;
-	float SandDollarDensityPrev;
-	float UrchinDensityPrev;
+  // Detected Densities - last 1
+  float ScallopDensityPrev;
+  float ClamDensityPrev;
+  float SandDollarDensityPrev;
+  float UrchinDensityPrev;
 
-	// Entries detected across all 
-	int thread_Detections[TOTAL_DESIG];
+  // Entries detected across all 
+  int thread_Detections[TOTAL_DESIG];
 
-	// Images processed
-	int processed;
+  // Images processed
+  int processed;
 
 private:
 
-	// Smallest image size required for all ops (pixels)
-	float global_min_rad;
+  // Smallest image size required for all ops (pixels)
+  float global_min_rad;
 };
 
 #endif

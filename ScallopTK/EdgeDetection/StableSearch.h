@@ -25,7 +25,7 @@
 
 //Benchmarking
 #ifdef SS_BENCHMARKING
-	#include "ScallopTK/Utilities/Benchmarking.h"
+  #include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 
 //------------------------------------------------------------------------------

@@ -48,9 +48,9 @@ void exitTrainingMode();
 
 // Get designations from user in GUI mode
 bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *display_img, IplImage *mask,
-								int *Detections, float minRad, float maxRad, string img_name );
+                int *Detections, float minRad, float maxRad, string img_name );
 bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *display_img, IplImage *mask,
-								int *Detections, float minRad, float maxRad, string img_name );
+                int *Detections, float minRad, float maxRad, string img_name );
 
 // Print out features to given file in MIP mode
 void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd );

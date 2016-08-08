@@ -50,59 +50,59 @@ static pthread_mutex_t LockInfo[ MAX_THREADS ];
 
 // Helper Functions
 inline void thread_exit() { 
-	pthread_exit( 0 ); 
+  pthread_exit( 0 ); 
 }
 
 inline void mark_thread_as_finished( const int& idx ) { 
-	pthread_mutex_lock(&LockInfo[idx]);
-	ThreadInfo[idx] = AVAILABLE; 
-	pthread_mutex_unlock(&LockInfo[idx]);
+  pthread_mutex_lock(&LockInfo[idx]);
+  ThreadInfo[idx] = AVAILABLE; 
+  pthread_mutex_unlock(&LockInfo[idx]);
 }
 
 inline void mark_thread_as_running( const int& idx ) { 
-	pthread_mutex_lock(&LockInfo[idx]);
-	ThreadInfo[idx] = RUNNING; 
-	pthread_mutex_unlock(&LockInfo[idx]);
+  pthread_mutex_lock(&LockInfo[idx]);
+  ThreadInfo[idx] = RUNNING; 
+  pthread_mutex_unlock(&LockInfo[idx]);
 }
 
 inline void set_threads_as_available() {
-	for( int i=0; i < THREADS; i++ )
-		ThreadInfo[i] = AVAILABLE;
+  for( int i=0; i < THREADS; i++ )
+    ThreadInfo[i] = AVAILABLE;
 }
 
 inline bool is_thread_running( const int& idx ) {
-	pthread_mutex_lock(&LockInfo[idx]);
-	bool response = (ThreadInfo[idx] == RUNNING);
-	pthread_mutex_unlock(&LockInfo[idx]);
-	return response;
+  pthread_mutex_lock(&LockInfo[idx]);
+  bool response = (ThreadInfo[idx] == RUNNING);
+  pthread_mutex_unlock(&LockInfo[idx]);
+  return response;
 }
 
 inline void get_display_lock() {
-	pthread_mutex_lock(&OutputLock);
+  pthread_mutex_lock(&OutputLock);
 }
 
 inline void unlock_display() {
-	pthread_mutex_unlock(&OutputLock);
+  pthread_mutex_unlock(&OutputLock);
 }
 
 inline void initialize_threads() {
-	pthread_mutex_init(&OutputLock, NULL);
-	for( int i=0; i<THREADS; i++ )
-		pthread_mutex_init(&LockInfo[i], NULL);
+  pthread_mutex_init(&OutputLock, NULL);
+  for( int i=0; i<THREADS; i++ )
+    pthread_mutex_init(&LockInfo[i], NULL);
 }
 
 inline void kill_threads() {
-	pthread_mutex_destroy(&OutputLock);
-	for (int i=0; i<THREADS; i++ )
-		pthread_mutex_destroy(&LockInfo[i]);
+  pthread_mutex_destroy(&OutputLock);
+  for (int i=0; i<THREADS; i++ )
+    pthread_mutex_destroy(&LockInfo[i]);
 }
 
 inline void get_ListLock() {
-	pthread_mutex_lock(&ListLock);
+  pthread_mutex_lock(&ListLock);
 }
 
 inline void unlock_list() {
-	pthread_mutex_unlock(&ListLock);
+  pthread_mutex_unlock(&ListLock);
 }
 
 #else

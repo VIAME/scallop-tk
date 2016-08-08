@@ -38,22 +38,22 @@
 
 class CompareCandidates {
 public:
-	bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
-		if( cd1->method < cd2->method )
-			return true;
-		if( cd1->method == cd2->method && cd1->magnitude > cd2->magnitude )
-			return true;
-		return false;
-	}
+  bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
+    if( cd1->method < cd2->method )
+      return true;
+    if( cd1->method == cd2->method && cd1->magnitude > cd2->magnitude )
+      return true;
+    return false;
+  }
 };
 
 class CompareRank {
 public:
-	bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
-		if( cd1->method_rank > cd2->method_rank )
-			return true;
-		return false;
-	}
+  bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
+    if( cd1->method_rank > cd2->method_rank )
+      return true;
+    return false;
+  }
 };
 
 typedef priority_queue<Candidate*, vector<Candidate*>, CompareRank> CandidateQueue;
@@ -65,11 +65,11 @@ typedef vector<Detection*> DetectionVector;
 //------------------------------------------------------------------------------
 
 void prioritizeCandidates( CandidateVector& Blob, 
-						   CandidateVector& Adaptive,
-						   CandidateVector& Template,
-						   CandidateVector& Canny,
-						   CandidateVector& Unordered,
-						   CandidateQueue& Ordered,
-						   ThreadStatistics *GS );
+               CandidateVector& Adaptive,
+               CandidateVector& Template,
+               CandidateVector& Canny,
+               CandidateVector& Unordered,
+               CandidateQueue& Ordered,
+               ThreadStatistics *GS );
 
 #endif

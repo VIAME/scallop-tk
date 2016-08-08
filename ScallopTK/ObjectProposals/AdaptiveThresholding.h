@@ -49,8 +49,8 @@ const float AT_UPPER_PER[AT_UPPER_SIZE] = { 0.00, 0.80, 0.60, 0.90 };
 
 // Specifies which values in the input (classified) image correspond to which %tiles
 struct atStats {
-	float lower_intvls[AT_LOWER_SIZE];
-	float upper_intvls[AT_UPPER_SIZE];
+  float lower_intvls[AT_LOWER_SIZE];
+  float upper_intvls[AT_UPPER_SIZE];
 };
 
 // Return variables for bin search

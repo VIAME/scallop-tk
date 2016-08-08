@@ -38,16 +38,16 @@ const int HEADER_BYTES = 48;
 //------------------------------------------------------------------------------
 
 struct hfResults {
-	float scale;
-	float minRad;
-	float maxRad;
-	IplImage *BrownScallopClass;
-	IplImage *WhiteScallopClass;
-	IplImage *SandDollarsClass;
-	IplImage *EnvironmentalClass;
-	IplImage *NetScallops;
-	IplImage *SaliencyMap;
-	IplImage *EnvironmentMap;
+  float scale;
+  float minRad;
+  float maxRad;
+  IplImage *BrownScallopClass;
+  IplImage *WhiteScallopClass;
+  IplImage *SandDollarsClass;
+  IplImage *EnvironmentalClass;
+  IplImage *NetScallops;
+  IplImage *SaliencyMap;
+  IplImage *EnvironmentMap;
 };
 
 //------------------------------------------------------------------------------
@@ -57,76 +57,76 @@ struct hfResults {
 // Class to construct a histogram-based classifier
 class hfFilter {
 public:
-	// Declares a new filter
-	hfFilter() { filterLoaded = false; filter3d = NULL; secondary3d = NULL; };
-	~hfFilter();
+  // Declares a new filter
+  hfFilter() { filterLoaded = false; filter3d = NULL; secondary3d = NULL; };
+  ~hfFilter();
 
-	// Loads a filter from a file in the default filter directory
-	// A secondary buffer should be used if you want to modify the filter, by
-	// first inserting values into the secondary buffer, and then merging that
-	// buffer into the primary
-	bool loadFromFile( const string& filter_fn, bool allocSecondary = false );
+  // Loads a filter from a file in the default filter directory
+  // A secondary buffer should be used if you want to modify the filter, by
+  // first inserting values into the secondary buffer, and then merging that
+  // buffer into the primary
+  bool loadFromFile( const string& filter_fn, bool allocSecondary = false );
 
-	// Returns true if a valid filter is loaded
-	bool isValid() { return filterLoaded; }
+  // Returns true if a valid filter is loaded
+  bool isValid() { return filterLoaded; }
 
-	// Classifies a single value
-	float classifyPoint3d( float* pt );
+  // Classifies a single value
+  float classifyPoint3d( float* pt );
 
-	// Classifies an entire 3-chan image
-	IplImage *classify3dImage( IplImage *img );
+  // Classifies an entire 3-chan image
+  IplImage *classify3dImage( IplImage *img );
 
-	// Sets the secondary buffer to 0
-	void flushSecondary();
+  // Sets the secondary buffer to 0
+  void flushSecondary();
 
-	// Inserts value into secondary
-	int insertInSecondary( float *val );
+  // Inserts value into secondary
+  int insertInSecondary( float *val );
 
-	// Merges secondary into filter
-	void mergeSecondary( float ratio, float secondaryDown );
+  // Merges secondary into filter
+  void mergeSecondary( float ratio, float secondaryDown );
 
 private:
 
-	// Buffer to hold color filter
-	float *filter3d;
+  // Buffer to hold color filter
+  float *filter3d;
 
-	// Buffer to hold secondary filter
-	//  The secondary filter is a double buffer, it exists if we 
-	//  want to merge the secondary into the primary filter [TODO Better descr]
-	float *secondary3d;
+  // Buffer to hold secondary filter
+  //  The secondary filter is a double buffer, it exists if we 
+  //  want to merge the secondary into the primary filter [TODO Better descr]
+  float *secondary3d;
 
-	// Was the filter successfully loaded?
-	bool filterLoaded;
+  // Was the filter successfully loaded?
+  bool filterLoaded;
 
-	// The start of the range that this histogram covers
-	float startCh1;
-	float startCh2;
-	float startCh3;
+  // The start of the range that this histogram covers
+  float startCh1;
+  float startCh2;
+  float startCh3;
 
-	// The end of the range that this histogram covers
-	float endCh1;
-	float endCh2;
-	float endCh3;
+  // The end of the range that this histogram covers
+  float endCh1;
+  float endCh2;
+  float endCh3;
 
-	// The range of each channel that the histogram covers
-	float bprCh1; // Bins per range (end-start)
-	float bprCh2;
-	float bprCh3;
+  // The range of each channel that the histogram covers
+  float bprCh1; // Bins per range (end-start)
+  float bprCh2;
+  float bprCh3;
 
-	// The number of bins per each channel of the histogram
-	int histBinsCh1;
-	int histBinsCh2;
-	int histBinsCh3;
+  // The number of bins per each channel of the histogram
+  int histBinsCh1;
+  int histBinsCh2;
+  int histBinsCh3;
 
-	// The number of channels (deprecated, always should be 3)
-	int numChan;
+  // The number of channels (deprecated, always should be 3)
+  int numChan;
 
-	// Histogram steps
-	int ch1_scale;
-	int ch2_scale;
+  // Histogram steps
+  int ch1_scale;
+  int ch2_scale;
 
-	// Total # of floats in histogram
-	int size;
+  // Total # of floats in histogram
+  int size;
 };
 
 //------------------------------------------------------------------------------
@@ -137,42 +137,42 @@ private:
 // Only RGB support [0,1] range, very similar to the above
 class salFilter {
 public:
-	// Declares a new filter
-	salFilter() { is_valid = false; size = 0; filter3d = NULL; }
-	~salFilter();
+  // Declares a new filter
+  salFilter() { is_valid = false; size = 0; filter3d = NULL; }
+  ~salFilter();
 
-	// Classifies an entire image
-	IplImage *classify3dImage( IplImage *img );
+  // Classifies an entire image
+  IplImage *classify3dImage( IplImage *img );
 
-	// Reset the histogram
-	void flushFilter();
+  // Reset the histogram
+  void flushFilter();
 
-	// Smooth the histogram
-	void smoothHist();
+  // Smooth the histogram
+  void smoothHist();
 
-	// Builds the saliency map
-	void allocMap( int binsPerDim );
-	void buildMap( IplImage *img );
+  // Builds the saliency map
+  void allocMap( int binsPerDim );
+  void buildMap( IplImage *img );
 
 private:
 
-	// Buffer to hold color filter
-	float *filter3d;
+  // Buffer to hold color filter
+  float *filter3d;
 
-	// Is the map valid
-	bool is_valid;
+  // Is the map valid
+  bool is_valid;
 
-	// The number of bins per each channel of the histogram
-	int histBinsCh1;
-	int histBinsCh2;
-	int histBinsCh3;
+  // The number of bins per each channel of the histogram
+  int histBinsCh1;
+  int histBinsCh2;
+  int histBinsCh3;
 
-	// Histogram steps
-	int ch1_scale;
-	int ch2_scale;
+  // Histogram steps
+  int ch1_scale;
+  int ch2_scale;
 
-	// Total # of floats in histogram
-	int size;
+  // Total # of floats in histogram
+  int size;
 };
 
 //------------------------------------------------------------------------------
@@ -184,43 +184,43 @@ class ColorClassifier {
 
 public:
 
-	// Class Constructor
-	ColorClassifier() { filtersLoaded=false; }
+  // Class Constructor
+  ColorClassifier() { filtersLoaded=false; }
 
-	// Class Destructr
-	~ColorClassifier() {}
+  // Class Destructr
+  ~ColorClassifier() {}
 
-	// Loads a group of filters from the default directory given a seedname
-	bool loadFilters( const string& dir, const string& seedname );
+  // Loads a group of filters from the default directory given a seedname
+  bool loadFilters( const string& dir, const string& seedname );
 
-	// Returns true if valid filters have been loaded
-	bool isValid() { return filtersLoaded; }
+  // Returns true if valid filters have been loaded
+  bool isValid() { return filtersLoaded; }
 
-	// Performs all required histogram-based filtering of image
-	hfResults *classifiyImage( IplImage *img );
+  // Performs all required histogram-based filtering of image
+  hfResults *classifiyImage( IplImage *img );
 
-	// Calls classifyImage after resizing/smoothing image
-	hfResults *performColorClassification( IplImage* img, float minRad, float maxRad );
+  // Calls classifyImage after resizing/smoothing image
+  hfResults *performColorClassification( IplImage* img, float minRad, float maxRad );
 
-	// Updates all of the filters after interest points have been classified
-	void Update( IplImage *img, IplImage *mask, int Detections[] );
-	
+  // Updates all of the filters after interest points have been classified
+  void Update( IplImage *img, IplImage *mask, int Detections[] );
+  
 private:
 
-	// Last classifier results for last image (managed externally)
-	IplImage *img;
-	hfResults *res;
+  // Last classifier results for last image (managed externally)
+  IplImage *img;
+  hfResults *res;
 
-	// True if filters successfully loaded
-	bool filtersLoaded;
+  // True if filters successfully loaded
+  bool filtersLoaded;
 
-	// Classifiers for each type
-	hfFilter WhiteScallop;
-	hfFilter BrownScallop;
-	hfFilter Clam;
-	hfFilter Environment;
-	hfFilter SandDollars;
-	salFilter SaliencyModel;
+  // Classifiers for each type
+  hfFilter WhiteScallop;
+  hfFilter BrownScallop;
+  hfFilter Clam;
+  hfFilter Environment;
+  hfFilter SandDollars;
+  salFilter SaliencyModel;
 };
 
 //------------------------------------------------------------------------------

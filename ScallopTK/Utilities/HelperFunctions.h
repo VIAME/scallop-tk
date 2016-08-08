@@ -73,70 +73,70 @@ void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img );
 // Get a pixel value from a 32-bit float image (single channel)
 inline float getPixel32f( IplImage* img, int r, int c )
 {
-	return ( (float*)(img->imageData + img->widthStep*r) )[c];
+  return ( (float*)(img->imageData + img->widthStep*r) )[c];
 }
 
 // Get a pixel value from a 32-bit float image (single channel)
 inline void setPixel32f( IplImage* img, int r, int c, float value )
 {
-	( (float*)(img->imageData + img->widthStep*r) )[c] = value;
+  ( (float*)(img->imageData + img->widthStep*r) )[c] = value;
 }
 
 // Get a pixel value from a 32-bit float image (multi channel)
 inline float getPixel32f( IplImage* img, int r, int c, int chan )
 {
-	return ( (float*)(img->imageData + img->widthStep*r) )[c*3 + chan];
+  return ( (float*)(img->imageData + img->widthStep*r) )[c*3 + chan];
 }
 
 inline void rgb2gray( IplImage *src, IplImage *dst ) {
-	dst = cvCreateImage( cvGetSize( src ), IPL_DEPTH_8U, 1 );
-	cvCvtColor( src, dst, CV_RGB2GRAY );
+  dst = cvCreateImage( cvGetSize( src ), IPL_DEPTH_8U, 1 );
+  cvCvtColor( src, dst, CV_RGB2GRAY );
 }
 
 inline void scaleCD( Candidate *cd, float sf ) {
-	cd->r = cd->r * sf;
-	cd->c = cd->c * sf;
-	cd->major = cd->major * sf;
-	cd->minor = cd->minor * sf;
+  cd->r = cd->r * sf;
+  cd->c = cd->c * sf;
+  cd->major = cd->major * sf;
+  cd->minor = cd->minor * sf;
 }
 
 inline int dround( const double& input ) {
-	float exp = input - floor( input );
-	if( exp < 0.5 )
-		return floor( input );
-	return ceil( input );
+  float exp = input - floor( input );
+  if( exp < 0.5 )
+    return floor( input );
+  return ceil( input );
 }
 
 inline int determine8quads( const int& x, const int&y ) {
-	if( x <= 0 ) {
-		if( y <= 0 ) {
-			if( x <= y ) {
-				return 0;
-			} else {
-				return 1;
-			}
-		} else {
-			if( -x > y ) {
-				return 2;
-			} else {
-				return 3;
-			}
-		}
-	} else {
-		if( y <= 0 ) {
-			if( x > -y ) {
-				return 4;
-			} else {
-				return 5;
-			}
-		} else {
-			if( x > y ) {
-				return 6;
-			} else {
-				return 7;
-			}
-		}
-	}
+  if( x <= 0 ) {
+    if( y <= 0 ) {
+      if( x <= y ) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else {
+      if( -x > y ) {
+        return 2;
+      } else {
+        return 3;
+      }
+    }
+  } else {
+    if( y <= 0 ) {
+      if( x > -y ) {
+        return 4;
+      } else {
+        return 5;
+      }
+    } else {
+      if( x > y ) {
+        return 6;
+      } else {
+        return 7;
+      }
+    }
+  }
 }
 
 
