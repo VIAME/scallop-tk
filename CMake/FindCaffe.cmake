@@ -11,12 +11,21 @@ if( Caffe_DIR )
 
 elseif( NOT Caffe_FOUND )
 
-  find_path( Caffe_INCLUDE_DIR caffe/caffe.hpp ${Caffe_FIND_OPTS} )
-  find_library( Caffe_LIBRARY caffe ${Caffe_FIND_OPTS} )
+  include( FindMacros )
+  configure_find_paths( Caffe )
+
+  find_path( Caffe_INCLUDE_DIR NAMES caffe/caffe.hpp HINTS ${Caffe_INC_FIND_PATH} )
+  if( NOT EXISTS ${Caffe_INCLUDE_DIR} )
+    message( FATAL_ERROR "Caffe include directory not valid, must contain caffe/caffe.hpp" )
+  endif()
+
+  find_library( Caffe_LIBRARY NAMES caffe HINTS ${Caffe_LIB_FIND_PATH} )
+  if( NOT EXISTS ${Caffe_LIBRARY} )
+    message( FATAL_ERROR "Caffe library path not valid, must contain caffe library .lib/.dll/.so/.a" )
+  endif()
 
   include( FindPackageHandleStandardArgs )
   find_package_handle_standard_args( Caffe Caffe_INCLUDE_DIR Caffe_LIBRARY )
-  mark_as_advanced( Caffe_INCLUDE_DIR Caffe_LIBRARY )
 
   set( Caffe_INCLUDE_DIRS ${Caffe_INCLUDE_DIR} )
   set( Caffe_LIBRARIES ${Caffe_LIBRARY} )

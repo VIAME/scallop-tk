@@ -36,6 +36,10 @@ if( OpenCV_VERSION VERSION_LESS "2.4" )
   message( FATAL_ERROR "OpenCV version must be at least 2.4" )
 endif()
 
+if( OpenCV_VERSION VERSION_GREATER "3.0" )
+  message( FATAL_ERROR "OpenCV v3.0+ currently not supported" )
+endif()
+
 option( USE_CAFFE "Build with Caffe support enabled" ON )
 
 if( USE_CAFFE )
