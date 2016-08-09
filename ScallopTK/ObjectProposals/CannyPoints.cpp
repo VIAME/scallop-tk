@@ -127,7 +127,7 @@ void findCannyCandidates( GradientChain& grad, std::vector<Candidate*>& cds ) {
   for( int r = 1; r < height-1; r++ ) {
     for( int c = 1; c < width-1; c++ ) {
 
-      // Check if new contour exists
+      // Check if new Contour exists
       if( (canny->imageData+wstep*r)[c] == EDGE_MARKER ) {
 
         stack<cp_point> sq;
@@ -176,7 +176,7 @@ void findCannyCandidates( GradientChain& grad, std::vector<Candidate*>& cds ) {
         if( csize < 8 )
           continue;
 
-        // If its a very small contour
+        // If its a very small Contour
         if( csize < 16 ) {
           int i1 = 1;
           int i2 = csize / 2;

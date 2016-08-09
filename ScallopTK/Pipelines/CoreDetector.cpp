@@ -110,7 +110,7 @@ struct AlgorithmArgs {
   bool UseMIPData;
 
   // MIP Training keep factor
-  float MIPUnannotatedKeepPercentage;
+  float TrainingPercentKeep;
 
   // Process border interest points
   bool ProcessBorderPoints;
@@ -363,7 +363,7 @@ void *ProcessImage( void *InputArgs ) {
     }
     
     // Remove any detected Candidates which conflict with markups
-    RemoveOverlapAndMerge( UnorderedCandidates, MIPDetections, Options->MIPUnannotatedKeepPercentage );
+    RemoveOverlapAndMerge( UnorderedCandidates, MIPDetections, Options->TrainingPercentKeep );
   }
 
   if( !Options->ProcessBorderPoints )
@@ -724,7 +724,7 @@ int runDetector( const SystemSettings& settings )
   }
 
   // Read MIPs file if necessary
-  if( settings.IsTrainingMode && settings.UseMIPInput )
+  if( settings.IsTrainingMode && settings.UseFileForTraining )
   {
     // srand for random adjustments
     srand(time(NULL));
@@ -831,7 +831,7 @@ int runDetector( const SystemSettings& settings )
   {
     // Set thread output options
     inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
-    inputArgs[i].UseMIPData = settings.UseMIPInput;
+    inputArgs[i].UseMIPData = settings.UseFileForTraining;
     inputArgs[i].MIPData = MIPs;
     inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
     inputArgs[i].EnableListOutput = settings.OutputList;
@@ -849,7 +849,7 @@ int runDetector( const SystemSettings& settings )
   }
 
   // Initialize training mode if in gui mode
-  if( settings.IsTrainingMode && !settings.UseMIPInput ) {
+  if( settings.IsTrainingMode && !settings.UseFileForTraining ) {
     if( !initializeTrainingMode( outputDir, outputFile ) ) {
       cerr << "ERROR: Could not initiate training mode!\n";
     }
@@ -920,7 +920,7 @@ int runDetector( const SystemSettings& settings )
 
     // Always set the focal length
     inputArgs[0].FocalLength = settings.FocalLength;
-    inputArgs[0].MIPUnannotatedKeepPercentage = settings.MIPTrainingPercentKeep;
+    inputArgs[0].TrainingPercentKeep = settings.TrainingPercentKeep;
     inputArgs[0].ProcessBorderPoints = settings.LookAtBorderPoints;
 
     // Set file/dir arguments
@@ -984,7 +984,7 @@ int runDetector( const SystemSettings& settings )
 #endif
 
   // Close gui-training mode
-  if( settings.IsTrainingMode && !settings.UseMIPInput )
+  if( settings.IsTrainingMode && !settings.UseFileForTraining )
   {
     exitTrainingMode();
   }

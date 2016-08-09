@@ -71,7 +71,7 @@ void extractWatershedEdge( IplImage *img, Candidate* kp, float scale ) {
   IplImage *mask = cvCreateImage( cvSize(c_size, r_size), IPL_DEPTH_32S, 1 );
   drawEllipseRing( mask, kp->r*scale-r_min, kp->c*scale-c_min, kp->angle, in_major, in_minor, out_major );
   
-  // Extract watershed contour
+  // Extract watershed Contour
   cvWatershed(img, mask);
   kp->stats->wsMask = mask;
   kp->stats->wsOffset.x = c_min;
@@ -110,7 +110,7 @@ void calcAvgMax( IplImage *img, float& avg, float& max, float& min ) {
   avg = avg / ( width * height );
 }
 
-// Extract contours from kps
+// Extract Contours from kps
 void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds ) {
 
   // Create base of pyramid (3-level incrementally scaled) if need to

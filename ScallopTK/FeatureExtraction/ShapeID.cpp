@@ -17,22 +17,22 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
   if( !cd->stats->active )
     return;
 
-  // Extract contour from watershed result
+  // Extract Contour from watershed result
   IplImage *wsResult = cd->stats->wsMask;
   struct cstats* stats = cd->stats;
-  vector<CvPoint2D32f> contour_list;
+  vector<CvPoint2D32f> Contour_list;
   for( int r=2; r<wsResult->height-2; r++ ) {
     for( int c=2; c<wsResult->width-2; c++ ) {
       if( ((int*)(wsResult->imageData + wsResult->widthStep*r))[c] == -1 ) {
         CvPoint2D32f p;
         p.x = c;
         p.y = r;
-        contour_list.push_back( p );
+        Contour_list.push_back( p );
       }
     }
   }
 
-  if( contour_list.size() < 6 ){
+  if( Contour_list.size() < 6 ){
     for( int i=0; i<9; i++ ) {
       cd->stats->shape_stats[i] = 0.0;
     }
@@ -41,9 +41,9 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
     return;
   }
 
-  // Fit ellipse on extracted contour
+  // Fit ellipse on extracted Contour
   CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
-  cv::fitEllipse( &contour_list[0], contour_list.size(), box );
+  cv::fitEllipse( &Contour_list[0], Contour_list.size(), box );
   double angle = stats->angle = box->angle;
   double new_cr   = stats->r    = box->center.y + stats->wsOffset.y;
   double new_cc   = stats->c    = box->center.x + stats->wsOffset.x;
@@ -66,11 +66,11 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
   avg_cc = avg_cc - stats->wsOffset.x;
   new_cr = new_cr - stats->wsOffset.y;
   new_cc = new_cc - stats->wsOffset.x;
-  for( unsigned int i=0; i < contour_list.size(); i++ ) {
-    int adj_r = contour_list[i].y - new_cr;
-    int adj_c = contour_list[i].x - new_cc;
-    int avg_adj_r = contour_list[i].y - avg_cr;
-    int avg_adj_c = contour_list[i].x - avg_cc;
+  for( unsigned int i=0; i < Contour_list.size(); i++ ) {
+    int adj_r = Contour_list[i].y - new_cr;
+    int adj_c = Contour_list[i].x - new_cc;
+    int avg_adj_r = Contour_list[i].y - avg_cr;
+    int avg_adj_c = Contour_list[i].x - avg_cc;
     int region = determine8quad_sm( avg_adj_c, avg_adj_r );
     int posr = adj_r * cosf - adj_r * sinf;
     int posc = adj_c * cosf + adj_c * sinf;
@@ -104,7 +104,7 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
   cd->stats->shape_stats[9] = major;
   cd->stats->shape_stats[10] = sqrt(1.0 - (major/minor)*(major/minor));
   
-  // Convert contour to polar cooridantes
+  // Convert Contour to polar cooridantes
   //TODO
 
   // Run FFT on polar coordinates

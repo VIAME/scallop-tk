@@ -151,15 +151,15 @@ int hfBinaryClassify(IplImage *bin, float minRad, float maxRad, vector<Candidate
 
   // Create OpenCV storage block
   CvMemStorage *mem = cvCreateMemStorage(0);
-  CvSeq *contours, *ptr;
+  CvSeq *Contours, *ptr;
 
-  // Identify contours in binary image
-  cvFindContours(bin,mem,&contours,sizeof(CvContour),CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
+  // Identify Contours in binary image
+  cvFindContours(bin,mem,&Contours,sizeof(CvContour),CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
 
   //Process
   int highcount = 0;
   int lowcount = 0;
-  for( ptr = contours; ptr != NULL; ptr = ptr->h_next ) {
+  for( ptr = Contours; ptr != NULL; ptr = ptr->h_next ) {
     int ret = findStableMatches( ptr, minRad, maxRad, kps, bin );
     if( ret == -1 )
       lowcount++;
@@ -175,7 +175,7 @@ int hfBinaryClassify(IplImage *bin, float minRad, float maxRad, vector<Candidate
     retval = retval | AT_RAISE;
 
   //Deallocate
-  cvReleaseMemStorage(&contours->storage);
+  cvReleaseMemStorage(&Contours->storage);
   return 0;
 }
 

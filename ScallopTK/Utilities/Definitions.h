@@ -13,9 +13,7 @@
 #include <map>
 
 // OpenCV Includes
-#include "cv.h"
-#include "cxcore.h"
-#include "highgui.h"
+#include <cv.h>
 
 //------------------------------------------------------------------------------
 //                           Compile/Build Parameters
@@ -160,52 +158,63 @@ const double SDSS_DIFFERENCE_FACTOR = 2.0;
 const int MAX_CLASSIFIERS = 30;
 
 //------------------------------------------------------------------------------
-//                      System Parameters - Set at Run-Time
+//                     System Parameters - Set at Run-Time
 //------------------------------------------------------------------------------
 
 struct SystemSettings
 {
-  // Input Directory
+  // Input directory, if specified
   std::string InputDirectory;
   
-  // Input Filename if we're processing a list in the above folder
+  // Input filename, if we're processing a list or using metadata from a list
   std::string InputFilename;
   
-  // Output Directory
+  // Output directory to dump annotated images into
   std::string OutputDirectory;
   
-  // Output Filename for list or training data in the above folder
+  // Output filename for detection list or training data in the above folder
   std::string OutputFilename;
-  
+
+  // Are input images coming from a directory or a filelist
+  bool IsInputDirectory;
+
   // Root directory for color filters
   std::string RootColorDIR;
   
   // Root directory for classifiers
   std::string RootClassifierDIR;
-  
+
+  // Are we using image metadata at all during processing?
+  bool UseMetadata;
+
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
 
-  // Are we in training mode or process mode?
+  // Are we using a CNN or AdaBoost final classifier?
+  bool UseCNNClassifier;
+
+  // CNN classifier model definition and weights, if enabled
+  std::string CNNClassifierModel;
+  std::string CNNClassifierWeights;
+
+  // Are we in training mode or process (testing) mode?
   bool IsTrainingMode;
-  
-  // If we are in training mode, simple-gui or mips?
-  bool UseMIPInput;
 
-  // If training from MIPs files, the percentage of false points outside
-  // of annotations to report
-  float MIPTrainingPercentKeep;
+  // If we are in training mode, are we getting annotations from a file,
+  // or should the internal GUI be enabled for annotations?
+  bool UseFileForTraining;
 
-  // Should we look at border points
+  // If training from files, the percentage of false points outside of
+  // annotations to use as false examples.
+  float TrainingPercentKeep;
+
+  // Should we consider classifying object proposals near image boundaries?
   bool LookAtBorderPoints;
 
-  // Is the input a directory or a list
-  bool IsInputDirectory;
-
-  // If the input is a directory, the classifier system to use
+  // The classifier ID to use
   std::string ClassifierToUse;
   
-  // Enable output display?
+  // Enable output GUI display?
   bool EnableOutputDisplay;
   
   // Output Detection list?
@@ -214,13 +223,16 @@ struct SystemSettings
   // If an IP falls into more than one category, output it multiple times?
   bool OutputDuplicateClass;
   
-  // Output images with Detections in output directory?
+  // Output images with proposals in output directory?
+  bool OutputProposalImages;
+  
+  // Output images with detections in output directory?
   bool OutputDetectionImages;
 
-  // Camera focal length
+  // Camera focal length, if known
   float FocalLength;
 
-  // Number of worker threads to allocate
+  // Number of worker threads to allocate for processing images
   int NumThreads;
 };
 
@@ -278,16 +290,16 @@ typedef std::vector< MIPParameters > MIPParameterVector;
 //                         Simple Contour Definition
 //------------------------------------------------------------------------------
 
-struct scanPoint {
-  scanPoint( const int& _r, const int& _c ) : r(_r), c(_c) {}
+struct ScanPoint {
+  ScanPoint( const int& _r, const int& _c ) : r(_r), c(_c) {}
   int r, c;
 };
 
-struct contour {
+struct Contour {
   float mag; // Contour Magnitude
   int label; // Contour Label in Binary Image
   bool covers_oct[8]; // Contour octant coverage around an IP center
-  std::vector<scanPoint> pts; // Vector of points comprising contour
+  std::vector<ScanPoint> pts; // Vector of points comprising Contour
 };
 
 //------------------------------------------------------------------------------
@@ -345,8 +357,8 @@ struct Candidate
   // Expensive edge search results
   float innerColorAvg[3];
   float outerColorAvg[3];
-  contour *best_cntr;
-  contour *full_cntr;
+  Contour *best_cntr;
+  Contour *full_cntr;
 
   // User entered designation, Candidate filename if in training mode
   int designation;
@@ -371,7 +383,7 @@ struct Detection
   double angle;
 
   // Object Contour (if it exists)
-  contour *cntr;
+  Contour *cntr;
 
   // Possible Object IDs and classification Detection values
   std::vector< std::string > IDs;

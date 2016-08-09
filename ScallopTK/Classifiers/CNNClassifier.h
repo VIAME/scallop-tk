@@ -6,35 +6,30 @@
 //------------------------------------------------------------------------------
 
 //Standard C/C++
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include <map>
 #include <vector>
-#include <cmath>
 
-//OpenCV 2.1
-#include "cv.h"
-#include "cxcore.h"
+//OpenCV
+#include <cv.h>
 
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"
-#include "ScallopTK/Utilities/HelperFunctions.h"
-#include "ScallopTK/TPL/AdaBoost/BoostedCommittee.h"
-#include "ScallopTK/Utilities/Threads.h"
 
 //------------------------------------------------------------------------------
-//                            Constants / Typedefs
+//                              Class Definitions
 //------------------------------------------------------------------------------
 
+class CNNClassifierSystem
+{
+public:
 
+  explicit CNNClassifierSystem() {}
+  ~CNNClassifierSystem() {}
 
-//------------------------------------------------------------------------------
-//                             Function Prototypes
-//------------------------------------------------------------------------------
+  //void classifyCandidates( cv::Mat image, CandidateVector& candidates );
 
-// Generate all raw classifier values for an interest point as required
-//int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers );
+private:
+
+  
+};
 
 #endif

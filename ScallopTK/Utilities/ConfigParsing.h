@@ -147,7 +147,7 @@ inline bool ParseModeConfig( string key, SystemSettings& params )
   
     if( params.IsTrainingMode )
     {
-      params.UseMIPInput = !strcmp( rdr.GetValue("options", "load_mip_file", NULL), "true" );
+      params.UseFileForTraining = !strcmp( rdr.GetValue("options", "load_mip_file", NULL), "true" );
       params.IsInputDirectory = !strcmp( rdr.GetValue("options", "is_list", NULL), "false" );
       params.IsMetadataInImage = !strcmp( rdr.GetValue("options", "is_metadata_in_image", NULL), "true" );
       params.EnableOutputDisplay = false;
@@ -158,7 +158,7 @@ inline bool ParseModeConfig( string key, SystemSettings& params )
     }
     else
     {
-      params.UseMIPInput = false;
+      params.UseFileForTraining = false;
       params.IsInputDirectory = !strcmp( rdr.GetValue("options", "is_list", NULL), "false" );
       params.IsMetadataInImage = !strcmp( rdr.GetValue("options", "is_metadata_in_image", NULL), "true" );
       params.EnableOutputDisplay = !strcmp( rdr.GetValue("options", "enable_display", NULL), "true" );
@@ -224,7 +224,7 @@ inline bool ParseSystemConfig( SystemSettings& params )
     params.RootColorDIR = rdr.GetValue("options", "root_histogram_dir", NULL);
     params.RootClassifierDIR = rdr.GetValue("options", "root_classifier_dir", NULL);
     params.FocalLength = atof( rdr.GetValue("options", "focal_length", NULL) );
-    params.MIPTrainingPercentKeep = atof( rdr.GetValue("options", "training_false_keep_percentage", NULL) );
+    params.TrainingPercentKeep = atof( rdr.GetValue("options", "training_false_keep_percentage", NULL) );
     params.LookAtBorderPoints = !strcmp( rdr.GetValue("options", "look_at_border_points", NULL), "true" );
 
     if( params.RootClassifierDIR == "[DEFAULT]" )
@@ -387,7 +387,7 @@ inline void InitializeDefault( SystemSettings& settings )
   settings.RootColorDIR = "data/ColorFilterBanks/";
   settings.RootClassifierDIR = "data/Classifiers/";
   settings.IsTrainingMode = false;
-  settings.UseMIPInput = false;
+  settings.UseFileForTraining = false;
   settings.IsInputDirectory = true;
   settings.EnableOutputDisplay = true;
   settings.OutputList = true;

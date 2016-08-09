@@ -128,7 +128,7 @@ int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<Candidate*
   // Return value
   int retVal = -1;
 
-  // Threshold contour entries size
+  // Threshold Contour entries size
   int elements = seq->total;
   if( elements < 8 ) {
     return retVal;
@@ -144,7 +144,7 @@ int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<Candidate*
     return retVal;
   }
   
-  // Allocate contour array
+  // Allocate Contour array
   CvPoint *group_pos = (CvPoint*) malloc(elements * sizeof(CvPoint));
   cvCvtSeqToArray(seq, group_pos, CV_WHOLE_SEQ);
 
@@ -171,7 +171,7 @@ int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<Candidate*
     }
   }
 
-  // Check to make sure reduced contour size is sufficient [quickfix: todo revise above]
+  // Check to make sure reduced Contour size is sufficient [quickfix: todo revise above]
   if( newSize < 6 ) {
     free(group_pos);
     free(dsed);

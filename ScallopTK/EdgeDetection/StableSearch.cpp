@@ -287,7 +287,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 #endif
 
     // Link/Select Edges
-    vector< contour* > cntrs;
+    vector< Contour* > cntrs;
     int label = 2;
     int bin_step = bin->widthStep / sizeof(char);
     step_dia_1 = -bin_step - 1;
@@ -311,9 +311,9 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
       if( (bin->imageData + bin->widthStep*r)[c] == EDGEL ) {
 
-        stack<scanPoint> sq;
-        scanPoint pt(r,c);
-        contour *ctr = new contour;
+        stack<ScanPoint> sq;
+        ScanPoint pt(r,c);
+        Contour *ctr = new Contour;
         sq.push( pt );
 
         while( sq.size() != 0 ) {
@@ -328,21 +328,21 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
           // Check 8-connectedness
           if( *(pos+step_up) == EDGEL )
-            sq.push( scanPoint( ir+1, ic ) );
+            sq.push( ScanPoint( ir+1, ic ) );
           if( *(pos+step_right) == EDGEL )
-            sq.push( scanPoint( ir, ic+1 ) );
+            sq.push( ScanPoint( ir, ic+1 ) );
           if( *(pos+step_down) == EDGEL )
-            sq.push( scanPoint( ir-1, ic ) );
+            sq.push( ScanPoint( ir-1, ic ) );
           if( *(pos+step_left) == EDGEL )
-            sq.push( scanPoint( ir, ic-1 ) );
+            sq.push( ScanPoint( ir, ic-1 ) );
           if( *(pos+step_dia_2) == EDGEL )
-            sq.push( scanPoint( ir-1, ic+1 ) );
+            sq.push( ScanPoint( ir-1, ic+1 ) );
           if( *(pos+step_dia_1) == EDGEL )
-            sq.push( scanPoint( ir-1, ic-1 ) );
+            sq.push( ScanPoint( ir-1, ic-1 ) );
           if( *(pos+step_dia_4) == EDGEL )
-            sq.push( scanPoint( ir+1, ic+1 ) );
+            sq.push( ScanPoint( ir+1, ic+1 ) );
           if( *(pos+step_dia_3) == EDGEL )
-            sq.push( scanPoint( ir+1, ic-1 ) );
+            sq.push( ScanPoint( ir+1, ic-1 ) );
         }  
 
         ctr->label = label;
@@ -371,7 +371,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     // Remove lowest cost edge (proabilistic outlier rejection) [OPT]  
     // TODO
   
-    // Calculate total pts in identified contours
+    // Calculate total pts in identified Contours
     int total_pts = 0;
     for( int j = 0; j < cntrs.size(); j++ )
       total_pts += cntrs[j]->pts.size();
@@ -483,7 +483,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
         else
           cd->EdgeFeatures[j+1] = 2.5;
       
-      // Calculate features around best 2 edge contours
+      // Calculate features around best 2 edge Contours
 
       //  - Identify 2 best edges (if exist)
       int best1 = -1;

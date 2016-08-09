@@ -266,7 +266,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     }
 
     // Link/Select Edges
-    vector< contour* > cntrs;
+    vector< Contour* > cntrs;
     int label = 2;
     int bin_step = bin->widthStep / sizeof(char);
     step_dia_1 = -bin_step - 1;
@@ -291,9 +291,9 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
         if( (bin->imageData + bin->widthStep*r)[c] == EDGEL ) {
 
-          stack<scanPoint> sq;
-          scanPoint pt(r,c);
-          contour *ctr = new contour;
+          stack<ScanPoint> sq;
+          ScanPoint pt(r,c);
+          Contour *ctr = new Contour;
           sq.push( pt );
 
           while( sq.size() != 0 ) {
@@ -308,21 +308,21 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
             // Check 8-connectedness
             if( *(pos+step_up) == EDGEL )
-              sq.push( scanPoint( ir+1, ic ) );
+              sq.push( ScanPoint( ir+1, ic ) );
             if( *(pos+step_right) == EDGEL )
-              sq.push( scanPoint( ir, ic+1 ) );
+              sq.push( ScanPoint( ir, ic+1 ) );
             if( *(pos+step_down) == EDGEL )
-              sq.push( scanPoint( ir-1, ic ) );
+              sq.push( ScanPoint( ir-1, ic ) );
             if( *(pos+step_left) == EDGEL )
-              sq.push( scanPoint( ir, ic-1 ) );
+              sq.push( ScanPoint( ir, ic-1 ) );
             if( *(pos+step_dia_2) == EDGEL )
-              sq.push( scanPoint( ir-1, ic+1 ) );
+              sq.push( ScanPoint( ir-1, ic+1 ) );
             if( *(pos+step_dia_1) == EDGEL )
-              sq.push( scanPoint( ir-1, ic-1 ) );
+              sq.push( ScanPoint( ir-1, ic-1 ) );
             if( *(pos+step_dia_4) == EDGEL )
-              sq.push( scanPoint( ir+1, ic+1 ) );
+              sq.push( ScanPoint( ir+1, ic+1 ) );
             if( *(pos+step_dia_3) == EDGEL )
-              sq.push( scanPoint( ir+1, ic-1 ) );
+              sq.push( ScanPoint( ir+1, ic-1 ) );
           }  
 
           ctr->label = label;
@@ -366,7 +366,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     cvReleaseImage( &temp );
 #endif*/
 
-    vector<contour*> components;
+    vector<Contour*> components;
     components.push_back( cntrs[best_ind] );
     bool oct_satisfied[8];
     for( int q = 0; q < 8; q++ ) {
@@ -390,7 +390,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
         }
 
         if( max_ind != -1 ) {
-          contour *ct = cntrs[max_ind];
+          Contour *ct = cntrs[max_ind];
           components.push_back( ct );
           cntrs.erase( cntrs.begin() + max_ind );
           for( int o = 0; o < 8; o++ ) {
@@ -404,9 +404,9 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     if( components.size() > 2 ) {
       float min = INF;
       int ind = -1;
-      contour *outlier;
+      Contour *outlier;
       for( unsigned int i=0; i<components.size(); i++ ) {
-        contour *ct = components[i];
+        Contour *ct = components[i];
         if( ct->mag < min ) {
           min = ct->mag;
           ind = i;
@@ -417,7 +417,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
       delete outlier;
     }
     
-    // Calculate total pts in identified contours
+    // Calculate total pts in identified Contours
     int total_pts = 0;
     for( int j = 0; j < components.size(); j++ )
       total_pts += components[j]->pts.size();
