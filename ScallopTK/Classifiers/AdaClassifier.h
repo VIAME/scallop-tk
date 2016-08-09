@@ -84,7 +84,7 @@ void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output, 
 void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output );
 
 // Load a new classifier system based on the loaded classifier config file
-ClassifierSystem* loadClassifiers( const SystemSettings& sparams, ClassifierConfigParameters& cparams );
+ClassifierSystem* loadClassifiers( const SystemParameters& sparams, ClassifierParameters& cparams );
 
 // Perform suppression and interpolation
 vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSystem* Classifiers, std::string Filename );
@@ -92,7 +92,7 @@ vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSyst
 // Deallocate Detections
 void deallocateDetections( vector<Detection*>& vec );
 
-// Append MIP training results to some file
+// Append GT training results to some file
 bool appendInfoToFile( vector<Detection>& Detections, const string& list_fn );
   
 // Append final Detections to some file

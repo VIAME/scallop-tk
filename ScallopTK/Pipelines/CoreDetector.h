@@ -19,7 +19,7 @@ namespace ScallopTK
 {
 
 // Standalone detection function, returns total number of detections
-int runDetector( const SystemSettings& settings );
+int runDetector( const SystemParameters& settings );
 
 // Streaming class definition, for use by external libraries
 class CoreDetector
@@ -30,7 +30,7 @@ public:
   explicit CoreDetector( std::string configFile );
 
   // Construct a detector given a configuration class
-  explicit CoreDetector( const SystemSettings& settings );
+  explicit CoreDetector( const SystemParameters& settings );
 
   // Destructor
   ~CoreDetector();

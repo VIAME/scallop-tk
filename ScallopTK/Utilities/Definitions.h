@@ -158,7 +158,7 @@ const int MAX_CLASSIFIERS = 30;
 //                     System Parameters - Set at Run-Time
 //------------------------------------------------------------------------------
 
-struct SystemSettings
+struct SystemParameters
 {
   // Input directory, if specified
   std::string InputDirectory;
@@ -186,13 +186,6 @@ struct SystemSettings
 
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
-
-  // Are we using a CNN or AdaBoost final classifier?
-  bool UseCNNClassifier;
-
-  // CNN classifier model definition and weights, if enabled
-  std::string CNNClassifierModel;
-  std::string CNNClassifierWeights;
 
   // Are we in training mode or process (testing) mode?
   bool IsTrainingMode;
@@ -235,25 +228,28 @@ struct SystemSettings
 
 
 //------------------------------------------------------------------------------
-//           Classifier Parameters - As Read From some Config File
+//          Classifier Parameters - As read from some config file
 //------------------------------------------------------------------------------
 
-struct ClassifierConfigParameters
+struct ClassifierParameters
 {
   // The subdirectory for all classifier files within the root folder
   std::string ClassifierSubdir;
-  
+
+  // Is this classifier subsystem an adaboost or CNN variant?
+  bool UseCNNClassifier;
+
   // Information for the primary classifiers
   std::vector< std::string > L1Keys;
   std::vector< std::string > L1Files;
   std::vector< std::string > L1SpecTypes;
-  
+
   // Information for the secondary classifiers
   std::vector< std::string > L2Keys;
   std::vector< std::string > L2Files;
   std::vector< std::string > L2SpecTypes;
   std::vector< std::string > L2SuppTypes;
-  
+
   // Is sand dollar suppression turned on?
   bool EnabledSDSS;
 
@@ -263,10 +259,10 @@ struct ClassifierConfigParameters
 
 
 //------------------------------------------------------------------------------
-//              Required Parameters read from some MIP file
+//              Required Parameters read from some GT file
 //------------------------------------------------------------------------------
 
-struct MIPParameters
+struct GTEntry
 {
   // Image name where object is
   std::string Name;
@@ -281,7 +277,7 @@ struct MIPParameters
   double X2, Y2;
 };
 
-typedef std::vector< MIPParameters > MIPParameterVector;
+typedef std::vector< GTEntry > GTEntryList;
 
 //------------------------------------------------------------------------------
 //                         Simple Contour Definition

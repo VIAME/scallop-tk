@@ -106,17 +106,17 @@ struct AlgorithmArgs {
   // processing mode
   bool IsTrainingMode;
   
-  // training style (GUI or MIP) if in training mode
-  bool UseMIPData;
+  // training style (GUI or GT) if in training mode
+  bool UseGTData;
 
-  // MIP Training keep factor
+  // GT Training keep factor
   float TrainingPercentKeep;
 
   // Process border interest points
   bool ProcessBorderPoints;
 
   // pointer to mip input data if in training mode
-  MIPParameterVector *MIPData;
+  GTEntryList *GTData;
 };
 
 // Our Scallop Detection Algorithm - performs classification for a single image
@@ -340,30 +340,30 @@ void *ProcessImage( void *InputArgs ) {
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-//------------------MIP Merging Procedure------------------------
+//------------------GT Merging Procedure------------------------
 
-  if( Options->IsTrainingMode && Options->UseMIPData )
+  if( Options->IsTrainingMode && Options->UseGTData )
   {
     // Mark which interest points are in this image
-    CandidateVector MIPDetections;
-    for( int i = 0; i < Options->MIPData->size(); i++ )
+    CandidateVector GTDetections;
+    for( int i = 0; i < Options->GTData->size(); i++ )
     {
-      MIPParameters& Pt = (*Options->MIPData)[i];
+      GTEntry& Pt = (*Options->GTData)[i];
       if( Pt.Name == Options->InputFilenameNoDir )
       {
-        Candidate *cd1 = ConvertMIPToCandidate( Pt, resizeFactor );
-        MIPDetections.push_back( cd1 );
+        Candidate *cd1 = ConvertGTToCandidate( Pt, resizeFactor );
+        GTDetections.push_back( cd1 );
 
         if( true /*todo: paramatize double_import*/ )
         {
-          Candidate *cd2 = ConvertMIPToCandidate( Pt, resizeFactor );
-          MIPDetections.push_back( cd2 );           
+          Candidate *cd2 = ConvertGTToCandidate( Pt, resizeFactor );
+          GTDetections.push_back( cd2 );           
         }
       }
     }
     
     // Remove any detected Candidates which conflict with markups
-    RemoveOverlapAndMerge( UnorderedCandidates, MIPDetections, Options->TrainingPercentKeep );
+    RemoveOverlapAndMerge( UnorderedCandidates, GTDetections, Options->TrainingPercentKeep );
   }
 
   if( !Options->ProcessBorderPoints )
@@ -441,7 +441,7 @@ void *ProcessImage( void *InputArgs ) {
   CandidateVector LikelyObjects;
   DetectionVector Objects;
 
-  if( Options->IsTrainingMode && !Options->UseMIPData )
+  if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
     if (!getDesignationsFromUser(OrderedCandidates, img_rgb_32f, mask, Detections, minRad, maxRad, Options->InputFilenameNoDir))
@@ -579,7 +579,7 @@ void *ProcessImage( void *InputArgs ) {
 
 //--------------File system manager / algorithm caller------------------
 
-int runDetector( const SystemSettings& settings )
+int runDetector( const SystemParameters& settings )
 {
   // Retrieve some contents from input
   string inputDir = settings.InputDirectory;
@@ -596,9 +596,9 @@ int runDetector( const SystemSettings& settings )
   vector<string> subdirsToCreate; // subdirs we may be going to create
   vector<string> outputFilenames; // corresponding output filenames if enabled
 
-  // MIP file contents if required
-  string MIPfilename = inputDir + inputFile;
-  MIPParameterVector* MIPs = NULL;
+  // GT file contents if required
+  string GTfilename = inputDir + inputFile;
+  GTEntryList* GTs = NULL;
 
   // Process directory mode
   if( settings.IsInputDirectory )
@@ -679,11 +679,11 @@ int runDetector( const SystemSettings& settings )
       return 0;
     }
 
-    // Read location of MIP annotations
+    // Read location of GT annotations
     char buffer[2048];
     input.getline(buffer,2048);
-    MIPfilename = buffer;
-    RemoveSpaces( MIPfilename );
+    GTfilename = buffer;
+    RemoveSpaces( GTfilename );
 
     // Iterate through list
     while( !input.eof() )
@@ -723,16 +723,16 @@ int runDetector( const SystemSettings& settings )
     inputDir = "";
   }
 
-  // Read MIPs file if necessary
+  // Read GTs file if necessary
   if( settings.IsTrainingMode && settings.UseFileForTraining )
   {
     // srand for random adjustments
     srand(time(NULL));
 
     // Load csv file
-    MIPs = new MIPParameterVector;
-    cout << MIPfilename << endl;
-    ParseMIPFile( MIPfilename, *MIPs );
+    GTs = new GTEntryList;
+    cout << GTfilename << endl;
+    ParseGTFile( GTfilename, *GTs );
   }
 
   // Check to make sure image list is not empty
@@ -791,7 +791,7 @@ int runDetector( const SystemSettings& settings )
       if( classifiers.find( inputClassifiers[i] ) == classifiers.end() )
       {
         // Load classifier config
-        ClassifierConfigParameters cparams;
+        ClassifierParameters cparams;
         if( !ParseClassifierConfig( inputClassifiers[i], settings, cparams ) )
         {
           return 0;
@@ -831,8 +831,8 @@ int runDetector( const SystemSettings& settings )
   {
     // Set thread output options
     inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
-    inputArgs[i].UseMIPData = settings.UseFileForTraining;
-    inputArgs[i].MIPData = MIPs;
+    inputArgs[i].UseGTData = settings.UseFileForTraining;
+    inputArgs[i].GTData = GTs;
     inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
     inputArgs[i].EnableListOutput = settings.OutputList;
     inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
@@ -989,10 +989,10 @@ int runDetector( const SystemSettings& settings )
     exitTrainingMode();
   }
 
-  // Deallocate MIP info if in training mode
-  if( !MIPs )
+  // Deallocate GT info if in training mode
+  if( !GTs )
   {
-    delete MIPs;
+    delete GTs;
   }
 
   return 0;
@@ -1011,7 +1011,7 @@ CoreDetector::CoreDetector( std::string configFile )
   
 }
 
-CoreDetector::CoreDetector( const SystemSettings& settings )
+CoreDetector::CoreDetector( const SystemParameters& settings )
 {
   
 }

@@ -100,7 +100,7 @@ inline std::vector< std::string > ConvertCSVLine( string line, bool ignore_empty
 }
 
 // Parse the contents of a process config file
-inline bool ParseModeConfig( string key, SystemSettings& params )
+inline bool ParseModeConfig( string key, SystemParameters& params )
 {
   // Find config directory
   const std::string EXEPATH = GetExectuablePath();
@@ -178,7 +178,7 @@ inline bool ParseModeConfig( string key, SystemSettings& params )
 }
 
 // Parse the contents of a process config file
-inline bool ParseSystemConfig( SystemSettings& params )
+inline bool ParseSystemConfig( SystemParameters& params )
 {
   // Find config directory
   const std::string EXEPATH = GetExectuablePath();
@@ -246,7 +246,7 @@ inline bool ParseSystemConfig( SystemSettings& params )
 }
 
 // Parse the contents of a classifier config file
-inline bool ParseClassifierConfig( string key, const SystemSettings& settings, ClassifierConfigParameters& params )
+inline bool ParseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
 {
   // Find config directory
   const std::string EXEPATH = GetExectuablePath();
@@ -336,8 +336,8 @@ inline bool ParseClassifierConfig( string key, const SystemSettings& settings, C
   return true;
 }
 
-// Parse the contents of a MIP input training file
-inline bool ParseMIPFile( string filename, MIPParameterVector& output )
+// Parse the contents of a GT input training file
+inline bool ParseGTFile( string filename, GTEntryList& output )
 {
   // Clear vector
   output.clear();
@@ -346,7 +346,7 @@ inline bool ParseMIPFile( string filename, MIPParameterVector& output )
   ifstream input( filename.c_str() );
   
   if( !input ) {
-    cout << "ERROR: Unable to load MIP file!" << endl;
+    cout << "ERROR: Unable to load GT file!" << endl;
     return false;
   }
   
@@ -363,26 +363,26 @@ inline bool ParseMIPFile( string filename, MIPParameterVector& output )
     
     // Confirm line length
     if( words.size() != 12 ) {
-      cout << "WARNING: Invalid MIP line or end of file, ignoring" << endl;
+      cout << "WARNING: Invalid GT line or end of file, ignoring" << endl;
       continue;
     }
     
     // Retrieve info from parsed line
     string filename, dir;
     SplitPathAndFile( words[0], dir, filename );
-    MIPParameters MIP;
-    MIP.Name = filename;
-    MIP.X1 = atof( words[ 1 ].c_str() );
-    MIP.Y1 = atof( words[ 2 ].c_str() );
-    MIP.X2 = atof( words[ 3 ].c_str() );
-    MIP.Y2 = atof( words[ 4 ].c_str() );
-    MIP.ID = atoi( words[ 7 ].c_str() );
-    output.push_back( MIP );
+    GTEntry GT;
+    GT.Name = filename;
+    GT.X1 = atof( words[ 1 ].c_str() );
+    GT.Y1 = atof( words[ 2 ].c_str() );
+    GT.X2 = atof( words[ 3 ].c_str() );
+    GT.Y2 = atof( words[ 4 ].c_str() );
+    GT.ID = atoi( words[ 7 ].c_str() );
+    output.push_back( GT );
   }
   return true;
 }
 
-inline void InitializeDefault( SystemSettings& settings )
+inline void InitializeDefault( SystemParameters& settings )
 {
   settings.RootColorDIR = "data/ColorFilterBanks/";
   settings.RootClassifierDIR = "data/Classifiers/";
@@ -397,9 +397,9 @@ inline void InitializeDefault( SystemSettings& settings )
 }
 
 
-inline Candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor )
+inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
 {
-  // Convert a MIP point to a Candidate with some random flux
+  // Convert a GT point to a Candidate with some random flux
   Candidate* output = new Candidate;
 
   // Calculate random adjustment factors
@@ -411,7 +411,7 @@ inline Candidate* ConvertMIPToCandidate( MIPParameters& Pt, float DownsizeFactor
   if( ((double)rand()/(double)RAND_MAX) < 0.3 )
     RAND_ANGLE = 0.0;
 
-  // Calculate MIP location in native
+  // Calculate GT location in native
   double R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
   double C = ( Pt.X1 + Pt.X2 ) / 2.0;
   double x_sqr = Pt.X2 - Pt.X1;
