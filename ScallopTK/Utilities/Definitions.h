@@ -236,7 +236,7 @@ struct ClassifierParameters
   // The subdirectory for all classifier files within the root folder
   std::string ClassifierSubdir;
 
-  // Is this classifier subsystem an adaboost or CNN variant?
+  // Is this classifier subsystem using AdaBoost or CNN classifiers?
   bool UseCNNClassifier;
 
   // Information for the primary classifiers
@@ -259,7 +259,7 @@ struct ClassifierParameters
 
 
 //------------------------------------------------------------------------------
-//              Required Parameters read from some GT file
+//              Required Parameters Read From Some GT file
 //------------------------------------------------------------------------------
 
 struct GTEntry
