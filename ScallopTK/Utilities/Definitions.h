@@ -40,36 +40,36 @@ const float minRadius = 0.0145f; //in meters
 const float maxRadius = 0.1298f; //in meters
 
 // Input image type definitions
-const int UNKNOWN = 0x00;   //.xxx
-const int JPEG = 0x01;      //.jpg || .JPG
-const int RAW_TIF = 0x02;   //.tif || .TIF
-const int RAW_TIFF = 0x03;  //.tiff
-const int BMP = 0x04;       //.bmp
-const int PNG = 0x05;       //.png
+const int UNKNOWN   = 0x00;   //.xxx
+const int JPEG      = 0x01;   //.jpg || .JPG
+const int RAW_TIF   = 0x02;   //.tif || .TIF
+const int RAW_TIFF  = 0x03;   //.tiff
+const int BMP       = 0x04;   //.bmp
+const int PNG       = 0x05;   //.png
 
 // Image Resize factors for different stages of our algorithm
 // Controls the resolution of our detectors and feature extrc.
 //   [units = meters / pixel]
 const float MAX_PIXEL_SIZE_COLOR_CLASS = 0.0026f;
-const float MAX_PIXEL_SIZE_COLOR_DOG = 0.0052f;
-const float MAX_PIXEL_SIZE_TEMPLATE = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_ADAPTIVE = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_WATERSHED = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_CLUST = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_TEXTONS = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_HOG = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_COLOR_DOG   = 0.0052f;
+const float MAX_PIXEL_SIZE_TEMPLATE    = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_ADAPTIVE    = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_WATERSHED   = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_CLUST       = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_TEXTONS     = MAX_PIXEL_SIZE_COLOR_CLASS;
+const float MAX_PIXEL_SIZE_HOG         = MAX_PIXEL_SIZE_COLOR_CLASS;
 
 // Resize factos w.r.t. scallop radius per pixel
 // ie, how many pixels we should resize the minRadius to for each stage
 //  [units = # of pixels / min scanning radius ]
 const float MIN_RAD_COLOR_CLASS = minRadius / MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MIN_RAD_COLOR_DOG = minRadius / MAX_PIXEL_SIZE_COLOR_DOG;
-const float MIN_RAD_TEMPLATE = minRadius / MAX_PIXEL_SIZE_TEMPLATE;
-const float MIN_RAD_ADAPTIVE = minRadius / MAX_PIXEL_SIZE_ADAPTIVE;
-const float MIN_RAD_WATERSHED = minRadius / MAX_PIXEL_SIZE_WATERSHED;
-const float MIN_RAD_CLUST = minRadius / MAX_PIXEL_SIZE_CLUST;
-const float MIN_RAD_TEXTONS = minRadius / MAX_PIXEL_SIZE_TEXTONS;
-const float MIN_RAD_HOG = minRadius / MAX_PIXEL_SIZE_HOG;
+const float MIN_RAD_COLOR_DOG   = minRadius / MAX_PIXEL_SIZE_COLOR_DOG;
+const float MIN_RAD_TEMPLATE    = minRadius / MAX_PIXEL_SIZE_TEMPLATE;
+const float MIN_RAD_ADAPTIVE    = minRadius / MAX_PIXEL_SIZE_ADAPTIVE;
+const float MIN_RAD_WATERSHED   = minRadius / MAX_PIXEL_SIZE_WATERSHED;
+const float MIN_RAD_CLUST       = minRadius / MAX_PIXEL_SIZE_CLUST;
+const float MIN_RAD_TEXTONS     = minRadius / MAX_PIXEL_SIZE_TEXTONS;
+const float MIN_RAD_HOG         = minRadius / MAX_PIXEL_SIZE_HOG;
 
 // Minimum template radius to scan for
 const float minTemplateRadius = 0.020f; //in meters
@@ -96,57 +96,57 @@ const float LAB_GRAD_SIGMA = 1.35f;
 const float ENV_GRAD_SIGMA = 1.85f;
 
 // Special type definitions
-const std::string BROWN_SCALLOP = "BROWN";
-const std::string WHITE_SCALLOP = "WHITE";
+const std::string BROWN_SCALLOP  = "BROWN";
+const std::string WHITE_SCALLOP  = "WHITE";
 const std::string BURIED_SCALLOP = "BURIED";
-const std::string ALL_SCALLOP = "ALL";
-const std::string SAND_DOLLAR = "DOLLARS";
+const std::string ALL_SCALLOP    = "ALL";
+const std::string SAND_DOLLAR    = "DOLLARS";
 
 // Suppression type definitions for config file
-const std::string WORLD_VS_OBJ_STR = "WVO";
+const std::string WORLD_VS_OBJ_STR   = "WVO";
 const std::string DESIRED_VS_OBJ_STR = "OVO";
-const std::string MIXED_CLASS_STR = "MIX";
+const std::string MIXED_CLASS_STR    = "MIX";
 
 // Classifier types
-const unsigned int MAIN_CLASS = 0x00;
-const unsigned int WORLD_VS_OBJ = 0x01;
+const unsigned int MAIN_CLASS     = 0x00;
+const unsigned int WORLD_VS_OBJ   = 0x01;
 const unsigned int DESIRED_VS_OBJ = 0x02;
-const unsigned int MIXED_CLASS = 0x03;
+const unsigned int MIXED_CLASS    = 0x03;
 
 // Internal tag designations for objects in mask
 //  - Why isn't this an enum? -
 typedef unsigned int tag;
 
-const tag UNCLASSIFIED = 0x00;
-const tag ENVIRONMENT = 0x01;
-const tag SCALLOP_WHITE = 0x02;
-const tag SCALLOP_BROWN = 0x03;
-const tag SCALLOP_BURIED = 0x04;
-const tag DOLLAR = 0x05;
-const tag CLAM = 0x06;
-const tag URCHIN = 0x07;
-const tag SAC = 0x08;
-const tag ROCK = 0x09;
-const tag OTHER = 0x10;
-const tag TOTAL_DESIG = 0x11;
+const tag UNCLASSIFIED      = 0x00;
+const tag ENVIRONMENT       = 0x01;
+const tag SCALLOP_WHITE     = 0x02;
+const tag SCALLOP_BROWN     = 0x03;
+const tag SCALLOP_BURIED    = 0x04;
+const tag DOLLAR            = 0x05;
+const tag CLAM              = 0x06;
+const tag URCHIN            = 0x07;
+const tag SAC               = 0x08;
+const tag ROCK              = 0x09;
+const tag OTHER             = 0x10;
+const tag TOTAL_DESIG       = 0x11;
 
 // Detection methods for prioritzation
-const unsigned int TEMPLATE = 0;
-const unsigned int DOG = 1;
-const unsigned int ADAPTIVE = 2;
-const unsigned int CANNY = 3;
+const unsigned int TEMPLATE  = 0;
+const unsigned int DOG       = 1;
+const unsigned int ADAPTIVE  = 2;
+const unsigned int CANNY     = 3;
 const unsigned int MULTIPLE1 = 4;
 const unsigned int MULTIPLE2 = 5;
 const unsigned int MULTIPLE3 = 6;
-const unsigned int TOTAL_DM = 7;
+const unsigned int TOTAL_DM  = 7;
 
 // Feature constants
-const unsigned int COLOR_BINS = 32;
+const unsigned int COLOR_BINS     = 32;
 const unsigned int COLOR_FEATURES = 122;
 const unsigned int GABOR_FEATURES = 36;
-const unsigned int SIZE_FEATURES = 9;
-const unsigned int EDGE_FEATURES = 137;
-const unsigned int NUM_HOG = 2;
+const unsigned int SIZE_FEATURES  = 9;
+const unsigned int EDGE_FEATURES  = 137;
+const unsigned int NUM_HOG        = 2;
 
 // Sand Dollar Suppression Sys value
 const double SDSS_DIFFERENCE_FACTOR = 2.0;
