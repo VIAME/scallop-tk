@@ -24,7 +24,7 @@
 #include "ScallopTK/ObjectProposals/HistogramFiltering.h"
 
 //Benchmarking
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   #include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 

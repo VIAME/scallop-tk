@@ -186,7 +186,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     // Smooth cost func [opt]
     cvSmooth( cost, cost, CV_BLUR, 5, 5 );
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark] += getTimeSinceLastCall();
 #endif
 

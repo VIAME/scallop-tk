@@ -19,9 +19,6 @@
 //                           Compile/Build Parameters
 //------------------------------------------------------------------------------
 
-// Benchmarks main function while processing (single thread only)
-//#define BENCHMARK 1
-
 // Enables automatic reading of metadata from image file
 //  - For any HabCam data this should be on -
 #define AUTO_READ_METADATA 1

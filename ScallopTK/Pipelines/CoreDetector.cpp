@@ -54,7 +54,7 @@ namespace ScallopTK
 {
 
 // Variables for benchmarking tests
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   const string BenchmarkingFilename = "BenchmarkingResults.dat";
   vector<double> ExecutionTimes;
   ofstream BenchmarkingOutput;
@@ -131,7 +131,7 @@ void *ProcessImage( void *InputArgs ) {
   ColorClassifier *CC = Options->CC;
   ThreadStatistics *Stats = Options->Stats;
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.clear();
   startTimer();
 #endif  
@@ -162,7 +162,7 @@ void *ProcessImage( void *InputArgs ) {
     return NULL; 
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -211,7 +211,7 @@ void *ProcessImage( void *InputArgs ) {
     return NULL;
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -245,7 +245,7 @@ void *ProcessImage( void *InputArgs ) {
     Detections[i] = 0;
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -267,7 +267,7 @@ void *ProcessImage( void *InputArgs ) {
   cvScale( img_gs_32f, img_gs_8u, 255. );
   cvScale( img_rgb_32f, img_rgb_8u, 255. );
   
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -276,14 +276,14 @@ void *ProcessImage( void *InputArgs ) {
   //   Contains classification results for different organisms, and sal maps
   hfResults *color = CC->performColorClassification( img_rgb_32f, minRad, maxRad );
     
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculate all required image gradients for later operations
   GradientChain Gradients = createGradientChain( ImgLab32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRad, maxRad );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
         
@@ -301,28 +301,28 @@ void *ProcessImage( void *InputArgs ) {
   else 
     detectSalientBlobs( color, ColorBlob ); //<-- Better for small # of images
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
   // Perform Adaptive Filtering
   performAdaptiveFiltering( color, Adaptive, minRad, false );
     
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
   // Template Matching Approx
   findTemplateCandidates( Gradients, Template, inputProp, mask );
     
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Stable Canny Edge Candidates
   findCannyCandidates( Gradients, Canny );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -336,7 +336,7 @@ void *ProcessImage( void *InputArgs ) {
   prioritizeCandidates( ColorBlob, Adaptive, Template, Canny,
     UnorderedCandidates, OrderedCandidates, Stats );
     
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -382,14 +382,14 @@ void *ProcessImage( void *InputArgs ) {
   // Initializes Candidate stats used for classification
   initalizeCandidateStats( UnorderedCandidates, inputImg->height, inputImg->width );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Identifies edges around each IP
   edgeSearch( Gradients, color, ImgLab32f, UnorderedCandidates, img_rgb_32f );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -397,7 +397,7 @@ void *ProcessImage( void *InputArgs ) {
   HoGFeatureGenerator gsHoG( img_gs_32f, minRad, maxRad, 0 );
   gsHoG.Generate( UnorderedCandidates );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -405,7 +405,7 @@ void *ProcessImage( void *InputArgs ) {
   HoGFeatureGenerator salHoG( color->SaliencyMap, minRad, maxRad, 1 );
   salHoG.Generate( UnorderedCandidates );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -414,7 +414,7 @@ void *ProcessImage( void *InputArgs ) {
     calculateSizeFeatures( UnorderedCandidates[i], inputProp, resizeFactor);
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
@@ -424,14 +424,14 @@ void *ProcessImage( void *InputArgs ) {
     calculateColorFeatures( img_rgb_32f, color, UnorderedCandidates[i] );
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculates gabor based features around each IP
   calculateGaborFeatures( img_gs_32f, UnorderedCandidates );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
@@ -767,7 +767,7 @@ int runDetector( const SystemSettings& settings )
     fout.close();
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   // Initialize Timing Statistics
   initializeTimer();
   BenchmarkingOutput.open( BenchmarkingFilename.c_str() );
@@ -942,7 +942,7 @@ int runDetector( const SystemSettings& settings )
     // Execute processing
     ProcessImage( inputArgs );
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
     // Output benchmarking results to file
     for( unsigned int i=0; i<ExecutionTimes.size(); i++ )
       BenchmarkingOutput << ExecutionTimes[i] << " ";
@@ -978,7 +978,7 @@ int runDetector( const SystemSettings& settings )
     killOuputDisplay();
   }
 
-#ifdef BENCHMARK
+#ifdef ENABLE_BENCHMARKING
   // Close benchmarking output file
   BenchmarkingOutput.close();
 #endif

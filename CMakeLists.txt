@@ -43,12 +43,25 @@ if( OpenCV_VERSION VERSION_GREATER "3.0" )
   message( FATAL_ERROR "OpenCV v3.0+ currently not supported" )
 endif()
 
-option( USE_CAFFE "Build with Caffe support enabled" ON )
+option( ENABLE_CAFFE "Build with Caffe support enabled" ON )
 
-if( USE_CAFFE )
+if( ENABLE_CAFFE )
   find_package( Caffe REQUIRED )
   add_definitions( -DUSE_CAFFE )
   include_directories( SYSTEM ${Caffe_INCLUDE_DIRS} )
+endif()
+
+# Add options for other misc things
+option( ENABLE_FASTER_RCNN "Build with faster RCNN support enabled" OFF )
+
+if( ENABLE_FASTER_RCNN )
+  message( FATAL_ERROR "Faster R-CNN not supported in this build" )
+endif()
+
+option( ENABLE_BENCHMARKING "Output timing statistics to a text file" OFF )
+
+if( ENABLE_BENCHMARKING )
+  add_definitions( -DENABLE_BENCHMARKING )
 endif()
 
 # Add subdirs to project

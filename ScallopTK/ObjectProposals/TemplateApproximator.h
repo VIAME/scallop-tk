@@ -32,7 +32,7 @@
 #include "ScallopTK/EdgeDetection/GaussianEdges.h"
 
 //Benchmarking
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   #include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 

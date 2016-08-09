@@ -61,7 +61,7 @@ void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, flo
 //                               Benchmarking
 //------------------------------------------------------------------------------
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   const string temp_bm_fn = "TemplateBMResults.dat";
   vector<double> tp_exe_times;
   ofstream tp_bm_output;
@@ -646,7 +646,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
   float minRad = grad.minRad * resize_factor;
   float maxRad = grad.maxRad * resize_factor;
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   tp_bm_output.open( temp_bm_fn.c_str(), fstream::out | fstream::app );
   tp_exe_times.clear();
   initializeTimer();
@@ -657,7 +657,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
   SSInfo scaleSpaceInfo;
   IplImage **ss = createScaleSpace( dx, dy, minRad, maxRad, scaleSpaceInfo, mask );
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   tp_exe_times.push_back( getTimeSinceLastCall() );  
 #endif
 
@@ -665,7 +665,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
   Candidates cds;
   detectT4Extremum( ss, cds, scaleSpaceInfo );
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   tp_exe_times.push_back( getTimeSinceLastCall() );  
 #endif
 
@@ -673,7 +673,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
   interpolateIP( ss, cds, kps, resize_factor, grad.minRad/grad.scale, grad.maxRad/grad.scale, 
     grad.dx->height/grad.scale, grad.dx->width/grad.scale, imgProp, scaleSpaceInfo );
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   tp_exe_times.push_back( getTimeSinceLastCall() );  
 #endif
 
@@ -684,7 +684,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
     cvReleaseImage(&dy);
   }
 
-#ifdef TEMPLATE_BENCHMARKING
+#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
   for( int i = 0; i < tp_exe_times.size(); i++ )
     tp_bm_output << tp_exe_times[i] << " ";
   tp_bm_output << endl;

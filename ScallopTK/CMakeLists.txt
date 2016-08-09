@@ -1,8 +1,8 @@
 
 set( ScallopTK_Library_Source
 
-  Classifiers/CNNClassifier.h            Classifiers/CNNClassifier.cpp
   Classifiers/AdaClassifier.h            Classifiers/AdaClassifier.cpp
+  Classifiers/CNNClassifier.h            Classifiers/CNNClassifier.cpp
   Classifiers/TrainingUtils.h            Classifiers/TrainingUtils.cpp
 
   EdgeDetection/EdgeLinking.h            EdgeDetection/EdgeLinking.cpp

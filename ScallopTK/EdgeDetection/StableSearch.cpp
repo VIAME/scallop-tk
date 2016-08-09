@@ -5,7 +5,7 @@
 //                               Benchmarking
 //------------------------------------------------------------------------------
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   const string ss_bm_fn = "SSBMResults.dat";
   vector<double> ss_exe_times;
   ofstream ss_bm_output;
@@ -74,7 +74,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
   // Debug Checks
   assert( color->SaliencyMap->width == ImgLab32f->width );
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_bm_output.open( ss_bm_fn.c_str(), fstream::out | fstream::app );
   ss_exe_times.clear();
   initializeTimer();
@@ -84,7 +84,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
   IplImage *lab_ori = Gradients.dLabOri;
   IplImage *lab_mag = Gradients.dLabMag;
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times.push_back( getTimeSinceLastCall() );
   int mark = ss_exe_times.size();
   for( int i=0; i<6; i++ )
@@ -154,7 +154,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     // Smooth cost func [opt]
     //cvSmooth( cost, cost, 2, 3, 3 );
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark] += getTimeSinceLastCall();
 #endif
 
@@ -282,7 +282,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
       }
     }
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark+1] += getTimeSinceLastCall();
 #endif
 
@@ -362,7 +362,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
       }
     }
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark+2] += getTimeSinceLastCall();
 #endif
   
@@ -783,7 +783,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
         cd->EdgeFeatures[j] = 0;
     }
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark+3] += getTimeSinceLastCall();
 #endif
   
@@ -793,17 +793,17 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     cvReleaseImage( &cost );
     cvReleaseImage( &bin );
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times[mark+4] += getTimeSinceLastCall();
 #endif
 
   }  
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   ss_exe_times.push_back( getTimeSinceLastCall() );  
 #endif
 
-#ifdef SS_BENCHMARKING
+#ifdef SS_ENABLE_BENCHMARKINGING
   for( int i = 0; i < ss_exe_times.size(); i++ )
     ss_bm_output << ss_exe_times[i] << " ";
   ss_bm_output << endl;
