@@ -50,3 +50,4 @@ void kmeansTextureClustering( Candidate *cd, IplImage *deletethisargument ) {
   // Perform connected component analysis
 
 }*/
+

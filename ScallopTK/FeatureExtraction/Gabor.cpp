@@ -208,3 +208,4 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 
   return output;
 }
+

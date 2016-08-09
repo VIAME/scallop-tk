@@ -400,3 +400,4 @@ void deallocateGradientChain( GradientChain& chain ) {
 
   cvReleaseImage( &chain.cannyEdges );
 }
+

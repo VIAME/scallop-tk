@@ -74,3 +74,4 @@ void ThreadStatistics::Update( int Detections[], float im_area ) {
     thread_Detections[ i ] += Detections[ i ];
   }
 }
+

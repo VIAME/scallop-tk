@@ -528,3 +528,4 @@ const unsigned int TOTAL_DM = 7;*/
   cerr << "ERROR! Undefined status used in Consolidator.h::addStatus\n";
   return s1;
 }
+

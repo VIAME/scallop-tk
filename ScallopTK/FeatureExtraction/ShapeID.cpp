@@ -171,3 +171,4 @@ inline int determine8quad_sm( int& x, int&y ) {
     }
   }
 }*/
+

@@ -246,3 +246,4 @@ void findCannyCandidates( GradientChain& grad, std::vector<Candidate*>& cds ) {
     cds.push_back( cd1 );
   }
 }
+

@@ -751,3 +751,4 @@ void releaseTrap( IplImage**** pyr, int octvs, int n )
   free( *pyr );
   *pyr = NULL;
 }
+

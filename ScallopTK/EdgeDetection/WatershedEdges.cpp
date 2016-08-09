@@ -194,3 +194,4 @@ void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds ) 
   if( resize_factor3 < 1.0f ) 
     cvReleaseImage( &level[2] );
 }
+
