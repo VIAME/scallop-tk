@@ -137,7 +137,7 @@ bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *
     if( input == "S" || input == "SKIP" ) 
       break;
     if( input == "EXIT" ) {
-      training_exit_flag = true;
+      trainingExitFlag = true;
       return false;
     }
     if( input == "SKIPSMALL" ) {
@@ -308,7 +308,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
     if( input == "SKIP" ) 
       break;
     if( input == "EXIT" ) {
-      training_exit_flag = true;
+      trainingExitFlag = true;
       return false;
     }
     if( input == "SKIPSMALL" ) {

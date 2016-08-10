@@ -31,7 +31,7 @@
 static ofstream instruction_file;
 static ofstream data_file;
 static std::string ip_file_out;
-static bool training_exit_flag = false;
+static bool trainingExitFlag = false;
 
 //------------------------------------------------------------------------------
 //                             Function Prototypes

@@ -27,7 +27,7 @@ class CoreDetector
 public:
 
   // Construct a detector given the location of a config file
-  explicit CoreDetector( std::string configFile );
+  explicit CoreDetector( const std::string& configFile );
 
   // Construct a detector given a configuration class
   explicit CoreDetector( const SystemParameters& settings );

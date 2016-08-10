@@ -1,4 +1,3 @@
-
 //------------------------------------------------------------------------------
 // CoreDetector.cpp
 // author: Matt Dawkins
@@ -17,7 +16,7 @@
 #include <time.h>
 
 // OpenCV
-#include "highgui.h"
+#include <highgui.h>
 
 // Internal Scallop Includes
 #include "ScallopTK/Utilities/ConfigParsing.h"
@@ -28,12 +27,12 @@
 
 #include "ScallopTK/ScaleDetection/ImageProperties.h"
 
-#include "ScallopTK/ObjectProposals/Consolidator.h"
 #include "ScallopTK/ObjectProposals/HistogramFiltering.h"
 #include "ScallopTK/ObjectProposals/PriorStatistics.h"
 #include "ScallopTK/ObjectProposals/AdaptiveThresholding.h"
 #include "ScallopTK/ObjectProposals/TemplateApproximator.h"
 #include "ScallopTK/ObjectProposals/CannyPoints.h"
+#include "ScallopTK/ObjectProposals/Consolidator.h"
 
 #include "ScallopTK/EdgeDetection/WatershedEdges.h"
 #include "ScallopTK/EdgeDetection/StableSearch.h"
@@ -46,6 +45,7 @@
 
 #include "ScallopTK/Classifiers/TrainingUtils.h"
 #include "ScallopTK/Classifiers/AdaClassifier.h"
+#include "ScallopTK/Classifiers/CNNClassifier.h"
 
 // Number of worker threads
 int THREADS;
@@ -66,6 +66,9 @@ struct AlgorithmArgs {
   // ID for this thread
   int ThreadID;
 
+  // Input image
+  cv::Mat InputImage;
+
   // input filename for input image, full path
   string InputFilename;
 
@@ -74,7 +77,7 @@ struct AlgorithmArgs {
 
   // Output filename for Scallop List or Extracted Training Data
   string ListFilename;
-  
+
   // Output filename for image result if enabled
   string OutputFilename;
 
@@ -128,9 +131,9 @@ struct AlgorithmArgs {
 //   outputs - returns NULL
 void *ProcessImage( void *InputArgs ) {
     
-//---------------------------Load Image----------------------------
+//--------------------Get Pointers to Main Inputs---------------------
 
-  // Read input (pthread requires void* as argument type)
+  // Read input arguments (pthread requires void* as argument type)
   AlgorithmArgs *Options = (AlgorithmArgs*) InputArgs;
   ColorClassifier *CC = Options->CC;
   ThreadStatistics *Stats = Options->Stats;
@@ -140,40 +143,13 @@ void *ProcessImage( void *InputArgs ) {
   startTimer();
 #endif  
 
-  // Retrieve image type from extension (TIFF, JPEG, etc.)
-  int imageType = getImageType( Options->InputFilename );
+  // Convert input image to desired format
+  IplImage inputWrapper = Options->InputImage;
+  IplImage *inputImg = &inputWrapper;
 
-  // Load input image from file
-  IplImage *inputImg;
-  if( imageType != UNKNOWN ) {
-    if( ( inputImg = cvLoadImage(Options->InputFilename.c_str(),
-            CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR)) == 0 ) {
-      cerr << "ERROR: Unable to load file.\n";
-      threadExit();
-      return NULL; 
-    }
-  } else {
-    cerr << "ERROR: Unsupported file type.\n";
-    threadExit();
-    return NULL; 
-  }
+//----------------------Calculate Object Size-------------------------
 
-  // Confirm input has 3 channels
-  if( inputImg->nChannels != 3 )
-  {
-    cerr << "ERROR: Unsupported file type.\n";
-    cvReleaseImage( &inputImg );
-    threadExit();
-    return NULL; 
-  }
-
-#ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
-#endif
-
-//----------------------Calculate Scallop Size------------------------
-
-  // Declare Image Properties reader (for metadata read, scallop size calc, etc)
+  // Declare Image Properties reader (for metadata read, size calc, etc)
 #ifdef AUTO_READ_METADATA
 
   // Automatically loads metadata from input file if necessary
@@ -181,7 +157,8 @@ void *ProcessImage( void *InputArgs ) {
   
   if( !Options->MetadataProvided )
   {
-    inputProp.calculateImageProperties( Options->InputFilename, inputImg->width, inputImg->height, Options->FocalLength );
+    inputProp.calculateImageProperties( Options->InputFilename, inputImg->width,
+      inputImg->height, Options->FocalLength );
   }
   else
   {
@@ -210,7 +187,7 @@ void *ProcessImage( void *InputArgs ) {
   if( maxRadPixels < 1.0 )
   {
     cerr << "WARN: Scallop scanning size range is less than 1 pixel for image ";
-    cerr << Options->InputFilenameNoDir << endl;
+    cerr << Options->InputFilenameNoDir << ", skipping." << endl;
     cvReleaseImage( &inputImg );
     threadExit();
     return NULL;
@@ -227,6 +204,7 @@ void *ProcessImage( void *InputArgs ) {
   //  in terms of how many pixels the min scallop radius should be. We only
   //  resize the image if this results in a downscale.
   float resizeFactor = Stats->returnMaxMinRadRequired() / minRadPixels;
+
   if( resizeFactor < 1.0f ) {
     IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*inputImg->width),(int)(resizeFactor*inputImg->height)),
                                         inputImg->depth, inputImg->nChannels );
@@ -241,7 +219,7 @@ void *ProcessImage( void *InputArgs ) {
 
   // Create processed mask - records which pixels belong to what
   IplImage *mask = cvCreateImage( cvGetSize( inputImg ), IPL_DEPTH_8U, 1 );
-  cvSet( mask, cvScalar(255) );
+  cvSet( mask, cvScalar( 255 ) );
 
   // Records how many Detections of each classification category we have
   int Detections[TOTAL_DESIG];
@@ -260,18 +238,19 @@ void *ProcessImage( void *InputArgs ) {
   //  - lab = CIELab color space
   //  - gs = Grayscale
   //  - rgb = sRGB (although beware OpenCV may load this as BGR in mem)
-  IplImage *img_rgb_32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
-  IplImage *ImgLab32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
-  IplImage *img_gs_32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, 1 );  
-  IplImage *img_gs_8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 1 );
-  IplImage *img_rgb_8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 3 );
-  float scalingFactor = 1 / (pow(2.0f, inputImg->depth)-1);
-  cvConvertScale(inputImg, img_rgb_32f, scalingFactor );
-  cvCvtColor(img_rgb_32f, ImgLab32f, CV_RGB2Lab );
-  cvCvtColor(img_rgb_32f, img_gs_32f, CV_RGB2GRAY );
-  cvScale( img_gs_32f, img_gs_8u, 255. );
-  cvScale( img_rgb_32f, img_rgb_8u, 255. );
-  
+  IplImage *imgRGB32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
+  IplImage *imgLab32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
+  IplImage *imgGrey32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, 1 );  
+  IplImage *imgGrey8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 1 );
+  IplImage *imgRGB8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 3 );
+
+  float scalingFactor = 1 / ( pow( 2.0f, inputImg->depth ) - 1 );
+  cvConvertScale( inputImg, imgRGB32f, scalingFactor );
+  cvCvtColor( imgRGB32f, imgLab32f, CV_RGB2Lab );
+  cvCvtColor( imgRGB32f, imgGrey32f, CV_RGB2GRAY );
+  cvScale( imgGrey32f, imgGrey8u, 255. );
+  cvScale( imgRGB32f, imgRGB8u, 255. );
+
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
@@ -279,14 +258,14 @@ void *ProcessImage( void *InputArgs ) {
   // Perform color classifications on base image
   //   Puts results in hfResults struct
   //   Contains classification results for different organisms, and sal maps
-  hfResults *color = CC->performColorClassification( img_rgb_32f, minRadPixels, maxRadPixels );
+  hfResults *color = CC->performColorClassification( imgRGB32f, minRadPixels, maxRadPixels );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculate all required image gradients for later operations
-  GradientChain Gradients = createGradientChain( ImgLab32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRadPixels, maxRadPixels );
+  GradientChain Gradients = createGradientChain( imgLab32f, imgGrey32f, imgGrey8u, imgRGB8u, color, minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -373,13 +352,13 @@ void *ProcessImage( void *InputArgs ) {
 
   if( !Options->ProcessBorderPoints )
   {
-    RemoveBorderCandidates( UnorderedCandidates, img_rgb_32f );
+    RemoveBorderCandidates( UnorderedCandidates, imgRGB32f );
   }
 
   /*if( Options.ShowVideoDisplay )
   {
     //I took this out to speed things and not complicate the display- smg 11/5/11
-    displayInterestPointImage( img_rgb_32f, UnorderedCandidates );
+    displayInterestPointImage( imgRGB32f, UnorderedCandidates );
   }*/
 
 //--------------------Extract Features---------------------------
@@ -392,14 +371,14 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Identifies edges around each IP
-  edgeSearch( Gradients, color, ImgLab32f, UnorderedCandidates, img_rgb_32f );
+  edgeSearch( Gradients, color, imgLab32f, UnorderedCandidates, imgRGB32f );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Creates an unoriented gs HoG descriptor around each IP
-  HoGFeatureGenerator gsHoG( img_gs_32f, minRadPixels, maxRadPixels, 0 );
+  HoGFeatureGenerator gsHoG( imgGrey32f, minRadPixels, maxRadPixels, 0 );
   gsHoG.Generate( UnorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
@@ -424,9 +403,9 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates color based features around each IP
-  createColorQuadrants( img_gs_32f, UnorderedCandidates );
+  createColorQuadrants( imgGrey32f, UnorderedCandidates );
   for( int i=0; i<UnorderedCandidates.size(); i++ ) {
-    calculateColorFeatures( img_rgb_32f, color, UnorderedCandidates[i] );
+    calculateColorFeatures( imgRGB32f, color, UnorderedCandidates[i] );
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -434,7 +413,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates gabor based features around each IP
-  calculateGaborFeatures( img_gs_32f, UnorderedCandidates );
+  calculateGaborFeatures( imgGrey32f, UnorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -449,10 +428,10 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if( !getDesignationsFromUser( OrderedCandidates, img_rgb_32f, mask, Detections,
+    if( !getDesignationsFromUser( OrderedCandidates, imgRGB32f, mask, Detections,
            minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
-      training_exit_flag = true;
+      trainingExitFlag = true;
     }
   }
   else if( Options->IsTrainingMode )
@@ -475,7 +454,7 @@ void *ProcessImage( void *InputArgs ) {
     }
   
     // Calculate expensive edges around each interesting point
-    expensiveEdgeSearch( Gradients, color, ImgLab32f, img_rgb_32f, Interesting );
+    expensiveEdgeSearch( Gradients, color, imgLab32f, imgRGB32f, Interesting );
   
     // Perform cleanup by removing interest points which are part of another interest point
     removeInsidePoints( Interesting, LikelyObjects );
@@ -486,7 +465,7 @@ void *ProcessImage( void *InputArgs ) {
     // Display Detections
     if( Options->ShowVideoDisplay ) {
       getDisplayLock();
-      displayResultsImage( img_rgb_32f, Objects, Options->InputFilenameNoDir );
+      displayResultsImage( imgRGB32f, Objects, Options->InputFilenameNoDir );
       unlockDisplay();
     }
   }
@@ -544,7 +523,7 @@ void *ProcessImage( void *InputArgs ) {
   }
 
   // Update color classifiers from mask and Detections matrix
-  CC->Update( img_rgb_32f, mask, Detections );
+  CC->Update( imgRGB32f, mask, Detections );
 
   // Update statistics
   Stats->Update( Detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
@@ -552,7 +531,7 @@ void *ProcessImage( void *InputArgs ) {
   // Output results to file(s)
   if( Options->EnableImageOutput )
   {
-    saveScallops( img_rgb_32f, Objects, Options->OutputFilename + ".Detections.jpg" );
+    saveScallops( imgRGB32f, Objects, Options->OutputFilename + ".Detections.jpg" );
   }
   if( Options->EnableListOutput && !Options->IsTrainingMode )
   {
@@ -569,13 +548,13 @@ void *ProcessImage( void *InputArgs ) {
   deallocateDetections( Objects );
   deallocateGradientChain( Gradients );
   hfDeallocResults( color );
-  cvReleaseImage(&inputImg);
-  cvReleaseImage(&img_rgb_32f);
-  cvReleaseImage(&img_rgb_8u);
-  cvReleaseImage(&img_gs_32f);
-  cvReleaseImage(&ImgLab32f);
-  cvReleaseImage(&img_gs_8u);
-  cvReleaseImage(&mask);
+  cvReleaseImage( &inputImg );
+  cvReleaseImage( &imgRGB32f );
+  cvReleaseImage( &imgRGB8u );
+  cvReleaseImage( &imgGrey32f );
+  cvReleaseImage( &imgLab32f );
+  cvReleaseImage( &imgGrey8u );
+  cvReleaseImage( &mask );
   
   // Update thread status
   markThreadAsFinished( Options->ThreadID );
@@ -744,7 +723,7 @@ int runCoreDetector( const SystemParameters& settings )
   // Check to make sure image list is not empty
   if( inputFilenames.size() == 0 )
   {
-    cerr << "\nERROR: Input invalid or contains no valid images.\n";
+    cerr << "\nERROR: Input invalid or contains no valid images." << std::endl;
     return 0;
   }
 
@@ -767,7 +746,7 @@ int runCoreDetector( const SystemParameters& settings )
   if( settings.OutputList ) {
     ofstream fout( ListFilename.c_str() );
     if( !fout.is_open() ) {
-      cout << "ERROR: Could not open output list for writing!\n";
+      cout << "ERROR: Could not open output list for writing!" << std::endl;
       return false;
     }
     fout.close();
@@ -778,7 +757,7 @@ int runCoreDetector( const SystemParameters& settings )
   initializeTimer();
   BenchmarkingOutput.open( BenchmarkingFilename.c_str() );
   if( !BenchmarkingOutput.is_open() ) {
-    cout << "ERROR: Could not write to benchmarking file!\n";
+    cout << "ERROR: Could not write to benchmarking file!" << std::endl;
     return false;
   }
 #endif
@@ -826,11 +805,11 @@ int runCoreDetector( const SystemParameters& settings )
     inputArgs[i].CC = new ColorClassifier;
     inputArgs[i].Stats = new ThreadStatistics;
     if( !inputArgs[i].CC->loadFilters( settings.RootColorDIR, "_32f_rgb_v1.cfilt" ) ) {
-      cerr << "ERROR: Could not load colour filters!\n";
+      cerr << "ERROR: Could not load colour filters!" << std::endl;
       return 0;
     }
   }
-  cout << "FINISHED\n";
+  cout << "FINISHED" << std::endl;
 
   // Configure algorithm input based on settings
   for( int i=0; i<THREADS; i++ )
@@ -857,7 +836,7 @@ int runCoreDetector( const SystemParameters& settings )
   // Initialize training mode if in gui mode
   if( settings.IsTrainingMode && !settings.UseFileForTraining ) {
     if( !initializeTrainingMode( outputDir, outputFile ) ) {
-      cerr << "ERROR: Could not initiate training mode!\n";
+      cerr << "ERROR: Could not initiate training mode!" << std::endl;
     }
   }
 
@@ -871,7 +850,7 @@ int runCoreDetector( const SystemParameters& settings )
   pthread_t earliest;
   
   // Cycle through all input files
-  cout << "Processing Files: \n\n";
+  cout << "Processing Files: \n" << std::endl;
   for( unsigned int i=0; i<inputFilenames.size(); i++ ) {
     
     // Go through all threads
@@ -884,7 +863,7 @@ int runCoreDetector( const SystemParameters& settings )
           int dirLength = inputDir.size() + 1;
           int fileLength = inputFilenames[i].size() - dirLength;
           string filenameNoDir = inputFilenames[i].substr(dirLength, fileLength);
-          cout << "Processing " << filenameNoDir << "...  \n";
+          cout << "Processing " << filenameNoDir << "...  " << std::endl;
           inputArgs[idx].InputFilename = inputFilenames[i];
           inputArgs[idx].OutputFilename = outputFilenames[i];
           inputArgs[idx].ThreadID = idx;
@@ -956,7 +935,7 @@ int runCoreDetector( const SystemParameters& settings )
 #endif
 
     // Checks if user entered EXIT command in training mode
-    if( settings.IsTrainingMode && training_exit_flag )
+    if( settings.IsTrainingMode && trainingExitFlag )
     {
       break;
     }
@@ -1012,7 +991,7 @@ public:
   int lol;
 };
 
-CoreDetector::CoreDetector( std::string configFile )
+CoreDetector::CoreDetector( const std::string& configFile )
 {
   
 }
