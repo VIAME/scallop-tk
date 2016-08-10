@@ -49,59 +49,59 @@ static pthread_mutex_t OutputLock;
 static pthread_mutex_t LockInfo[ MAX_THREADS ];
 
 // Helper Functions
-inline void thread_exit() { 
-  pthread_exit( 0 ); 
+inline void threadExit() { 
+  pthread_exit()( 0 ); 
 }
 
-inline void mark_thread_as_finished( const int& idx ) { 
+inline void markThreadAsFinished( const int& idx ) { 
   pthread_mutex_lock(&LockInfo[idx]);
   ThreadInfo[idx] = AVAILABLE; 
   pthread_mutex_unlock(&LockInfo[idx]);
 }
 
-inline void mark_thread_as_running( const int& idx ) { 
+inline void markThreadAsRunning( const int& idx ) { 
   pthread_mutex_lock(&LockInfo[idx]);
   ThreadInfo[idx] = RUNNING; 
   pthread_mutex_unlock(&LockInfo[idx]);
 }
 
-inline void set_threads_as_available() {
+inline void setThreadsAsAvailable() {
   for( int i=0; i < THREADS; i++ )
     ThreadInfo[i] = AVAILABLE;
 }
 
-inline bool is_thread_running( const int& idx ) {
+inline bool isThreadRunning( const int& idx ) {
   pthread_mutex_lock(&LockInfo[idx]);
   bool response = (ThreadInfo[idx] == RUNNING);
   pthread_mutex_unlock(&LockInfo[idx]);
   return response;
 }
 
-inline void get_display_lock() {
+inline void getDisplayLock() {
   pthread_mutex_lock(&OutputLock);
 }
 
-inline void unlock_display() {
+inline void unlockDisplay() {
   pthread_mutex_unlock(&OutputLock);
 }
 
-inline void initialize_threads() {
+inline void initializeThreads() {
   pthread_mutex_init(&OutputLock, NULL);
   for( int i=0; i<THREADS; i++ )
     pthread_mutex_init(&LockInfo[i], NULL);
 }
 
-inline void kill_threads() {
+inline void killThreads() {
   pthread_mutex_destroy(&OutputLock);
   for (int i=0; i<THREADS; i++ )
     pthread_mutex_destroy(&LockInfo[i]);
 }
 
-inline void get_ListLock() {
+inline void getListLock() {
   pthread_mutex_lock(&ListLock);
 }
 
-inline void unlock_list() {
+inline void unlockList() {
   pthread_mutex_unlock(&ListLock);
 }
 
@@ -111,15 +111,15 @@ inline void unlock_list() {
 //                   No Threading Enabled Empty Prototypes
 //------------------------------------------------------------------------------
 
-inline void initialize_threads() {}
-inline void thread_exit() {}
-inline void mark_thread_as_finished( const int& idx ) {}
-inline void mark_thread_as_running( const int& idx ) {}
+inline void initializeThreads() {}
+inline void threadExit() {}
+inline void markThreadAsFinished( const int& idx ) {}
+inline void markThreadAsRunning( const int& idx ) {}
 inline void halt_until_finished() {}
-inline void get_display_lock() {}
-inline void unlock_display() {}
-inline void get_ListLock() {}
-inline void unlock_list() {}
+inline void getDisplayLock() {}
+inline void unlockDisplay() {}
+inline void getListLock() {}
+inline void unlockList() {}
 
 #endif
 

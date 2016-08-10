@@ -1,8 +1,8 @@
 
 //------------------------------------------------------------------------------
-// scallopDetector.cpp
+// CoreDetector.cpp
 // author: Matt Dawkins
-// description: Processes all of the images within a folder
+// description: Core detector pipeline of this mini toolkit
 //------------------------------------------------------------------------------
 
 #include "CoreDetector.h"
@@ -91,6 +91,10 @@ struct AlgorithmArgs {
   float Altitude;
   float FocalLength;
 
+  // Search radii (in meters if metadata is available, else pixels)
+  float MinSearchRadius;
+  float MaxSearchRadius;
+
   // container for color filters
   ColorClassifier *CC;
 
@@ -119,7 +123,7 @@ struct AlgorithmArgs {
   GTEntryList *GTData;
 };
 
-// Our Scallop Detection Algorithm - performs classification for a single image
+// Our Core Detection Algorithm - performs classification for a single image
 //   inputs - shown above
 //   outputs - returns NULL
 void *ProcessImage( void *InputArgs ) {
@@ -142,14 +146,15 @@ void *ProcessImage( void *InputArgs ) {
   // Load input image from file
   IplImage *inputImg;
   if( imageType != UNKNOWN ) {
-    if( (inputImg = cvLoadImage(Options->InputFilename.c_str(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR)) == 0 ) {
+    if( ( inputImg = cvLoadImage(Options->InputFilename.c_str(),
+            CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR)) == 0 ) {
       cerr << "ERROR: Unable to load file.\n";
-      thread_exit();
+      threadExit();
       return NULL; 
     }
   } else {
     cerr << "ERROR: Unsupported file type.\n";
-    thread_exit();
+    threadExit();
     return NULL; 
   }
 
@@ -158,7 +163,7 @@ void *ProcessImage( void *InputArgs ) {
   {
     cerr << "ERROR: Unsupported file type.\n";
     cvReleaseImage( &inputImg );
-    thread_exit();
+    threadExit();
     return NULL; 
   }
 
@@ -176,11 +181,11 @@ void *ProcessImage( void *InputArgs ) {
   
   if( !Options->MetadataProvided )
   {
-    inputProp.CalculateImageProperties( Options->InputFilename, inputImg->width, inputImg->height, Options->FocalLength );
+    inputProp.calculateImageProperties( Options->InputFilename, inputImg->width, inputImg->height, Options->FocalLength );
   }
   else
   {
-    inputProp.CalculateImageProperties( inputImg->width, inputImg->height,
+    inputProp.calculateImageProperties( inputImg->width, inputImg->height,
        Options->Altitude, Options->Pitch, Options->Roll, Options->FocalLength );
   }
 
@@ -189,7 +194,7 @@ void *ProcessImage( void *InputArgs ) {
     cerr << "ERROR: Failure to read image metadata for file ";
     cerr << Options->InputFilenameNoDir << endl;
     cvReleaseImage( &inputImg );
-    thread_exit();
+    threadExit();
     return NULL;
   }
 #else
@@ -197,17 +202,17 @@ void *ProcessImage( void *InputArgs ) {
   ImageProperties inputProp( inputImg->width, inputImg->height );
 #endif
   
-  // Get the min and max Scallop size from imageProp
-  float minRad = inputProp.getMinScallopSize();
-  float maxRad = inputProp.getMaxScallopSize();
+  // Get the min and max Scallop size from combined image properties and input parameters
+  float minRadPixels = Options->MinSearchRadius / inputProp.getAvgPixelSizeMeters();
+  float maxRadPixels = Options->MaxSearchRadius / inputProp.getAvgPixelSizeMeters();
 
   // Threshold size scanning range
-  if( maxRad < 1.0 )
+  if( maxRadPixels < 1.0 )
   {
-    cerr << "ERROR: Scallop scanning size range is less than 1 pixel for image ";
+    cerr << "WARN: Scallop scanning size range is less than 1 pixel for image ";
     cerr << Options->InputFilenameNoDir << endl;
     cvReleaseImage( &inputImg );
-    thread_exit();
+    threadExit();
     return NULL;
   }
 
@@ -221,15 +226,15 @@ void *ProcessImage( void *InputArgs ) {
   //  Stats->getMaxMinRequiredRad returns the maximum required image size
   //  in terms of how many pixels the min scallop radius should be. We only
   //  resize the image if this results in a downscale.
-  float resizeFactor = Stats->returnMaxMinRadRequired() / minRad;
+  float resizeFactor = Stats->returnMaxMinRadRequired() / minRadPixels;
   if( resizeFactor < 1.0f ) {
     IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*inputImg->width),(int)(resizeFactor*inputImg->height)),
                                         inputImg->depth, inputImg->nChannels );
     cvResize(inputImg, temp, CV_INTER_LINEAR);
     cvReleaseImage(&inputImg);
     inputImg = temp;
-    minRad = minRad * resizeFactor;
-    maxRad = maxRad * resizeFactor;
+    minRadPixels = minRadPixels * resizeFactor;
+    maxRadPixels = maxRadPixels * resizeFactor;
   } else {
     resizeFactor = 1.0f;
   }
@@ -274,14 +279,14 @@ void *ProcessImage( void *InputArgs ) {
   // Perform color classifications on base image
   //   Puts results in hfResults struct
   //   Contains classification results for different organisms, and sal maps
-  hfResults *color = CC->performColorClassification( img_rgb_32f, minRad, maxRad );
+  hfResults *color = CC->performColorClassification( img_rgb_32f, minRadPixels, maxRadPixels );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculate all required image gradients for later operations
-  GradientChain Gradients = createGradientChain( ImgLab32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRad, maxRad );
+  GradientChain Gradients = createGradientChain( ImgLab32f, img_gs_32f, img_gs_8u, img_rgb_8u, color, minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -306,7 +311,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
   
   // Perform Adaptive Filtering
-  performAdaptiveFiltering( color, Adaptive, minRad, false );
+  performAdaptiveFiltering( color, Adaptive, minRadPixels, false );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -394,7 +399,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Creates an unoriented gs HoG descriptor around each IP
-  HoGFeatureGenerator gsHoG( img_gs_32f, minRad, maxRad, 0 );
+  HoGFeatureGenerator gsHoG( img_gs_32f, minRadPixels, maxRadPixels, 0 );
   gsHoG.Generate( UnorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
@@ -402,7 +407,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Creates an unoriented sal HoG descriptor around each IP
-  HoGFeatureGenerator salHoG( color->SaliencyMap, minRad, maxRad, 1 );
+  HoGFeatureGenerator salHoG( color->SaliencyMap, minRadPixels, maxRadPixels, 1 );
   salHoG.Generate( UnorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
@@ -444,7 +449,8 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if (!getDesignationsFromUser(OrderedCandidates, img_rgb_32f, mask, Detections, minRad, maxRad, Options->InputFilenameNoDir))
+    if( !getDesignationsFromUser( OrderedCandidates, img_rgb_32f, mask, Detections,
+           minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
       training_exit_flag = true;
     }
@@ -479,9 +485,9 @@ void *ProcessImage( void *InputArgs ) {
 
     // Display Detections
     if( Options->ShowVideoDisplay ) {
-      get_display_lock();
+      getDisplayLock();
       displayResultsImage( img_rgb_32f, Objects, Options->InputFilenameNoDir );
-      unlock_display();
+      unlockDisplay();
     }
   }
 
@@ -572,14 +578,14 @@ void *ProcessImage( void *InputArgs ) {
   cvReleaseImage(&mask);
   
   // Update thread status
-  mark_thread_as_finished( Options->ThreadID );
-  thread_exit();
+  markThreadAsFinished( Options->ThreadID );
+  threadExit();
   return NULL; 
 }
 
 //--------------File system manager / algorithm caller------------------
 
-int runDetector( const SystemParameters& settings )
+int runCoreDetector( const SystemParameters& settings )
 {
   // Retrieve some contents from input
   string inputDir = settings.InputDirectory;
@@ -859,8 +865,8 @@ int runDetector( const SystemParameters& settings )
 
   // Support removed at the moment!
 
-  /*initialize_threads();
-  set_threads_as_available();
+  /*initializeThreads();
+  setThreadsAsAvailable();
   pthread_t pid[ MAX_THREADS ];
   pthread_t earliest;
   
@@ -874,7 +880,7 @@ int runDetector( const SystemParameters& settings )
 
       // Cycle through threads checking for availability
       for( unsigned int idx = 0; idx < THREADS; idx++ ) {
-        if( !is_thread_running(idx) ) {
+        if( !isThreadRunning(idx) ) {
           int dirLength = inputDir.size() + 1;
           int fileLength = inputFilenames[i].size() - dirLength;
           string filenameNoDir = inputFilenames[i].substr(dirLength, fileLength);
@@ -883,7 +889,7 @@ int runDetector( const SystemParameters& settings )
           inputArgs[idx].OutputFilename = outputFilenames[i];
           inputArgs[idx].ThreadID = idx;
           inputArgs[idx].InputFilenameNoDir = filenameNoDir;
-          mark_thread_as_running( idx );
+          markThreadAsRunning( idx );
           pthread_create( &pid[idx], NULL, ProcessImage, &inputArgs[idx] );
           launched = true;
           break;
@@ -901,7 +907,7 @@ int runDetector( const SystemParameters& settings )
   }
 
   // Deallocate threading variables
-  kill_threads();*/
+  killThreads();*/
 
 #else
 
@@ -999,7 +1005,7 @@ int runDetector( const SystemParameters& settings )
 }
 
 // Streaming class definition, for use by external libraries
-class CoreDetector::priv
+class CoreDetector::Priv
 {
 public:
 

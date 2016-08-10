@@ -163,7 +163,7 @@ int main( int argc, char** argv )
   }
 
   // Count scallops!
-  int count = runDetector( settings );
+  int count = runCoreDetector( settings );
 
   // Output completion statement
   cout << endl << "Processing Complete." << endl;

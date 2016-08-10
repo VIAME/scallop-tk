@@ -223,7 +223,7 @@ inline bool ParseSystemConfig( SystemParameters& params )
     // Read file contents
     params.RootColorDIR = rdr.GetValue("options", "root_histogram_dir", NULL);
     params.RootClassifierDIR = rdr.GetValue("options", "root_classifier_dir", NULL);
-    params.FocalLength = atof( rdr.GetValue("options", "focal_length", NULL) );
+    params.FocalLength = atof( rdr.GetValue("options", "focalLength", NULL) );
     params.TrainingPercentKeep = atof( rdr.GetValue("options", "training_false_keep_percentage", NULL) );
     params.LookAtBorderPoints = !strcmp( rdr.GetValue("options", "look_at_border_points", NULL), "true" );
 

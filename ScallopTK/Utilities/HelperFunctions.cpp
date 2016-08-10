@@ -149,6 +149,31 @@ int stringToInt(const string& s) {
     return atoi(s.c_str());
 }
 
+// Show min and max scallop size superimposed on image
+void showScallopMinMax( IplImage* img, float minRad, float maxRad ) {
+
+  //Clone image so we can draw unto it
+  IplImage* toOutput = cvCloneImage( img );
+
+  //Position circles at center
+  int posW = img->width / 2;
+  int posH = img->height / 2;
+
+  //Draw circles
+  cvCircle( toOutput, cvPoint( posW, posH ), (int)minRad, cvScalar( 0, (int)pow(2.0f, img->depth) - 1, 0), 2 );
+  cvCircle( toOutput, cvPoint( posW, posH ), (int)maxRad, cvScalar( 0, (int)pow(2.0f, img->depth) - 1, 0), 2 );
+
+  //Show image
+#ifdef VisualDebugger
+  vdAddImage(toOutput,VD_STANDARD,VD_CENTER,true);
+#else
+  showImage( toOutput );
+#endif
+
+  //Deallocate memory
+  cvReleaseImage( &toOutput );
+}
+
 void showImages( IplImage* img1, IplImage *img2 ) {
   cvNamedWindow( "image1", CV_WINDOW_AUTOSIZE );
   cvShowImage( "image1", img1 );

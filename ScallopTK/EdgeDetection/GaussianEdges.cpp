@@ -260,10 +260,10 @@ GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f, IplI
   GradientChain output;
 
   // Resize input img if needed
-  float maxMinRequired = max( MIN_RAD_WATERSHED, MIN_RAD_TEMPLATE );
+  float maxMinRequired = max( OSF_WATERSHED, OSF_TEMPLATE );
   float resize_factor = maxMinRequired / minRad;
   IplImage *input = img_lab;
-  if( resize_factor < 0.95f ) {
+  if( resize_factor < RESIZE_FACTOR_REQUIRED ) {
     int nheight = resize_factor * img_lab->height;
     int nwidth = resize_factor * img_lab->width;
     input = cvCreateImage( cvSize(nwidth, nheight), IPL_DEPTH_32F, img_lab->nChannels );
@@ -281,7 +281,7 @@ GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f, IplI
   output.scale = resize_factor;
 
   // Create Lab derivatives
-  float adj_sigma_1 = LAB_GRAD_SIGMA * minRad / MIN_RAD_TEMPLATE;
+  float adj_sigma_1 = LAB_GRAD_SIGMA * minRad / OSF_TEMPLATE;
   output.dxColorSig1 = gaussDerivHorizontal( input, adj_sigma_1 );
   output.dyColorSig1 = gaussDerivVerticle( input, adj_sigma_1 );
   output.dxMergedSig1 = mergeAbs3Chan( output.dxColorSig1 );

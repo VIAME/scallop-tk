@@ -41,6 +41,7 @@ void showScallopsNW( IplImage *img, vector<Candidate*>& kps );
 void saveCandidates( IplImage *img, vector<Candidate*>& kps, const string& fn );
 void saveImage( IplImage *img, const string &fn );
 void showIPNW( IplImage* img, Candidate *ip );
+void showMinMaxRad( IplImage* img, float minRad, float maxRad );
 
 // Memory Functions
 void deallocateCandidates( vector<Candidate*> &kps );

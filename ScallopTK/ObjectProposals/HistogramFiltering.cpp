@@ -307,7 +307,7 @@ void salFilter::buildMap( IplImage *img ) {
     img_ptr = img_ptr + pixels_to_skip*3;
   }
 
-  is_valid = true;
+  isValid = true;
 }
 
 
@@ -385,7 +385,7 @@ void ColorClassifier::Update( IplImage *img, IplImage *mask, int Detections[] ) 
   int obj_skip = DEFAULT_OBJ_SKIP;
   int nsamples = img->width * img->height;
   float sf = MAX_ESTIM_TO_SCAN / ( OBJ_ENVI_RATIO*nsamples/obj_skip + (1-OBJ_ENVI_RATIO)*nsamples/envi_skip); 
-  if( sf < 0.95f ) {
+  if( sf < RESIZE_FACTOR_REQUIRED ) {
     envi_skip = envi_skip * 1.0f/sf;
     obj_skip = obj_skip * 1.0f/sf;
   }
@@ -472,7 +472,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
   hfResults *results;
 
   // Perform Class-by-Class Classification
-  float resizeFactor = MIN_RAD_COLOR_CLASS / minRad;
+  float resizeFactor = OSF_COLOR_CLASS / minRad;
   if( resizeFactor < RESIZE_FACTOR_REQUIRED ) {
     IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*img->width),(int)(resizeFactor*img->height)),
                                         img->depth, img->nChannels );
@@ -511,7 +511,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
 void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
   
   // Add border unto classification results and resize if needed
-  float resize_factor = MIN_RAD_COLOR_DOG/color->minRad;
+  float resize_factor = OSF_COLOR_DOG/color->minRad;
   IplImage* input;
   float minRad = color->minRad;
   float maxRad = color->maxRad;
@@ -546,7 +546,7 @@ void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
 void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds ) {
   
   // Add border unto classification results and resize if needed
-  float resize_factor = MIN_RAD_COLOR_DOG/color->minRad;
+  float resize_factor = OSF_COLOR_DOG/color->minRad;
   IplImage* input;
   float minRad = color->minRad;
   float maxRad = color->maxRad;

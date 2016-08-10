@@ -436,7 +436,7 @@ inline void getSortedIDs( vector<int>& indices, vector<double> values )
 bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor ) {
   
   // Get lock on file
-  get_ListLock();
+  getListLock();
   
   // Open file and output
   ofstream fout( ListFilename.c_str(), ios::app );
@@ -470,7 +470,7 @@ bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, cons
   fout.close();
   
   // Remove lock on file
-  unlock_list();
+  unlockList();
   return true;
 }
 

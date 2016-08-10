@@ -60,6 +60,6 @@ void sgFullXformPnt3 ( sgVec3 dst, const sgVec3 src, const sgMat4 mat );
 float  myIsectLinesegPlane ( sgVec3 dst, sgVec3 v1, sgVec3 v2, sgVec4 plane );
 float sgTriArea( sgVec3 p0, sgVec3 p1, sgVec3 p2 );
 int calculateDimensions(float heading, float pitch, float roll, float altitude, float width, float height, 
-						float focal_length, float &area, float &rHeight, float &rWidth);
+						float focalLength, float &area, float &rHeight, float &rWidth);
 
 #endif

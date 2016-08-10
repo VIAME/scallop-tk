@@ -23,7 +23,7 @@ CCD CornerPositions   Ground Intersection Points
 2.4000 altitude
 0.0169 width
 0.0131 height
-0.0170 focal_length
+0.0170 focalLength
 PP =   0.0000   0.0000   2.4000
 -0.0085   0.0066   2.4170  =>    1.1953  -0.9273   0.0000
 -0.0085  -0.0066   2.4170  =>    1.1953   0.9273   0.0000
@@ -338,7 +338,7 @@ int calculateDimensions(float heading,
 	float altitude, 
 	float width, 
 	float height, 
-	float focal_length,
+	float focalLength,
 	float &area,
 	float &rHeight,
 	float &rWidth)
@@ -361,7 +361,7 @@ int calculateDimensions(float heading,
 	fprintf(stdout,"     %8.4f altitude\n",altitude);
 	fprintf(stdout,"     %8.4f width\n",width);
 	fprintf(stdout,"     %8.4f height\n",height);
-	fprintf(stdout,"     %8.4f focal_length\n",focal_length);
+	fprintf(stdout,"     %8.4f focalLength\n",focalLength);
 #endif
 
 	//float pixel_size = chip_size/width;
@@ -372,10 +372,10 @@ int calculateDimensions(float heading,
 
 	sgSetVec3(PP,0,0,0.0);
 
-	sgSetVec3(UL, -width/2.0f, height/2.0f, focal_length);
-	sgSetVec3(LL, -width/2.0f, -height/2.0f, focal_length );
-	sgSetVec3(UR, width/2.0f, height/2.0f, focal_length);
-	sgSetVec3(LR, width/2.0f, -height/2.0f, focal_length);
+	sgSetVec3(UL, -width/2.0f, height/2.0f, focalLength);
+	sgSetVec3(LL, -width/2.0f, -height/2.0f, focalLength );
+	sgSetVec3(UR, width/2.0f, height/2.0f, focalLength);
+	sgSetVec3(LR, width/2.0f, -height/2.0f, focalLength);
 
 	sgVec3 A,B,C;
 	sgSetVec3(A,1,0,0);

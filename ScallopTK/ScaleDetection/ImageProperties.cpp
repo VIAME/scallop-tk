@@ -1,6 +1,9 @@
 
 #include "ImageProperties.h"
 
+#include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/TPL/Homography/ScottCamera.h"
+
 using namespace std;
 
 //------------------------------------------------------------------------------
@@ -8,23 +11,19 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 // Loads metadata from file fn
-void ImageProperties::CalculateImageProperties( const std::string& fn, const int& cols, const int& rows, const float& focal_length ) {
+void ImageProperties::calculateImageProperties( const std::string& fn, const int& cols, const int& rows, const float& focalLength ) {
   filename = fn;
   imgRows = rows;
   imgCols = cols;
   imageType = getImageType();
-  is_valid = loadMetadata( focal_length);
-  if( is_valid )
+  isValid = loadMetadata( focalLength);
+  if( isValid )
     calculateProperties();
 }
 
-void ImageProperties::CalculateImageProperties( const int& cols,
-                                            const int& rows,
-                        const float& metaaltitude,
-                        const float& metapitch,
-                        const float& metaroll,
-                        const float& focal,
-                        float metaheading )
+void ImageProperties::calculateImageProperties( const int& cols,
+  const int& rows, const float& metaaltitude, const float& metapitch,
+  const float& metaroll, const float& focal, float metaheading )
 {
   imgRows = rows;
   imgCols = cols;
@@ -32,8 +31,8 @@ void ImageProperties::CalculateImageProperties( const int& cols,
   pitch = metapitch;
   roll = metaroll;
   altitude = metaaltitude;
-  focal_length = focal;
-  is_valid = true;
+  focalLength = focal;
+  isValid = true;
 
   //Adjust for special circumstances (unreported data)
   if( heading == -999.99f )
@@ -47,23 +46,15 @@ void ImageProperties::CalculateImageProperties( const int& cols,
 }
 
 // Queries user for metadata
-void ImageProperties::CalculateImageProperties( const int& cols, const int& rows ) {
+void ImageProperties::calculateImageProperties( const int& cols, const int& rows ) {
 
   // Set basic properties
   imgRows = rows;
   imgCols = cols;
-  is_valid = false;
-  float minMaxRatio = maxRadius / minRadius;
-  
-  std::cout << std::endl << std::endl;
-  std::cout << "Enter minimum scanning radius (# of pixels): ";
-  std::cin >> minScallopRadius;
-  maxScallopRadius = minScallopRadius * minMaxRatio;
-  cout << "The maximum scanning radius will be set as: " << maxScallopRadius;
-  std::cout << std::endl << std::endl;
+  isValid = false;
 
   // Approx below properties (probably unused in manual mode)
-  avgPixelSize = minRadius / minScallopRadius;
+  avgPixelSize = 1.0;
   avgHeight = avgPixelSize * imgRows;
   avgWidth = avgPixelSize * imgCols;
   estArea = avgHeight * avgWidth;
@@ -92,47 +83,13 @@ void ImageProperties::calculateProperties() {
 
   //Use modified scott_camera function to calculate real dimensions
   calculateDimensions(heading, pitch, roll, altitude, (float)imgCols, (float)imgRows, 
-    focal_length, estArea, avgHeight, avgWidth);
+    focalLength, estArea, avgHeight, avgWidth);
 
   //Calculate any other statistics
   pixelHeight = avgHeight / (float)imgRows;
   pixelWidth = avgWidth / (float)imgCols;
   avgPixelSize = ( pixelHeight + pixelWidth ) / 2;
-
-  //Calculate scallop related stats from constants in 'Definitions.h'
-  minScallopRadius = minRadius/avgPixelSize; 
-  maxScallopRadius = maxRadius/avgPixelSize;
 }
-
-// Show min and max scallop size superimposed on image
-void ImageProperties::showScallopMinMax( IplImage* img, float resizeFactor ) {
-
-  //Clone image so we can draw unto it
-  IplImage* toOutput = cvCloneImage( img );
-
-  //Position circles at center
-  int posW = img->width / 2;
-  int posH = img->height / 2;
-
-  //Radius adjusted for prior image resize
-  float minR = minScallopRadius * resizeFactor;
-  float maxR = maxScallopRadius * resizeFactor;
-
-  //Draw circles
-  cvCircle( toOutput, cvPoint( posW, posH ), (int)minR, cvScalar( 0, (int)pow(2.0f, img->depth) - 1, 0), 2 );
-  cvCircle( toOutput, cvPoint( posW, posH ), (int)maxR, cvScalar( 0, (int)pow(2.0f, img->depth) - 1, 0), 2 );
-
-  //Show image
-#ifdef VisualDebugger
-  vdAddImage(toOutput,VD_STANDARD,VD_CENTER,true);
-#else
-  showImage( toOutput );
-#endif
-
-  //Deallocate memory
-  cvReleaseImage( &toOutput );
-}
-
 
 // Load metadata from the specified file
 bool ImageProperties::loadMetadata( const float& focal ) {
@@ -147,7 +104,7 @@ bool ImageProperties::loadMetadata( const float& focal ) {
   }
 
   // Set focal length (is not hardcoded in file)
-  focal_length = focal;
+  focalLength = focal;
 
   if( imageType == JPEG ) {
 
@@ -164,7 +121,7 @@ bool ImageProperties::loadMetadata( const float& focal ) {
       } else if( word == "alt," ) {
         type = 2;
         break;
-      } else if( counter >= MAX_DEPTH_META ) {
+      } else if( counter >= MAX_META_SEARCH_DEPTH ) {
         return false;
       }
     }

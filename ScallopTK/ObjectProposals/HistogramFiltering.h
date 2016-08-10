@@ -138,7 +138,7 @@ private:
 class salFilter {
 public:
   // Declares a new filter
-  salFilter() { is_valid = false; size = 0; filter3d = NULL; }
+  salFilter() { isValid = false; size = 0; filter3d = NULL; }
   ~salFilter();
 
   // Classifies an entire image
@@ -160,7 +160,7 @@ private:
   float *filter3d;
 
   // Is the map valid
-  bool is_valid;
+  bool isValid;
 
   // The number of bins per each channel of the histogram
   int histBinsCh1;

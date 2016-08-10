@@ -4,7 +4,7 @@
 [options] ; Settings shared across all processing modes
 
 ; The focal length of the utilized camera system
-focal_length = 0.02764
+focalLength = 0.02764
 
 ; If training from MIPs files, the percentage of false points outside
 ; of annotations to report, in range [0,1]

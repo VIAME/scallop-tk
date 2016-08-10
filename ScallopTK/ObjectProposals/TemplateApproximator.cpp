@@ -104,7 +104,7 @@ IplImage **createScaleSpace( IplImage* dx, IplImage *dy, float minRad, float max
   IplImage **ss = (IplImage**) malloc( total_scales * sizeof( IplImage* ) );
 
   // Adjust radius for standard->temp difference
-  float ratio = minTemplateRadius / minRadius;
+  const float ratio = 1.2;
   float firstScanRad = minRad * ratio;
   float lastScanRad = maxRad;
 
@@ -630,7 +630,7 @@ void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, flo
 void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, ImageProperties& imgProp, IplImage* mask ) {
 
   // Normalize image scale
-  float resize_factor = MIN_RAD_TEMPLATE / grad.minRad;
+  float resize_factor = OSF_TEMPLATE / grad.minRad;
   IplImage *dx = grad.dx;
   IplImage *dy = grad.dy;
   if( resize_factor < RESIZE_FACTOR_REQUIRED ) {

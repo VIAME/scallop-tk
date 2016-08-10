@@ -28,60 +28,39 @@
 //------------------------------------------------------------------------------
 
 // Mathematical Constants
-const float PI = 3.14159265f;
+const float PI  = 3.14159265f;
 const float INF = 1E+37f;
 
 // Max search depth for reading metadata contained within JPEG files
-const int MAX_DEPTH_META = 10000;
-
-// Scallop Size Variables
-// (Pre-adjusted for given tolerances in size calc stage)
-const float minRadius = 0.0145f; //in meters
-const float maxRadius = 0.1298f; //in meters
+const int MAX_META_SEARCH_DEPTH = 10000;
 
 // Input image type definitions
-const int UNKNOWN   = 0x00;   //.xxx
+const int UNKNOWN   = 0x00;   //.???
 const int JPEG      = 0x01;   //.jpg || .JPG
 const int RAW_TIF   = 0x02;   //.tif || .TIF
 const int RAW_TIFF  = 0x03;   //.tiff
 const int BMP       = 0x04;   //.bmp
 const int PNG       = 0x05;   //.png
 
-// Image Resize factors for different stages of our algorithm
-// Controls the resolution of our detectors and feature extrc.
-//   [units = meters / pixel]
-const float MAX_PIXEL_SIZE_COLOR_CLASS = 0.0026f;
-const float MAX_PIXEL_SIZE_COLOR_DOG   = 0.0052f;
-const float MAX_PIXEL_SIZE_TEMPLATE    = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_ADAPTIVE    = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_WATERSHED   = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_CLUST       = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_TEXTONS     = MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MAX_PIXEL_SIZE_HOG         = MAX_PIXEL_SIZE_COLOR_CLASS;
+// Default image scale factors for assorted operations, this is applied
+// on top of any initial image filtering resize optimizations. Units are
+// relative measure w.r.t. base image size.
+const float OSF_COLOR_CLASS = 1.0;
+const float OSF_COLOR_DOG   = 2.0;
+const float OSF_TEMPLATE    = 1.0;
+const float OSF_ADAPTIVE    = 1.0;
+const float OSF_WATERSHED   = 1.0;
+const float OSF_CLUST       = 1.0;
+const float OSF_TEXTONS     = 1.0;
+const float OSF_HOG         = 1.0;
 
-// Resize factos w.r.t. scallop radius per pixel
-// ie, how many pixels we should resize the minRadius to for each stage
-//  [units = # of pixels / min scanning radius ]
-const float MIN_RAD_COLOR_CLASS = minRadius / MAX_PIXEL_SIZE_COLOR_CLASS;
-const float MIN_RAD_COLOR_DOG   = minRadius / MAX_PIXEL_SIZE_COLOR_DOG;
-const float MIN_RAD_TEMPLATE    = minRadius / MAX_PIXEL_SIZE_TEMPLATE;
-const float MIN_RAD_ADAPTIVE    = minRadius / MAX_PIXEL_SIZE_ADAPTIVE;
-const float MIN_RAD_WATERSHED   = minRadius / MAX_PIXEL_SIZE_WATERSHED;
-const float MIN_RAD_CLUST       = minRadius / MAX_PIXEL_SIZE_CLUST;
-const float MIN_RAD_TEXTONS     = minRadius / MAX_PIXEL_SIZE_TEXTONS;
-const float MIN_RAD_HOG         = minRadius / MAX_PIXEL_SIZE_HOG;
-
-// Minimum template radius to scan for
-const float minTemplateRadius = 0.020f; //in meters
-
-// A downsizing image resize factor must be lower than 95%
-// to validate and actually perform the resize (otherwise
+// A downsizing image resize factor must be lower than 95% to validate
+// and actually perform the resize for computational benefit (otherwise
 // it doesn't pay)
 const float RESIZE_FACTOR_REQUIRED = 0.95f;
 
 // Histogram Update Propterties for Fast Read/Merge
 // These are approximates which don't mean that much.
-//
 // -Approximate # of pixels to scan
 const float MAX_ESTIM_TO_SCAN   = 60000;
 // -Estimated ratio in # of environment/object pixels
@@ -94,17 +73,17 @@ const int DEFAULT_OBJ_SKIP      = 2;
 const float DEFAULT_MERGE_RATIO = 0.08f;
 
 // Properties for gradient calculations
-const float LAB_GRAD_SIGMA = 1.35f;
-const float ENV_GRAD_SIGMA = 1.85f;
+const float LAB_GRAD_SIGMA     = 1.35f;
+const float ENV_GRAD_SIGMA     = 1.85f;
 
-// Special type definitions
+// Special type definitions for input classification files
 const std::string BROWN_SCALLOP  = "BROWN";
 const std::string WHITE_SCALLOP  = "WHITE";
 const std::string BURIED_SCALLOP = "BURIED";
 const std::string ALL_SCALLOP    = "ALL";
 const std::string SAND_DOLLAR    = "DOLLARS";
 
-// Suppression type definitions for config file
+// Suppression type definitions for input classification files
 const std::string WORLD_VS_OBJ_STR   = "WVO";
 const std::string DESIRED_VS_OBJ_STR = "OVO";
 const std::string MIXED_CLASS_STR    = "MIX";
@@ -315,7 +294,7 @@ struct Candidate
   double angle;
 
   // Revised ellipse location
-  // (Calculted from edge feature cost function)
+  // (Calculated from edge feature cost function)
   double nr;
   double nc;
   double nmajor;

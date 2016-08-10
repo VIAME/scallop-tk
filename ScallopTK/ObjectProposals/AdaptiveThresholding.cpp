@@ -257,7 +257,7 @@ void performAdaptiveFiltering( hfResults* color, vector<Candidate*>& cds, float 
 
   // Resize and smooth image as desired
   IplImage *img = color->NetScallops;
-  float resize_factor = MIN_RAD_ADAPTIVE / color->minRad;
+  float resize_factor = OSF_ADAPTIVE / color->minRad;
   if( resize_factor < RESIZE_FACTOR_REQUIRED ) {
     int new_height = color->NetScallops->height * resize_factor;
     int new_width = color->NetScallops->width * resize_factor;

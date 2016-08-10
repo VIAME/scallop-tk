@@ -19,7 +19,7 @@ namespace ScallopTK
 {
 
 // Standalone detection function, returns total number of detections
-int runDetector( const SystemParameters& settings );
+int runCoreDetector( const SystemParameters& settings );
 
 // Streaming class definition, for use by external libraries
 class CoreDetector
@@ -44,8 +44,8 @@ public:
 private:
 
   // Class for storing all cross-frame required data
-  class priv;
-  priv* data;
+  class Priv;
+  Priv* data;
 };
 
 }
