@@ -80,14 +80,16 @@ const float minTemplateRadius = 0.020f; //in meters
 const float RESIZE_FACTOR_REQUIRED = 0.95f;
 
 // Histogram Update Propterties for Fast Read/Merge
+// These are approximates which don't mean that much.
+//
 // -Approximate # of pixels to scan
-const float MAX_ESTIM_TO_SCAN = 60000;
+const float MAX_ESTIM_TO_SCAN   = 60000;
 // -Estimated ratio in # of environment/object pixels
-const float OBJ_ENVI_RATIO = 0.1f;
+const float OBJ_ENVI_RATIO      = 0.1f;
 // -Default # of pixels to skip after hitting an env pixel
-const int DEFAULT_ENVI_SKIP = 5;
+const int DEFAULT_ENVI_SKIP     = 5;
 // -Default # of pixels to skip after hitting an obj pixel
-const int DEFAULT_OBJ_SKIP = 2;
+const int DEFAULT_OBJ_SKIP      = 2;
 // -Default merge ratio for syncing old w/ new histogram
 const float DEFAULT_MERGE_RATIO = 0.08f;
 
@@ -117,18 +119,18 @@ const unsigned int MIXED_CLASS    = 0x03;
 //  - Why isn't this an enum? -
 typedef unsigned int tag;
 
-const tag UNCLASSIFIED      = 0x00;
-const tag ENVIRONMENT       = 0x01;
-const tag SCALLOP_WHITE     = 0x02;
-const tag SCALLOP_BROWN     = 0x03;
-const tag SCALLOP_BURIED    = 0x04;
-const tag DOLLAR            = 0x05;
-const tag CLAM              = 0x06;
-const tag URCHIN            = 0x07;
-const tag SAC               = 0x08;
-const tag ROCK              = 0x09;
-const tag OTHER             = 0x10;
-const tag TOTAL_DESIG       = 0x11;
+const tag UNCLASSIFIED       = 0x00;
+const tag ENVIRONMENT        = 0x01;
+const tag SCALLOP_WHITE      = 0x02;
+const tag SCALLOP_BROWN      = 0x03;
+const tag SCALLOP_BURIED     = 0x04;
+const tag DOLLAR             = 0x05;
+const tag CLAM               = 0x06;
+const tag URCHIN             = 0x07;
+const tag SAC                = 0x08;
+const tag ROCK               = 0x09;
+const tag OTHER              = 0x10;
+const tag TOTAL_DESIG        = 0x11;
 
 // Detection methods for prioritzation
 const unsigned int TEMPLATE  = 0;
