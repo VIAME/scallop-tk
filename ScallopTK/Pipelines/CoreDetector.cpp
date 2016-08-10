@@ -206,10 +206,11 @@ void *ProcessImage( void *InputArgs ) {
   float resizeFactor = Stats->returnMaxMinRadRequired() / minRadPixels;
 
   if( resizeFactor < 1.0f ) {
-    IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*inputImg->width),(int)(resizeFactor*inputImg->height)),
-                                        inputImg->depth, inputImg->nChannels );
-    cvResize(inputImg, temp, CV_INTER_LINEAR);
-    cvReleaseImage(&inputImg);
+    IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*inputImg->width),
+                                           (int)(resizeFactor*inputImg->height)),
+                                      inputImg->depth, inputImg->nChannels );
+    cvResize( inputImg, temp, CV_INTER_LINEAR );
+    cvReleaseImage( &inputImg );
     inputImg = temp;
     minRadPixels = minRadPixels * resizeFactor;
     maxRadPixels = maxRadPixels * resizeFactor;
@@ -221,11 +222,11 @@ void *ProcessImage( void *InputArgs ) {
   IplImage *mask = cvCreateImage( cvGetSize( inputImg ), IPL_DEPTH_8U, 1 );
   cvSet( mask, cvScalar( 255 ) );
 
-  // Records how many Detections of each classification category we have
-  int Detections[TOTAL_DESIG];
+  // Records how many detections of each classification category we have
+  int detections[TOTAL_DESIG];
   for( unsigned int i=0; i<TOTAL_DESIG; i++ )
   {
-    Detections[i] = 0;
+    detections[i] = 0;
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -428,7 +429,7 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if( !getDesignationsFromUser( OrderedCandidates, imgRGB32f, mask, Detections,
+    if( !getDesignationsFromUser( OrderedCandidates, imgRGB32f, mask, detections,
            minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
       trainingExitFlag = true;
@@ -478,20 +479,20 @@ void *ProcessImage( void *InputArgs ) {
     for( unsigned int i=0; i<Objects.size(); i++ ) {
       Detection *cur = Objects[i];
       if( cur->IsBrownScallop ) {
-        Detections[SCALLOP_BROWN]++;
+        detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
       } else if( cur->IsWhiteScallop ) {
-        Detections[SCALLOP_WHITE]++;
+        detections[SCALLOP_WHITE]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
       } else if( cur->IsBuriedScallop ) {
-        Detections[SCALLOP_BURIED]++;
+        detections[SCALLOP_BURIED]++;
         updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }
   else
   {
-    // Quick hack: If we're not trying to detect scallops, reuse scallop histogram for better ip Detections
+    // Quick hack: If we're not trying to detect scallops, reuse scallop histogram for better ip detections
     for( unsigned int i=0; i<Objects.size(); i++ ) {
       Detection *cur = Objects[i];
       updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
@@ -506,32 +507,32 @@ void *ProcessImage( void *InputArgs ) {
       int id = cur->classification;
       if( id == 18028 || id == 18034 || id == 2 )
       {
-        Detections[SCALLOP_WHITE]++;
+        detections[SCALLOP_WHITE]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
       }
       else if( id >= 18004 && id <= 18035 || id == 1 )
       {
-        Detections[SCALLOP_BROWN]++;
+        detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
       }
       else if( id == 3 )
       {
-        Detections[SCALLOP_BURIED]++;
+        detections[SCALLOP_BURIED]++;
         updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }
 
-  // Update color classifiers from mask and Detections matrix
-  CC->Update( imgRGB32f, mask, Detections );
+  // Update color classifiers from mask and detections matrix
+  CC->Update( imgRGB32f, mask, detections );
 
   // Update statistics
-  Stats->Update( Detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
+  Stats->Update( detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
 
   // Output results to file(s)
   if( Options->EnableImageOutput )
   {
-    saveScallops( imgRGB32f, Objects, Options->OutputFilename + ".Detections.jpg" );
+    saveScallops( imgRGB32f, Objects, Options->OutputFilename + ".detections.jpg" );
   }
   if( Options->EnableListOutput && !Options->IsTrainingMode )
   {

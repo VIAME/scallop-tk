@@ -35,12 +35,12 @@ const float INF = 1E+37f;
 const int MAX_META_SEARCH_DEPTH = 10000;
 
 // Input image type definitions
-const int UNKNOWN   = 0x00;   //.???
-const int JPEG      = 0x01;   //.jpg || .JPG
-const int RAW_TIF   = 0x02;   //.tif || .TIF
-const int RAW_TIFF  = 0x03;   //.tiff
-const int BMP       = 0x04;   //.bmp
-const int PNG       = 0x05;   //.png
+const int UNKNOWN  = 0x00;   //.???
+const int JPEG     = 0x01;   //.jpg || .JPG
+const int RAW_TIF  = 0x02;   //.tif || .TIF
+const int RAW_TIFF = 0x03;   //.tiff
+const int BMP      = 0x04;   //.bmp
+const int PNG      = 0x05;   //.png
 
 // Default image scale factors for assorted operations, this is applied
 // on top of any initial image filtering resize optimizations. Units are
@@ -56,7 +56,7 @@ const float OSF_HOG         = 1.0;
 
 // A downsizing image resize factor must be lower than 95% to validate
 // and actually perform the resize for computational benefit (otherwise
-// it doesn't pay)
+// it doesn't really pay)
 const float RESIZE_FACTOR_REQUIRED = 0.95f;
 
 // Histogram Update Propterties for Fast Read/Merge
@@ -111,7 +111,7 @@ const tag ROCK               = 0x09;
 const tag OTHER              = 0x10;
 const tag TOTAL_DESIG        = 0x11;
 
-// Detection methods for prioritzation
+// Detection methods for prioritization
 const unsigned int TEMPLATE  = 0;
 const unsigned int DOG       = 1;
 const unsigned int ADAPTIVE  = 2;
@@ -121,7 +121,7 @@ const unsigned int MULTIPLE2 = 5;
 const unsigned int MULTIPLE3 = 6;
 const unsigned int TOTAL_DM  = 7;
 
-// Feature constants
+// Feature size-related constants
 const unsigned int COLOR_BINS     = 32;
 const unsigned int COLOR_FEATURES = 122;
 const unsigned int GABOR_FEATURES = 36;
@@ -129,7 +129,7 @@ const unsigned int SIZE_FEATURES  = 9;
 const unsigned int EDGE_FEATURES  = 137;
 const unsigned int NUM_HOG        = 2;
 
-// Sand Dollar Suppression Sys value
+// Sand dollar suppression system factor
 const double SDSS_DIFFERENCE_FACTOR = 2.0;
 
 // Maximum number of classifiers in a single classification system
