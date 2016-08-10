@@ -579,23 +579,23 @@ void vdReshape (int w, int h) {
 void vdInitialize() {
 
 	//Initialize glut settings
-	int argc = 1;
-	std::string args = "Visual Debugger";
-  char *argv = const_cast<char*>( args.c_str() );
-	glutInit(&argc,&argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	int init_argc = 1;
+	std::string init_args = "Visual Debugger";
+  char *init_argv = const_cast<char*>( init_args.c_str() );
+	glutInit( &init_argc, &init_argv );
+	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 
 	//Create window
 	vdW = 1000;
 	vdH = 500;
-	glutInitWindowSize(vdW, vdH);
-	glutCreateWindow("Visual Debugger");
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glutInitWindowSize( vdW, vdH );
+	glutCreateWindow( "Visual Debugger" );
+	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 
 	//Enable settings
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glShadeModel(GL_SMOOTH);
+	glEnable( GL_DEPTH_TEST );
+	glDepthMask( GL_TRUE );
+	glShadeModel( GL_SMOOTH );
 
 	//Load required textures
 	vdLoadIconSaveTextures();

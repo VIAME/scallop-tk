@@ -1,5 +1,5 @@
-#ifndef VD_SAVE_IMAGE_H_
-#define VD_SAVE_IMAGE_H_
+#ifndef SCALLOP_TK_SAVE_IMAGE_ICON_H_
+#define SCALLOP_TK_SAVE_IMAGE_ICON_H_
 
 const unsigned char vdSaveR[42][42] = {
 {0, 0, 27, 26, 25, 25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25, 26, 28, 31, 0, 0},

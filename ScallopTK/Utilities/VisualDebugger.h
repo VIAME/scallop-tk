@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+
 #include <GL/glut.h>
 
 #include "cv.h"
