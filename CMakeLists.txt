@@ -75,7 +75,6 @@ if( ENABLE_VISUAL_DEBUGGER )
 endif()
 
 # Add subdirs to project
-add_subdirectory( Documentation )
 add_subdirectory( ScallopTK )
 add_subdirectory( Tools )
 
