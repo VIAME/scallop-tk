@@ -67,7 +67,11 @@ endif()
 option( ENABLE_VISUAL_DEBUGGER "Enable visual debugger, requires OpenGL" OFF )
 
 if( ENABLE_VISUAL_DEBUGGER )
+  find_package( OpenGL REQUIRED )
+  find_package( GLUT REQUIRED )
+
   add_definitions( -DENABLE_VISUAL_DEBUGGER )
+  include_directories( ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} )
 endif()
 
 # Add subdirs to project

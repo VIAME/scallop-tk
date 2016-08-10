@@ -50,11 +50,22 @@ set( ScallopTK_Library_Source
   Utilities/Threads.h
 )
 
+if( ENABLE_VISUAL_DEBUGGER )
+  set( ScallopTK_Library_Source
+    ${ScallopTK_Library_Source}
+    Utilities/SaveImageIcon.h
+    Utilities/VisualDebugger.h           Utilities/VisualDebugger.cpp )
+endif()
+
 add_library( ScallopTK ${ScallopTK_Library_Source} )
 target_link_libraries( ScallopTK ${OpenCV_LIBS} )
 
 if( USE_CAFFE )
   target_link_libraries( ScallopTK ${Caffe_LIBRARIES} )
+endif()
+
+if( ENABLE_VISUAL_DEBUGGER )
+  target_link_libraries( ScallopTK ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 endif()
 
 set_target_properties( ScallopTK PROPERTIES
