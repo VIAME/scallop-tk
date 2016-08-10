@@ -64,6 +64,12 @@ if( ENABLE_BENCHMARKING )
   add_definitions( -DENABLE_BENCHMARKING )
 endif()
 
+option( ENABLE_VISUAL_DEBUGGER "Enable visual debugger, requires OpenGL" OFF )
+
+if( ENABLE_VISUAL_DEBUGGER )
+  add_definitions( -DENABLE_VISUAL_DEBUGGER )
+endif()
+
 # Add subdirs to project
 add_subdirectory( Documentation )
 add_subdirectory( ScallopTK )
