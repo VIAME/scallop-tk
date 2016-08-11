@@ -1010,13 +1010,13 @@ CoreDetector::~CoreDetector()
 std::vector< Detection >
 CoreDetector::processFrame( const cv::Mat& image )
 {
-  
+  return std::vector< Detection >();
 }
 
 std::vector< Detection >
 CoreDetector::processFrame( std::string filename )
 {
-  
+  return std::vector< Detection >();
 }
 
 }

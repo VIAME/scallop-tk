@@ -78,6 +78,12 @@ endif()
 add_subdirectory( ScallopTK )
 add_subdirectory( Tools )
 
+# On windows include dependency dlls in installer
+#if( WIN32 )
+#  install( FILES ${Caffe_LIBRARIES} ${OpenCV_LIBS}
+#    DESTINATION bin FILES_MATCHING PATTERN "*.dll" )
+#endif()
+
 # Options to build a CPack driven installer package
 set( CPACK_SYSTEM_NAME           "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
 set( CPACK_PACKAGE_NAME          "Scallop-TK" )
