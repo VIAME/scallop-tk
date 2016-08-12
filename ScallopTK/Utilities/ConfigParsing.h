@@ -367,7 +367,7 @@ inline bool ParseGTFile( string filename, GTEntryList& output )
   
   // Loop through file line by line
   string line;
-  while(getline(input, line))
+  while( getline(input, line) )
   {
     // Ignore header
     if( line.substr(0,12) == "imagename,x1" )
@@ -394,6 +394,7 @@ inline bool ParseGTFile( string filename, GTEntryList& output )
     GT.ID = atoi( words[ 7 ].c_str() );
     output.push_back( GT );
   }
+
   return true;
 }
 
@@ -409,90 +410,6 @@ inline void InitializeDefault( SystemParameters& settings )
   settings.OutputDuplicateClass = true;
   settings.OutputDetectionImages = false;
   settings.NumThreads = 1;
-}
-
-
-inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
-{
-  // Convert a GT point to a Candidate with some random flux
-  Candidate* output = new Candidate;
-
-  // Calculate random adjustment factors
-  double RAND_R = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_C = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_ANGLE = 3.14159 * ((double)rand()/(double)RAND_MAX);
-  double RAND_MAJOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_MINOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  if( ((double)rand()/(double)RAND_MAX) < 0.3 )
-    RAND_ANGLE = 0.0;
-
-  // Calculate GT location in native
-  double R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
-  double C = ( Pt.X1 + Pt.X2 ) / 2.0;
-  double x_sqr = Pt.X2 - Pt.X1;
-  x_sqr = x_sqr * x_sqr;
-  double y_sqr = Pt.Y2 - Pt.Y1;
-  y_sqr = y_sqr * y_sqr;
-  double DIST = sqrt( x_sqr + y_sqr );
-
-  // Adjust location for rescale factor
-  R *= DownsizeFactor;
-  C *= DownsizeFactor;
-  DIST *= DownsizeFactor;
-
-  // Set Candidate vals
-  output->r = R + DIST * RAND_R;
-  output->c = C + DIST * RAND_C;
-  output->major = RAND_MAJOR * DIST / 2.0;
-  output->minor = RAND_MINOR * DIST / 2.0;
-  output->angle = RAND_ANGLE;
-
-  // Set classification value
-  output->classification = Pt.ID;
-
-  return output;
-}
-
-// Move this function to somplace better
-inline void RemoveOverlapAndMerge( vector<Candidate*>& Base, vector<Candidate*>& Truth, double percentage_keep = 0.10 )
-{
-  // Top down greedy search - very slow but who cares its for training only
-  for( int j = Base.size() - 1; j >= 0; j-- )
-  {
-    // Determine if we should kill this Candidate (too close to GT)
-    bool RemoveCandidate = false;
-
-    for( int i = 0; i < Truth.size(); i++ )
-    {
-      double MAJOR = ( Base[j]->major < Truth[i]->major ? Truth[i]->major : Base[j]->major );
-      double COMP1 = Base[j]->r - Truth[i]->r;
-      double COMP2 = Base[j]->c - Truth[i]->c;
-      COMP1 *= COMP1;
-      COMP2 *= COMP2;
-      double DIST = sqrt( COMP1 + COMP2 );
-      if( DIST < 1.8 * MAJOR )
-      {
-        RemoveCandidate = true;
-        break;
-      }
-    }
-
-    if( RemoveCandidate || ((double)rand()/(double)RAND_MAX) > percentage_keep )
-    {
-      delete Base[j];
-      Base.erase(Base.begin()+j);
-    }
-    else
-    {
-      Base[j]->classification = 0;
-    }
-  }
-
-  // Merge results
-  for( int j = 0; j < Truth.size(); j++ )
-  {
-    Base.push_back( Truth[j] );
-  }
 }
 
 #endif

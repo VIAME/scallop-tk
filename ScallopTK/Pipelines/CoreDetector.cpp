@@ -259,14 +259,16 @@ void *ProcessImage( void *InputArgs ) {
   // Perform color classifications on base image
   //   Puts results in hfResults struct
   //   Contains classification results for different organisms, and sal maps
-  hfResults *color = CC->performColorClassification( imgRGB32f, minRadPixels, maxRadPixels );
+  hfResults *color = CC->performColorClassification( imgRGB32f,
+    minRadPixels, maxRadPixels );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculate all required image gradients for later operations
-  GradientChain Gradients = createGradientChain( imgLab32f, imgGrey32f, imgGrey8u, imgRGB8u, color, minRadPixels, maxRadPixels );
+  GradientChain Gradients = createGradientChain( imgLab32f, imgGrey32f,
+    imgGrey8u, imgRGB8u, color, minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -486,7 +488,8 @@ void *ProcessImage( void *InputArgs ) {
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
       } else if( cur->IsBuriedScallop ) {
         detections[SCALLOP_BURIED]++;
-        updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
+        updateMaskRing( mask, cur->r, cur->c, cur->angle,
+          cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }
@@ -518,7 +521,8 @@ void *ProcessImage( void *InputArgs ) {
       else if( id == 3 )
       {
         detections[SCALLOP_BURIED]++;
-        updateMaskRing( mask, cur->r, cur->c, cur->angle, cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
+        updateMaskRing( mask, cur->r, cur->c, cur->angle,
+          cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
       }
     }
   }

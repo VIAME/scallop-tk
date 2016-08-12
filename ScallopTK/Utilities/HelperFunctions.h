@@ -4,8 +4,8 @@
 // Description: This file contains various helper function declarations
 //------------------------------------------------------------------------------
 
-#ifndef SCALLOP_TK_HELPER_H
-#define SCALLOP_TK_HELPER_H
+#ifndef SCALLOP_TK_HELPER_FUNCTIONS_H_
+#define SCALLOP_TK_HELPER_FUNCTIONS_H_
 
 // C/C++ Includes
 #include <iostream>
@@ -33,40 +33,54 @@ using namespace std;
 void showImage( IplImage* img );
 void showImageNW( IplImage* img );
 void showImages( IplImage* img1, IplImage *img2 );
-void showCandidates( IplImage *img, vector<Candidate*>& kps, float min = 0.0f, float max = INF );
+void showCandidates( IplImage *img, vector<Candidate*>& kps,
+  float min = 0.0f, float max = INF );
+void showCandidatesNW( IplImage *img, vector<Candidate*>& kps,
+  float min = 0.0f, float max = INF );
 void showScallops( IplImage *img, vector<Candidate*>& kps );
-void saveScallops( IplImage *img, vector<Detection*>& kps, const string& fn );
-void showCandidatesNW( IplImage *img, vector<Candidate*>& kps, float min = 0.0f, float max = INF );
+void saveScallops( IplImage *img, vector<Detection*>& kps,
+  const string& fn );
 void showScallopsNW( IplImage *img, vector<Candidate*>& kps );
-void saveCandidates( IplImage *img, vector<Candidate*>& kps, const string& fn );
+void saveCandidates( IplImage *img, vector<Candidate*>& kps,
+  const string& fn );
 void saveImage( IplImage *img, const string &fn );
 void showIPNW( IplImage* img, Candidate *ip );
 void showMinMaxRad( IplImage* img, float minRad, float maxRad );
+void showIP( IplImage* img, IplImage *img2, Candidate *ip );
+void showIPNW( IplImage* img, IplImage *img2, Candidate *ip );
 
 // Memory Functions
 void deallocateCandidates( vector<Candidate*> &kps );
 Candidate *copyCandidate( Candidate* kp );
 int getImageType( const string& filename );
 
+// Drawing functions
+void drawFilledEllipse( IplImage *input, float r, float c,
+  float angle, float major, float minor );
+void drawEllipseRing( IplImage *input, float r, float c,
+  float angle, float major1, float minor1, float major2 );
+void drawColorRing( IplImage *input, float r, float c,
+  float angle, float major1, float minor1, float major2,
+  float major3, int (&bins)[COLOR_BINS] );
+
+// Mask related
+void updateMaskRing( IplImage *input, float r, float c,
+  float angle, float major1, float minor1, float major2, tag obj );
+void updateMask( IplImage *input, float r, float c,
+  float angle, float major, float minor, tag obj );
+
+// Misc
 void saveMatrix( CvMat* mat, string filename );
-string intToString(const int& i);
-int stringToInt(const string& s);
+string intToString( const int& i );
+int stringToInt( const string& s );
 inline void rgb2gray( IplImage *src, IplImage *dst );
-void showIP( IplImage* img, IplImage *img2, Candidate *ip );
-void PrintMat(CvMat *A);
+void printMat( CvMat *A );
 void showImageRange( IplImage* img );
 void calcMinMax( IplImage *img );
-void drawFilledEllipse( IplImage *input, float r, float c, float angle, float major, float minor );
-void drawEllipseRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2 );
-void drawColorRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2, float major3, int (&bins)[COLOR_BINS] );
-void showIPNW( IplImage* img, IplImage *img2, Candidate *ip );
-void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth );
-void updateMaskRing( IplImage *input, float r, float c, float angle, float major1, float minor1, float major2, tag obj );
-void updateMask( IplImage *input, float r, float c, float angle, float major, float minor, tag obj );
+void initalizeCandidateStats( vector<Candidate*> cds,
+  int imheight, int imwidth );
 float quickMedian( IplImage* img, int max_to_sample );
-
 void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img );
-
 void CullNonImages( vector<string>& fn_list );
 
 //------------------------------------------------------------------------------
@@ -142,5 +156,88 @@ inline int determine8quads( const int& x, const int&y ) {
   }
 }
 
+inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
+{
+  // Convert a GT point to a Candidate with some random flux
+  Candidate* output = new Candidate;
+
+  // Calculate random adjustment factors
+  double RAND_R = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+  double RAND_C = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+  double RAND_ANGLE = 3.14159 * ((double)rand()/(double)RAND_MAX);
+  double RAND_MAJOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+  double RAND_MINOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+  if( ((double)rand()/(double)RAND_MAX) < 0.3 )
+    RAND_ANGLE = 0.0;
+
+  // Calculate GT location in native
+  double R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
+  double C = ( Pt.X1 + Pt.X2 ) / 2.0;
+  double x_sqr = Pt.X2 - Pt.X1;
+  x_sqr = x_sqr * x_sqr;
+  double y_sqr = Pt.Y2 - Pt.Y1;
+  y_sqr = y_sqr * y_sqr;
+  double DIST = sqrt( x_sqr + y_sqr );
+
+  // Adjust location for rescale factor
+  R *= DownsizeFactor;
+  C *= DownsizeFactor;
+  DIST *= DownsizeFactor;
+
+  // Set Candidate vals
+  output->r = R + DIST * RAND_R;
+  output->c = C + DIST * RAND_C;
+  output->major = RAND_MAJOR * DIST / 2.0;
+  output->minor = RAND_MINOR * DIST / 2.0;
+  output->angle = RAND_ANGLE;
+
+  // Set classification value
+  output->classification = Pt.ID;
+
+  return output;
+}
+
+// Move this function to somplace better
+inline void RemoveOverlapAndMerge( vector<Candidate*>& Base,
+  vector<Candidate*>& Truth, double percentage_keep = 0.10 )
+{
+  // Top down greedy search - very slow but who cares its for training only
+  for( int j = Base.size() - 1; j >= 0; j-- )
+  {
+    // Determine if we should kill this Candidate (too close to GT)
+    bool RemoveCandidate = false;
+
+    for( int i = 0; i < Truth.size(); i++ )
+    {
+      double MAJOR = ( Base[j]->major < Truth[i]->major ? Truth[i]->major : Base[j]->major );
+      double COMP1 = Base[j]->r - Truth[i]->r;
+      double COMP2 = Base[j]->c - Truth[i]->c;
+      COMP1 *= COMP1;
+      COMP2 *= COMP2;
+      double DIST = sqrt( COMP1 + COMP2 );
+      if( DIST < 1.8 * MAJOR )
+      {
+        RemoveCandidate = true;
+        break;
+      }
+    }
+
+    if( RemoveCandidate || ((double)rand()/(double)RAND_MAX) > percentage_keep )
+    {
+      delete Base[j];
+      Base.erase(Base.begin()+j);
+    }
+    else
+    {
+      Base[j]->classification = 0;
+    }
+  }
+
+  // Merge results
+  for( int j = 0; j < Truth.size(); j++ )
+  {
+    Base.push_back( Truth[j] );
+  }
+}
 
 #endif
