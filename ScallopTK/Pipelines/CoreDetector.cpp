@@ -355,7 +355,7 @@ void *ProcessImage( void *InputArgs ) {
 
   if( !Options->ProcessBorderPoints )
   {
-    RemoveBorderCandidates( UnorderedCandidates, imgRGB32f );
+    removeBorderCandidates( UnorderedCandidates, imgRGB32f );
   }
 
   /*if( Options.ShowVideoDisplay )
@@ -597,7 +597,7 @@ int runCoreDetector( const SystemParameters& settings )
     ListAllFiles( inputDir, inputFilenames, subdirsToCreate );
     
     // Remove files that don't have an image extension (jpg/tif)
-    CullNonImages( inputFilenames );
+    cullNonImages( inputFilenames );
     
     // Initialize classifier array
     inputClassifiers.resize( inputFilenames.size(), settings.ClassifierToUse );

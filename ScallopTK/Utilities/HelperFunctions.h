@@ -80,8 +80,8 @@ void calcMinMax( IplImage *img );
 void initalizeCandidateStats( vector<Candidate*> cds,
   int imheight, int imwidth );
 float quickMedian( IplImage* img, int max_to_sample );
-void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img );
-void CullNonImages( vector<string>& fn_list );
+void removeBorderCandidates( vector<Candidate*>& cds, IplImage *img );
+void cullNonImages( vector<string>& fn_list );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions

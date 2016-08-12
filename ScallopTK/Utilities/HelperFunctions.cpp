@@ -48,7 +48,7 @@ int getImageType( const string& filename ) {
 }
 
 // Remove imagees of unknown type from the list
-void CullNonImages( vector<string>& fn_list ) {
+void cullNonImages( vector<string>& fn_list ) {
 
   for( int i=fn_list.size()-1; i>=0; i-- ) {
     if( getImageType( fn_list[i] ) == UNKNOWN ) {
@@ -660,7 +660,7 @@ void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth 
   }
 }
 
-void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img )
+void removeBorderCandidates( vector<Candidate*>& cds, IplImage *img )
 {
   // Top down greedy search - very slow but who cares its for training only
   for( int j = cds.size() - 1; j >= 0; j-- )
