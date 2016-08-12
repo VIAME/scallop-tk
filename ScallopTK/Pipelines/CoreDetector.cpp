@@ -213,9 +213,9 @@ void *ProcessImage( void *InputArgs ) {
   //  Stats->getMaxMinRequiredRad returns the maximum required image size
   //  in terms of how many pixels the min scallop radius should be. We only
   //  resize the image if this results in a downscale.
-  float resizeFactor = Stats->returnMaxMinRadRequired() / minRadPixels;
+  float resizeFactor = MAX_PIXELS_FOR_MIN_RAD / minRadPixels;
 
-  if( resizeFactor < 1.0f ) {
+  if( resizeFactor < RESIZE_FACTOR_REQUIRED ) {
     cv::Mat resizedImgMat;
 
     cv::resize( inputImgMat, resizedImgMat,
@@ -225,6 +225,7 @@ void *ProcessImage( void *InputArgs ) {
     inputImgMat = resizedImgMat;
     minRadPixels = minRadPixels * resizeFactor;
     maxRadPixels = maxRadPixels * resizeFactor;
+
   } else {
     resizeFactor = 1.0f;
   }
@@ -826,7 +827,7 @@ int runCoreDetector( const SystemParameters& settings )
   {
     inputArgs[i].CC = new ColorClassifier;
     inputArgs[i].Stats = new ThreadStatistics;
-    if( !inputArgs[i].CC->loadFilters( settings.RootColorDIR, "_32f_rgb_v1.cfilt" ) ) {
+    if( !inputArgs[i].CC->loadFilters( settings.RootColorDIR, DEFAULT_COLORBANK_EXT ) ) {
       cerr << "ERROR: Could not load colour filters!" << std::endl;
       return 0;
     }
