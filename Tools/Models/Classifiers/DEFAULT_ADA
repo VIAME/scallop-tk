@@ -7,7 +7,7 @@
 ; The relative path w.r.t. the root classifier directory, where all of the 
 ; classifier files below can be found. A slash should be placed at the end.
 
-CLASSIFIER_SUBDIR = Default/
+CLASSIFIER_SUBDIR = AdaBoost/
 
 ; A level 1 classifier is applied to all detected interest points
 ; within an image. Any interest point which passes any one of these
