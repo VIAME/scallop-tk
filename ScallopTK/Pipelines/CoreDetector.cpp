@@ -278,7 +278,7 @@ void *ProcessImage( void *InputArgs ) {
   //   Contains classification results for different organisms, and sal maps
   hfResults *color = CC->performColorClassification( imgRGB32f,
     minRadPixels, maxRadPixels );
-    
+
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
@@ -337,8 +337,8 @@ void *ProcessImage( void *InputArgs ) {
   CandidateQueue orderedCandidates;
 
   // Consolidate interest points
-  prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx, cdsCannyEdge,
-    unorderedCandidates, orderedCandidates, Stats );
+  prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx,
+    cdsCannyEdge, unorderedCandidates, orderedCandidates, Stats );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
