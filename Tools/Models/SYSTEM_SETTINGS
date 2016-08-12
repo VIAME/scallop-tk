@@ -6,7 +6,7 @@
 ; The focal length of the utilized camera system
 focalLength = 0.02764
 
-; If training from MIPs files, the percentage of false points outside
+; If training from GT files, the percentage of false points outside
 ; of annotations to report, in range [0,1]
 training_false_keep_percentage = 0.10
 

@@ -19,7 +19,7 @@
 //                             Class Declaration
 //------------------------------------------------------------------------------
 
-// Estimates various image properties (GSD, Scale) from metadata.
+// Estimates various image properties (GSD, i.e. Scale) from metadata.
 class ImageProperties {
 
 public:

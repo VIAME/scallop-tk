@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
-// Title: dog.h
-// Author: 
+// Title: DoG.h
 // Description: Difference of Gaussian Candidate Detection
 //------------------------------------------------------------------------------
 
@@ -27,8 +26,8 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 
 //Visual Debugger
-#ifdef VisualDebugger
-  #include "ScallopTK/Visual Debugger/visualDebugger.h"
+#ifdef ENABLE_VISUAL_DEBUGGER
+  #include "ScallopTK/Utilities/VisualDebugger.h"
 #endif
 
 //------------------------------------------------------------------------------
@@ -73,7 +72,8 @@ const int DOG_ALL = 0x02;
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-bool findDoGCandidates( IplImage* input, vector<Candidate*>& kps, float minRad, float maxRad, int mode = DOG_ALL);
+bool findDoGCandidates( IplImage* input, vector<Candidate*>& kps,
+  float minRad, float maxRad, int mode = DOG_ALL );
 
 //------------------------------------------------------------------------------
 //                             Required Structures

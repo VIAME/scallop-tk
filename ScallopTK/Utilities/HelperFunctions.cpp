@@ -174,11 +174,7 @@ void showScallopMinMax( IplImage* img, float minRad, float maxRad ) {
   cvCircle( toOutput, cvPoint( posW, posH ), (int)maxRad, cvScalar( 0, (int)pow(2.0f, img->depth) - 1, 0), 2 );
 
   //Show image
-#ifdef VisualDebugger
-  vdAddImage(toOutput,VD_STANDARD,VD_CENTER,true);
-#else
   showImage( toOutput );
-#endif
 
   //Deallocate memory
   cvReleaseImage( &toOutput );
