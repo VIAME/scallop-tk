@@ -36,13 +36,17 @@ const float VD_HEIGHT_SPAC_DEFAULT = 0.016f;
 void vdDelete();
 void vdInitiateLoop();
 
-//Manual Placement Mode
+
 void vdInitialize();
+
+//Manual Placement Mode
 bool vdAddImage( IplImage *img, int mode, float px, float py, float pz,
   int slant, float width, float height );
 
-//Automatic Placement Mode
+//Expand Image Placement in View to New Row
 void vdNewRow( float row_height_spacing = VD_HEIGHT_SPAC_DEFAULT );
+
+//Automatic Placement Mode
 bool vdAddImage( IplImage *img, int mode, int lrc, bool new_entry,
   float minRange = 0.0f, float maxRange = 0.0f);
 

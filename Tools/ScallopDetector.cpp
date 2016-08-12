@@ -15,7 +15,6 @@
 // Scallop Includes
 #include "ScallopTK/Pipelines/CoreDetector.h"
 #include "ScallopTK/Utilities/ConfigParsing.h"
-
 #include "ScallopTK/Utilities/Threads.h"
 
 //------------------------------------------------------------------------------
@@ -24,7 +23,6 @@
 
 // Namespaces
 using namespace std;
-
 using namespace ScallopTK;
 
 //------------------------------------------------------------------------------
@@ -78,6 +76,7 @@ int main( int argc, char** argv )
     {
       settings.InputDirectory = input;
       settings.InputFilename = "";
+
       if( input.size() > 0 && input[ input.size()-1 ] != '\\' && input[ input.size()-1 ] != '/' )
       {
         settings.InputDirectory = settings.InputDirectory + "/";
@@ -119,8 +118,9 @@ int main( int argc, char** argv )
     }
     
     settings.ClassifierToUse = classifier;
-    
+
     SplitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
+
     settings.InputDirectory = input;
     settings.InputFilename = "";
   }
@@ -167,5 +167,5 @@ int main( int argc, char** argv )
 
   // Output completion statement
   cout << endl << "Processing Complete." << endl;
-    return true;
+  return true;
 }

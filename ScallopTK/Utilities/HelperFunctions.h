@@ -67,6 +67,8 @@ float quickMedian( IplImage* img, int max_to_sample );
 
 void RemoveBorderCandidates( vector<Candidate*>& cds, IplImage *img );
 
+void CullNonImages( vector<string>& fn_list );
+
 //------------------------------------------------------------------------------
 //                               Inline Definitions
 //------------------------------------------------------------------------------

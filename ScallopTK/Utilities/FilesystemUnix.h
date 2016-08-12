@@ -1,6 +1,6 @@
 
-#ifndef SCALLOP_TK_FS_UNIX
-#define SCALLOP_TK_FS_UNIX
+#ifndef SCALLOP_TK_FILESYSTEM_UNIX_H_
+#define SCALLOP_TK_FILESYSTEM_UNIX_H_
 
 #ifndef SCALLOP_TK_WIN32
 
@@ -9,10 +9,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
+
 #include <fcntl.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -105,16 +108,6 @@ inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const
     }
   }
   return true;
-}
-
-inline void CullNonImages( vector<string>& fn_list ) {
-
-  for( int i=fn_list.size()-1; i>=0; i-- ) {
-    string ext = fn_list[i].substr(fn_list[i].find_last_of(".") + 1);
-    if( ext != "jpg" && ext != "JPG" && ext != "tif" && ext != "TIF" ) {
-      fn_list.erase( fn_list.begin()+i );
-    }
-  }
 }
 
 inline void FormatOutputNames( vector<string>& in, vector<string>& out, 

@@ -47,6 +47,16 @@ int getImageType( const string& filename ) {
   return UNKNOWN;
 }
 
+// Remove imagees of unknown type from the list
+void CullNonImages( vector<string>& fn_list ) {
+
+  for( int i=fn_list.size()-1; i>=0; i-- ) {
+    if( getImageType( fn_list[i] ) == UNKNOWN ) {
+      fn_list.erase( fn_list.begin()+i );
+    }
+  }
+}
+
 //Display Candidates within some rdange
 void showCandidates( IplImage *img, std::vector<Candidate*>& kps, float min, float max ) {  
   IplImage* local = cvCloneImage( img );

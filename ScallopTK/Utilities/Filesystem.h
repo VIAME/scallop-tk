@@ -1,6 +1,6 @@
 
-#ifndef SCALLOP_TK_FS
-#define SCALLOP_TK_FS
+#ifndef SCALLOP_TK_FILESYSTEM_H_
+#define SCALLOP_TK_FILESYSTEM_H_
 
 #ifdef WIN32
   #include "FilesystemWin32.h"

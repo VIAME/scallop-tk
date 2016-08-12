@@ -57,7 +57,7 @@ namespace ScallopTK
 #ifdef ENABLE_BENCHMARKING
   const string BenchmarkingFilename = "BenchmarkingResults.dat";
   vector<double> ExecutionTimes;
-  ofstream BenchmarkingOutput;
+  ofstream benchmarkingOutput;
 #endif
 
 // Struct to hold inputs to the single image algorithm (1 per thread is created)
@@ -69,10 +69,10 @@ struct AlgorithmArgs {
   // Input image
   cv::Mat InputImage;
 
-  // input filename for input image, full path
+  // Input filename for input image, full path, if available
   string InputFilename;
 
-  // input filename for image, without directory
+  // Input filename for image, without directory
   string InputFilenameNoDir;
 
   // Output filename for Scallop List or Extracted Training Data
@@ -122,7 +122,7 @@ struct AlgorithmArgs {
   // Process border interest points
   bool ProcessBorderPoints;
 
-  // pointer to mip input data if in training mode
+  // pointer to GT input data if in training mode
   GTEntryList *GTData;
 };
 
@@ -170,7 +170,6 @@ void *ProcessImage( void *InputArgs ) {
   {
     cerr << "ERROR: Failure to read image metadata for file ";
     cerr << Options->InputFilenameNoDir << endl;
-    cvReleaseImage( &inputImg );
     threadExit();
     return NULL;
   }
@@ -188,7 +187,6 @@ void *ProcessImage( void *InputArgs ) {
   {
     cerr << "WARN: Scallop scanning size range is less than 1 pixel for image ";
     cerr << Options->InputFilenameNoDir << ", skipping." << endl;
-    cvReleaseImage( &inputImg );
     threadExit();
     return NULL;
   }
@@ -741,11 +739,11 @@ int runCoreDetector( const SystemParameters& settings )
   THREADS = settings.NumThreads;
 
   // Create output list filename
-  string ListFilename = outputDir + outputFile;
+  string listFilename = outputDir + outputFile;
 
   // Check to make sure we can open the output file (and flush contents)
   if( settings.OutputList ) {
-    ofstream fout( ListFilename.c_str() );
+    ofstream fout( listFilename.c_str() );
     if( !fout.is_open() ) {
       cout << "ERROR: Could not open output list for writing!" << std::endl;
       return false;
@@ -756,8 +754,9 @@ int runCoreDetector( const SystemParameters& settings )
 #ifdef ENABLE_BENCHMARKING
   // Initialize Timing Statistics
   initializeTimer();
-  BenchmarkingOutput.open( BenchmarkingFilename.c_str() );
-  if( !BenchmarkingOutput.is_open() ) {
+  benchmarkingOutput.open( BenchmarkingFilename.c_str() );
+
+  if( !benchmarkingOutput.is_open() ) {
     cout << "ERROR: Could not write to benchmarking file!" << std::endl;
     return false;
   }
@@ -801,6 +800,7 @@ int runCoreDetector( const SystemParameters& settings )
   // Load Statistics/Color filters
   cout << "Loading Colour Filters... ";
   AlgorithmArgs *inputArgs = new AlgorithmArgs[THREADS];
+
   for( int i=0; i < THREADS; i++ )
   {
     inputArgs[i].CC = new ColorClassifier;
@@ -825,7 +825,7 @@ int runCoreDetector( const SystemParameters& settings )
     inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
     inputArgs[i].ScallopMode = true;
     inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
-    inputArgs[i].ListFilename = ListFilename;
+    inputArgs[i].ListFilename = listFilename;
   }
 
   // Initiate display window for output
@@ -840,56 +840,6 @@ int runCoreDetector( const SystemParameters& settings )
       cerr << "ERROR: Could not initiate training mode!" << std::endl;
     }
   }
-
-#ifdef USE_PTHREADS
-
-  // Support removed at the moment!
-
-  /*initializeThreads();
-  setThreadsAsAvailable();
-  pthread_t pid[ MAX_THREADS ];
-  pthread_t earliest;
-  
-  // Cycle through all input files
-  cout << "Processing Files: \n" << std::endl;
-  for( unsigned int i=0; i<inputFilenames.size(); i++ ) {
-    
-    // Go through all threads
-    bool launched = false;
-    while( !launched ) {
-
-      // Cycle through threads checking for availability
-      for( unsigned int idx = 0; idx < THREADS; idx++ ) {
-        if( !isThreadRunning(idx) ) {
-          int dirLength = inputDir.size() + 1;
-          int fileLength = inputFilenames[i].size() - dirLength;
-          string filenameNoDir = inputFilenames[i].substr(dirLength, fileLength);
-          cout << "Processing " << filenameNoDir << "...  " << std::endl;
-          inputArgs[idx].InputFilename = inputFilenames[i];
-          inputArgs[idx].OutputFilename = outputFilenames[i];
-          inputArgs[idx].ThreadID = idx;
-          inputArgs[idx].InputFilenameNoDir = filenameNoDir;
-          markThreadAsRunning( idx );
-          pthread_create( &pid[idx], NULL, ProcessImage, &inputArgs[idx] );
-          launched = true;
-          break;
-        }
-      }
-
-      // [Replace this with a conditioned wait!]
-      sleep(0.01);
-    }
-  }
-  
-  // Halt execution until all worker threads are finished
-  for( unsigned int idx = 0; idx < THREADS; idx++ ) {
-    pthread_join( pid[idx], NULL );
-  }
-
-  // Deallocate threading variables
-  killThreads();*/
-
-#else
 
   // Cycle through all input files
   cout << endl << "Processing Files: " << endl << endl;
@@ -931,8 +881,8 @@ int runCoreDetector( const SystemParameters& settings )
 #ifdef ENABLE_BENCHMARKING
     // Output benchmarking results to file
     for( unsigned int i=0; i<ExecutionTimes.size(); i++ )
-      BenchmarkingOutput << ExecutionTimes[i] << " ";
-    BenchmarkingOutput << endl;
+      benchmarkingOutput << ExecutionTimes[i] << " ";
+    benchmarkingOutput << endl;
 #endif
 
     // Checks if user entered EXIT command in training mode
@@ -940,8 +890,7 @@ int runCoreDetector( const SystemParameters& settings )
     {
       break;
     }
-  }  
-#endif
+  }
 
   // Deallocate algorithm inputs
   for( int i=0; i < THREADS; i++ ) {
@@ -966,7 +915,7 @@ int runCoreDetector( const SystemParameters& settings )
 
 #ifdef ENABLE_BENCHMARKING
   // Close benchmarking output file
-  BenchmarkingOutput.close();
+  benchmarkingOutput.close();
 #endif
 
   // Close gui-training mode
@@ -976,7 +925,7 @@ int runCoreDetector( const SystemParameters& settings )
   }
 
   // Deallocate GT info if in training mode
-  if( !GTs )
+  if( GTs )
   {
     delete GTs;
   }
@@ -989,7 +938,13 @@ class CoreDetector::Priv
 {
 public:
 
-  int lol;
+  Priv() : counter(0) {}
+  ~Priv() {}
+
+  ClassifierSystem* classifier;
+  AlgorithmArgs *inputArgs;
+  SystemParameters settings;
+  unsigned counter;
 };
 
 CoreDetector::CoreDetector( const std::string& configFile )
@@ -999,18 +954,152 @@ CoreDetector::CoreDetector( const std::string& configFile )
 
 CoreDetector::CoreDetector( const SystemParameters& settings )
 {
-  
+  // Retrieve some contents from input
+  data->settings = settings;
+  string outputDir = settings.OutputDirectory;
+  string outputFile = settings.OutputFilename;
+  string listFilename = outputDir + outputFile;
+  THREADS = settings.NumThreads;
+
+  // Check to make sure we can open the output file (and flush contents)
+  if( settings.OutputList ) {
+    ofstream fout( listFilename.c_str() );
+    if( !fout.is_open() ) {
+      cout << "ERROR: Could not open output list for writing!" << std::endl;
+      return;
+    }
+    fout.close();
+  }
+
+#ifdef ENABLE_BENCHMARKING
+  // Initialize Timing Statistics
+  initializeTimer();
+  benchmarkingOutput.open( BenchmarkingFilename.c_str() );
+
+  if( !benchmarkingOutput.is_open() ) {
+    cout << "ERROR: Could not write to benchmarking file!" << std::endl;
+    return false;
+  }
+#endif
+
+  // Load classifier config
+  cout << "Loading Classifier System";
+
+  ClassifierParameters cparams;
+
+  if( !ParseClassifierConfig( settings.ClassifierToUse, settings, cparams ) )
+  {
+    return;
+  }
+
+  // Load classifier system based on config settings
+  data->classifier = loadClassifiers( settings, cparams );
+
+  if( data->classifier == NULL )
+  {
+    cout << "ERROR: Unabled to load classifier " << settings.ClassifierToUse << endl;
+    return;
+  }
+
+  // Load Statistics/Color filters
+  cout << "Loading Colour Filters... ";
+  data->inputArgs = new AlgorithmArgs[THREADS];
+
+  for( int i=0; i < THREADS; i++ )
+  {
+    data->inputArgs[i].CC = new ColorClassifier;
+    data->inputArgs[i].Stats = new ThreadStatistics;
+
+    if( !data->inputArgs[i].CC->loadFilters( settings.RootColorDIR, "_32f_rgb_v1.cfilt" ) ) {
+      cerr << "ERROR: Could not load colour filters!" << std::endl;
+      return;
+    }
+  }
+
+  cout << "FINISHED" << std::endl;
+
+  // Configure algorithm input based on settings
+  for( int i=0; i<THREADS; i++ )
+  {
+    // Set thread output options
+    data->inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
+    data->inputArgs[i].UseGTData = settings.UseFileForTraining;
+    data->inputArgs[i].GTData = NULL;
+    data->inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
+    data->inputArgs[i].EnableListOutput = settings.OutputList;
+    data->inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
+    data->inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
+    data->inputArgs[i].ScallopMode = true;
+    data->inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
+    data->inputArgs[i].ListFilename = listFilename;
+  }
+
+  // Initiate display window for output
+  if( settings.EnableOutputDisplay )
+  {
+    initOutputDisplay();
+  }
+
+  // Cycle through all input files
+  cout << endl << "Ready to Process Files" << endl;
+
 }
 
 CoreDetector::~CoreDetector()
 {
+  if( data )
+  {
+    // Deallocate algorithm inputs
+    for( int i=0; i < THREADS; i++ ) {
+      delete data->inputArgs[i].Stats;
+      delete data->inputArgs[i].CC;
+    }
+
+    delete[] data->inputArgs;
   
+    // Deallocate loaded classifier systems
+    if( data->classifier )
+    {
+      delete data->classifier;
+    }
+  
+    // Remove output display window
+    if( data->settings.EnableOutputDisplay )
+    {
+      killOuputDisplay();
+    }
+  
+#ifdef ENABLE_BENCHMARKING
+    // Close benchmarking output file
+    benchmarkingOutput.close();
+#endif
+  
+    delete data;
+  }
 }
 
 std::vector< Detection >
 CoreDetector::processFrame( const cv::Mat& image )
 {
-  return std::vector< Detection >();
+  // Always set the focal length
+  data->counter++;
+  std::string frameID = "streaming_frame" + INT_2_STR( data->counter );
+
+  data->inputArgs[0].InputImage = image;
+  data->inputArgs[0].FocalLength = data->settings.FocalLength;
+  data->inputArgs[0].InputFilename = frameID;
+  data->inputArgs[0].OutputFilename = frameID;
+  data->inputArgs[0].InputFilenameNoDir = frameID;
+
+  // Execute processing
+  ProcessImage( data->inputArgs );
+
+#ifdef ENABLE_BENCHMARKING
+  // Output benchmarking results to file
+  for( unsigned int i=0; i<ExecutionTimes.size(); i++ )
+    benchmarkingOutput << ExecutionTimes[i] << " ";
+  benchmarkingOutput << endl;
+#endif
 }
 
 std::vector< Detection >

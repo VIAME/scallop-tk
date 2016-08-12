@@ -1,6 +1,6 @@
 
-#ifndef SCALLOP_TK_FS_WIN32
-#define SCALLOP_TK_FS_WIN32
+#ifndef SCALLOP_TK_FILESYSTEM_WIN32_H_
+#define SCALLOP_TK_FILESYSTEM_WIN32_H_
 
 #ifdef WIN32
 
@@ -23,7 +23,6 @@ using namespace std;
 bool ListAllFiles(string path, vector<string>& files, vector<string>& dirlist);
 bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir);
 void FormatOutputNames( vector<string>& in, vector<string>& out, const string& in_dir, const string& out_dir );
-void CullNonImages( vector<string>& fn_list );
 string GetExecutablePath();
 
 // Function Declarations
@@ -82,16 +81,6 @@ inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const
     CreateDirectory( toMake.c_str(), attr );
   }
   return true;
-}
-
-inline void CullNonImages( vector<string>& fn_list ) {
-
-  for( int i=fn_list.size()-1; i>=0; i-- ) {
-    string ext = fn_list[i].substr(fn_list[i].find_last_of(".") + 1);
-    if( ext != "jpg" && ext != "JPG" && ext != "tif" && ext != "TIF" ) {
-      fn_list.erase( fn_list.begin()+i );
-    }
-  }
 }
 
 inline void FormatOutputNames( vector<string>& in, vector<string>& out, 

@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------
 // Title: Definitions.h
+//
 // Description: This file contains declarations, constants, and shared structs
-// used across many other operations within this toolkit
+// used across many other operations within this mini toolkit
 //------------------------------------------------------------------------------
 
 #ifndef SCALLOP_TK_DEFINITIONS_H_
@@ -11,20 +12,25 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sstream>
 
 // OpenCV Includes
 #include <cv.h>
 
 //------------------------------------------------------------------------------
-//                           Compile/Build Parameters
+//                         Common Defines and Macros
 //------------------------------------------------------------------------------
 
 // Enables automatic reading of metadata from image file
 //  - For any HabCam data this should be on -
 #define AUTO_READ_METADATA 1
 
+// Convert an integer to a string
+#define INT_2_STR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
+
 //------------------------------------------------------------------------------
-//                                 Constants
+//                                Constants
 //------------------------------------------------------------------------------
 
 // Mathematical Constants
@@ -42,6 +48,16 @@ const int RAW_TIFF = 0x03;   //.tiff
 const int BMP      = 0x04;   //.bmp
 const int PNG      = 0x05;   //.png
 
+// Desired maximum pixel count covering the min object search radius,
+// this is an optimization which speeds up all operations by performing
+// an initial resize of the input image.
+const float MAX_PIXELS_FOR_MIN_RAD = 10.0;
+
+// A downsizing image resize factor must be lower than 95% to validate
+// and actually perform the resize for computational benefit (otherwise
+// it doesn't really pay)
+const float RESIZE_FACTOR_REQUIRED = 0.95f;
+
 // Default image scale factors for assorted operations, this is applied
 // on top of any initial image filtering resize optimizations. Units are
 // relative measure w.r.t. base image size.
@@ -53,11 +69,6 @@ const float OSF_WATERSHED   = 1.0;
 const float OSF_CLUST       = 1.0;
 const float OSF_TEXTONS     = 1.0;
 const float OSF_HOG         = 1.0;
-
-// A downsizing image resize factor must be lower than 95% to validate
-// and actually perform the resize for computational benefit (otherwise
-// it doesn't really pay)
-const float RESIZE_FACTOR_REQUIRED = 0.95f;
 
 // Histogram Update Propterties for Fast Read/Merge
 // These are approximates which don't mean that much.
@@ -94,8 +105,9 @@ const unsigned int WORLD_VS_OBJ   = 0x01;
 const unsigned int DESIRED_VS_OBJ = 0x02;
 const unsigned int MIXED_CLASS    = 0x03;
 
-// Internal tag designations for objects in mask
-//  - Why isn't this an enum? -
+// Default internally specified tags for different species
+// types. The classifier system file can manually specify
+// other tags to put in output files, etc.
 typedef unsigned int tag;
 
 const tag UNCLASSIFIED       = 0x00;
@@ -136,7 +148,7 @@ const double SDSS_DIFFERENCE_FACTOR = 2.0;
 const int MAX_CLASSIFIERS = 30;
 
 //------------------------------------------------------------------------------
-//                     System Parameters - Set at Run-Time
+//          System Parameters - Set at Run-Time From Config Files
 //------------------------------------------------------------------------------
 
 struct SystemParameters
@@ -165,8 +177,17 @@ struct SystemParameters
   // Are we using image metadata at all during processing?
   bool UseMetadata;
 
+  // The classifier ID to use
+  std::string ClassifierToUse;
+
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
+
+  // Minimum search radius (in meters if metadata is available, else pixels)
+  float MinSearchRadius;
+
+  // Maximum search radius (in meters if metadata is available, else pixels)
+  float MaxSearchRadius;
 
   // Are we in training mode or process (testing) mode?
   bool IsTrainingMode;
@@ -182,9 +203,6 @@ struct SystemParameters
   // Should we consider classifying object proposals near image boundaries?
   bool LookAtBorderPoints;
 
-  // The classifier ID to use
-  std::string ClassifierToUse;
-  
   // Enable output GUI display?
   bool EnableOutputDisplay;
   
@@ -250,7 +268,10 @@ struct GTEntry
   
   // ID code of object
   int ID;
-  
+
+  // Type of annotation
+  enum{ POINT, LINE, BOX } Type;
+
   // X1, Y1
   double X1, Y1;
   
@@ -261,7 +282,7 @@ struct GTEntry
 typedef std::vector< GTEntry > GTEntryList;
 
 //------------------------------------------------------------------------------
-//                         Simple Contour Definition
+//                        Simple Contour Definition
 //------------------------------------------------------------------------------
 
 struct ScanPoint {
@@ -277,7 +298,7 @@ struct Contour {
 };
 
 //------------------------------------------------------------------------------
-//                          Interest Point Definition
+//                         Interest Point Definition
 //------------------------------------------------------------------------------
 
 // Candidate Point
