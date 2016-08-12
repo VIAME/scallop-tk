@@ -3,23 +3,62 @@
 
 [options] ; Settings shared across all processing modes
 
-; The focal length of the utilized camera system
-focalLength = 0.02764
+; Are we using image metadata at all during processing?
+use_metadata = false
 
-; If training from GT files, the percentage of false points outside
-; of annotations to report, in range [0,1]
-training_false_keep_percentage = 0.10
+; Is metadata stored in the image or the file list?
+is_metadata_in_image = false
 
-; For training and operating modes, should we look at interest points centered
-; around image bounds, or outside of it [true, false]
+; Minimum search radius (in meters if metadata is available, else pixels)
+min_search_radius = 4
+
+; Maximum search radius (in meters if metadata is available, else pixels)
+max_search_radius = 200
+
+; The default classifier ID to use
+classifier_to_use = DEFAULT
+
+; Are we in training mode or process (testing) mode?
+is_training_mode = false
+
+; If we are in training mode, are we getting annotations from a file,
+; or should the internal GUI be enabled for annotations?
+use_file_for_training = true
+
+; If training from files, the percentage of false points outside of
+; annotations to use as false examples.
+training_percent_keep = 0.10
+
+; Should we consider classifying object proposals near image boundaries?
 look_at_border_points = true
+
+; Enable output GUI display?
+enale_output_display = false
+  
+; Output Detection list?
+output_list = true
+  
+; If an IP falls into more than one category, output it multiple times?
+output_duplicate_class = true
+  
+; Output images with proposals in output directory?
+output_proposal_images = false
+  
+; Output images with detections in output directory?
+output_detection_images = false
+
+; Number of worker threads to allocate for processing images
+num_threads = 1
+
+; The focal length of the utilized camera system, if known
+focal_length = 0.02764
 
 ; The relative path w.r.t. the current path as to the root of where all of the 
 ; classifiers are stored. Include a slash at the end. Leave as [DEFAULT].
-; for storing them in the default data/Classifiers directory
+; for storing them in the default Classifiers directory
 root_classifier_dir=[DEFAULT]
 
 ; The relative path w.r.t. the current path as to where the initial
 ; seed histograms for all categories are stored. Leave as [DEFAULT]
-; for storing them in the default data/ColorFilterBanks directory
-root_histogram_dir=[DEFAULT]
+; for storing them in the default ColorFilterBanks directory
+root_color_dir=[DEFAULT]

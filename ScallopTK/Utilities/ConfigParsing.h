@@ -86,49 +86,57 @@ inline void SplitPathAndFile( const string& input, string& path, string& file )
 inline std::vector< std::string > ConvertCSVLine( string line, bool ignore_empty = false )
 {
   std::vector< std::string > parsed;
-    stringstream strm(line);
-    string word;
+  stringstream strm(line);
+  string word;
 
-    while(getline(strm,word,','))
-    {
-    word = RemoveSpaces(word);
+  while( getline( strm,word, ',' ) )
+  {
+    word = RemoveSpaces( word );
+
     if( ignore_empty && word.size() == 0 )
       continue;
-        parsed.push_back(word);
-    }
-    return parsed;
+
+    parsed.push_back( word );
+  }
+
+  return parsed;
 }
 
-// Parse the contents of a process config file
+// Parse the contents of a process config file, adding them to params
 inline bool ParseModeConfig( string key, SystemParameters& params )
 {
   // Find config directory
-  const std::string EXEPATH = GetExectuablePath();
+  const std::string exePath = GetExectuablePath();
   string ROOT, TMP;
-  SplitPathAndFile( EXEPATH, ROOT, TMP );
-  const std::string DIR1 = ROOT + "/data/";
-  const std::string DIR2 = ROOT + "/../data/";
-  const std::string DIR1DEFAULT = ROOT + "/data/ConfigFiles/SYSTEM_SETTINGS";
-  const std::string DIR2DEFAULT = ROOT +"/../data/ConfigFiles/SYSTEM_SETTINGS";
-  string CONFIG_DIR = "";
-  string DATA_DIR = "";
+  SplitPathAndFile( exePath, ROOT, TMP );
+
+  const std::string DIR1 = ROOT + CONFIG_SEARCH_DIR1;
+  const std::string DIR2 = ROOT + CONFIG_SEARCH_DIR2;
+
+  const std::string DIR1DEFAULT = ROOT + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
+  const std::string DIR2DEFAULT = ROOT + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
+
+  string configDir = "";
 
   if( !DoesFileExist( DIR1DEFAULT ) )
   {
     if( DoesFileExist( DIR2DEFAULT ) )
     {
-      CONFIG_DIR = DIR2 + "ConfigFiles/";
-      DATA_DIR = DIR2;
+      configDir = DIR2;
+    }
+    else
+    {
+      cerr << "CRITICAL ERROR: Could not find Models folder" << endl;
+      return false;
     }
   }
   else
   {
-    CONFIG_DIR = DIR1 + "ConfigFiles/";
-    DATA_DIR = DIR1;
+    configDir = DIR1;
   }
 
   // Calculate location of config file
-  string filename = CONFIG_DIR + key;
+  string filename = configDir + key;
 
   try
   {
@@ -138,7 +146,7 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
     SI_Error rc = rdr.LoadFile(filename.c_str());
     if( rc < 0 )
     {
-      cout << "CRITICAL ERROR: Could not load system config file - " << key << endl;
+      cout << "CRITICAL ERROR: Could not load config file - " << key << endl;
       return false;
     }
 
@@ -147,7 +155,7 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
   
     if( params.IsTrainingMode )
     {
-      params.UseFileForTraining = !strcmp( rdr.GetValue("options", "load_mip_file", NULL), "true" );
+      params.UseFileForTraining = !strcmp( rdr.GetValue("options", "load_gt_file", NULL), "true" );
       params.IsInputDirectory = !strcmp( rdr.GetValue("options", "is_list", NULL), "false" );
       params.IsMetadataInImage = !strcmp( rdr.GetValue("options", "is_metadata_in_image", NULL), "true" );
       params.EnableOutputDisplay = false;
@@ -178,42 +186,66 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
 }
 
 // Parse the contents of a process config file
-inline bool ParseSystemConfig( SystemParameters& params )
+inline bool ParseSystemConfig( SystemParameters& params, std::string location = "" )
 {
-  // Find config directory
-  const std::string EXEPATH = GetExectuablePath();
-  string ROOT, TMP;
-  SplitPathAndFile( EXEPATH, ROOT, TMP );
-  const std::string DIR1 = ROOT + "/data/";
-  const std::string DIR2 = ROOT + "/../data/";
-  const std::string DIR1DEFAULT = ROOT + "/data/ConfigFiles/SYSTEM_SETTINGS";
-  const std::string DIR2DEFAULT = ROOT +"/../data/ConfigFiles/SYSTEM_SETTINGS";
-  string CONFIG_DIR = "";
-  string DATA_DIR = "";
+  // Calculate location of config file
+  std::string filename;
+  std::string configDir;
 
-  if( !DoesFileExist( DIR1DEFAULT ) )
+  // Find config directory
+  if( location.empty() )
   {
-    if( DoesFileExist( DIR2DEFAULT ) )
+    const std::string exePath = GetExectuablePath();
+    string ROOT, TMP;
+    SplitPathAndFile( exePath, ROOT, TMP );
+
+    const std::string DIR1 = ROOT + CONFIG_SEARCH_DIR1;
+    const std::string DIR2 = ROOT + CONFIG_SEARCH_DIR2;
+
+    const std::string DIR1DEFAULT = ROOT + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
+    const std::string DIR2DEFAULT = ROOT + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
+
+    if( !DoesFileExist( DIR1DEFAULT ) )
     {
-      CONFIG_DIR = DIR2 + "ConfigFiles/";
-      DATA_DIR = DIR2;
+      if( DoesFileExist( DIR2DEFAULT ) )
+      {
+        configDir = DIR2;
+      }
+      else
+      {
+        cerr << "CRITICAL ERROR: Could not find Models folder" << endl;
+        return false;
+      }
     }
+    else
+    {
+      configDir = DIR1;
+    }
+
+    filename = configDir + DEFAULT_CONFIG_FILE;
   }
   else
   {
-    CONFIG_DIR = DIR1 + "ConfigFiles/";
-    DATA_DIR = DIR1;
+    if( DoesFileExist( location ) )
+    {
+      filename = location;
+      
+      std::string tmp;
+      SplitPathAndFile( location, configDir, tmp );
+    }
+    else
+    {
+      cerr << "CRITICAL ERROR: Could not load config file " << location << endl;
+      return false;
+    }
   }
-
-  // Calculate location of config file
-  string filename = CONFIG_DIR + "SYSTEM_SETTINGS";
 
   try
   {
     // Open file
     CSimpleIniA rdr;
     rdr.SetUnicode();
-    SI_Error rc = rdr.LoadFile(filename.c_str());
+    SI_Error rc = rdr.LoadFile( filename.c_str() );
     if( rc < 0 )
     {
       cout << "CRITICAL ERROR: Could not load system config file - SYSTEM_CONFIG" << endl;
@@ -223,17 +255,17 @@ inline bool ParseSystemConfig( SystemParameters& params )
     // Read file contents
     params.RootColorDIR = rdr.GetValue("options", "root_histogram_dir", NULL);
     params.RootClassifierDIR = rdr.GetValue("options", "root_classifier_dir", NULL);
-    params.FocalLength = atof( rdr.GetValue("options", "focalLength", NULL) );
+    params.FocalLength = atof( rdr.GetValue("options", "focal_length", NULL) );
     params.TrainingPercentKeep = atof( rdr.GetValue("options", "training_false_keep_percentage", NULL) );
     params.LookAtBorderPoints = !strcmp( rdr.GetValue("options", "look_at_border_points", NULL), "true" );
 
     if( params.RootClassifierDIR == "[DEFAULT]" )
     {
-      params.RootClassifierDIR = DATA_DIR + "Classifiers/";
+      params.RootClassifierDIR = configDir + DEFAULT_CLASSIFIER_DIR;
     }
     if( params.RootColorDIR == "[DEFAULT]" )
     {
-      params.RootColorDIR = DATA_DIR + "ColorFilterBanks/";
+      params.RootColorDIR = configDir + DEFAULT_COLORBANK_DIR;
     }
   }
   catch(...)
@@ -249,29 +281,29 @@ inline bool ParseSystemConfig( SystemParameters& params )
 inline bool ParseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
 {
   // Find config directory
-  const std::string EXEPATH = GetExectuablePath();
+  const std::string exePath = GetExectuablePath();
   string ROOT, TMP;
-  SplitPathAndFile( EXEPATH, ROOT, TMP );
+  SplitPathAndFile( exePath, ROOT, TMP );
   const std::string DIR1 = ROOT + "/data/ConfigFiles/";
   const std::string DIR2 = ROOT + "/../data/ConfigFiles/";
   const std::string DIR1DEFAULT = ROOT + "/data/ConfigFiles/" + key;
   const std::string DIR2DEFAULT = ROOT +"/../data/ConfigFiles/" + key;
-  string CONFIG_DIR = "";
+  string configDir = "";
 
   if( !DoesFileExist( DIR1DEFAULT ) )
   {
     if( DoesFileExist( DIR2DEFAULT ) )
     {
-      CONFIG_DIR = DIR2;
+      configDir = DIR2;
     }
   }
   else
   {
-    CONFIG_DIR = DIR1;
+    configDir = DIR1;
   }
 
   // Calculate location of config file
-  string filename = CONFIG_DIR + key;
+  string filename = configDir + key;
 
   try
   {

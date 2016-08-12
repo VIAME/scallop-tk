@@ -9,11 +9,14 @@ training_mode = false
 ; Is the input a list or a directory?
 is_list = true
 
-; Enable output window showing detections while processing?
-enable_display = true
+; Are we using image metadata at all during processing?
+use_metadata = false
 
 ; Is the metadata stored in the list or within the images?
 is_metadata_in_image = true
+
+; Enable output window showing detections while processing?
+enable_display = true
 
 ; Enable output list describing detections?
 output_list = true

@@ -37,6 +37,14 @@
 const float PI  = 3.14159265f;
 const float INF = 1E+37f;
 
+// Default search directories for config files
+const std::string CONFIG_SEARCH_DIR1 = "/Models/";
+const std::string CONFIG_SEARCH_DIR2 = "/../Models/";
+
+const std::string DEFAULT_COLORBANK_DIR = "ColorFilterBanks/";
+const std::string DEFAULT_CLASSIFIER_DIR = "Classifiers/";
+const std::string DEFAULT_CONFIG_FILE = "SYSTEM_SETTINGS";
+
 // Max search depth for reading metadata contained within JPEG files
 const int MAX_META_SEARCH_DEPTH = 10000;
 
@@ -153,7 +161,7 @@ const int MAX_CLASSIFIERS = 30;
 
 struct SystemParameters
 {
-  // Input directory, if specified
+  // Input directory containing input images, if specified
   std::string InputDirectory;
   
   // Input filename, if we're processing a list or using metadata from a list
@@ -177,11 +185,11 @@ struct SystemParameters
   // Are we using image metadata at all during processing?
   bool UseMetadata;
 
-  // The classifier ID to use
-  std::string ClassifierToUse;
-
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
+
+  // The classifier ID to use
+  std::string ClassifierToUse;
 
   // Minimum search radius (in meters if metadata is available, else pixels)
   float MinSearchRadius;

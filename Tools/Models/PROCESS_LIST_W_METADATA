@@ -9,6 +9,9 @@ training_mode = false
 ; Is the input a list or a directory?
 is_list = true
 
+; Are we using image metadata at all during processing?
+use_metadata = true
+
 ; Is the metadata stored in the list or within the images?
 is_metadata_in_image = false
 
@@ -23,3 +26,4 @@ output_duplicate_classifications = true
 
 ; Output images showing detections?
 output_images = false
+
