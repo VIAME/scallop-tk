@@ -47,15 +47,19 @@ public:
   // Destructor
   ~CoreDetector();
 
-  // Process a new frame given an image
+  // Process a new frame given an image and platform metadata
+  // if it is known (otherwise leave it all values as the defaults)
   //
-  // Throws runtime_error exception on failure
-  std::vector< Detection > processFrame( const cv::Mat& image );
+  // Throws runtime_error exception on critical failure
+  std::vector< Detection > processFrame( const cv::Mat& image,
+    float pitch = 0.0f, float roll = 0.0f, float altitude = 0.0f );
 
-  // Process a new frame given the location of an image
+  // Process a new frame given an image and platform metadata
+  // if it is known (otherwise leave it all values as the defaults)
   //
-  // Throws runtime_error exception on failure
-  std::vector< Detection > processFrame( std::string filename );
+  // Throws runtime_error exception on critical failure
+  std::vector< Detection > processFrame( std::string filename,
+    float pitch = 0.0f, float roll = 0.0f, float altitude = 0.0f  );
 
 private:
 

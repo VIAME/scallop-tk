@@ -81,39 +81,44 @@ struct AlgorithmArgs {
   // Output filename for image result if enabled
   string OutputFilename;
 
+  // Will have the algorithm use metadata if it is available
+  bool UseMetadata;
+
   // Output options
   bool ShowVideoDisplay;
   bool EnableListOutput;
   bool OutputMultiEntries;
   bool EnableImageOutput;
 
-  // True if metadata is provided externally from the image file
+  // Search radii (used in meters if metadata is available, else pixels)
+  float MinSearchRadiusMeters;
+  float MaxSearchRadiusMeters;
+  float MinSearchRadiusPixels;
+  float MaxSearchRadiusPixels;
+
+  // True if metadata is provided externally from a list
   bool MetadataProvided;
   float Pitch;
   float Roll;
   float Altitude;
   float FocalLength;
 
-  // Search radii (in meters if metadata is available, else pixels)
-  float MinSearchRadius;
-  float MaxSearchRadius;
-
-  // container for color filters
+  // Container for color filters
   ColorClassifier *CC;
 
-  // container for external statistics collected so far (densities, etc)
+  // Container for external statistics collected so far (densities, etc)
   ThreadStatistics *Stats;
 
-  // container for loaded classifier system to use on this image
+  // Container for loaded classifier system to use on this image
   ClassifierSystem *ClassifierGroup;
 
   // Did we last see a scallop or sand dollar cluster?
   bool ScallopMode;
   
-  // processing mode
+  // Processing mode
   bool IsTrainingMode;
   
-  // training style (GUI or GT) if in training mode
+  // Training style (GUI or GT) if in training mode
   bool UseGTData;
 
   // GT Training keep factor
@@ -122,7 +127,7 @@ struct AlgorithmArgs {
   // Process border interest points
   bool ProcessBorderPoints;
 
-  // pointer to GT input data if in training mode
+  // Pointer to GT input data if in training mode
   GTEntryList *GTData;
 };
 
@@ -143,46 +148,51 @@ void *ProcessImage( void *InputArgs ) {
   startTimer();
 #endif  
 
-  // Convert input image to desired format
-  IplImage inputWrapper = Options->InputImage;
-  IplImage *inputImg = &inputWrapper;
+  // Declare input image in assorted formats for later operations
+  cv::Mat inputImgMat = Options->InputImage;
+
+  if( inputImgMat.cols == 0 || inputImgMat.rows == 0 )
+  {
+    throw std::runtime_error( "Invalid input image" );
+  }
 
 //----------------------Calculate Object Size-------------------------
 
   // Declare Image Properties reader (for metadata read, size calc, etc)
-#ifdef AUTO_READ_METADATA
-
-  // Automatically loads metadata from input file if necessary
   ImageProperties inputProp;
-  
-  if( !Options->MetadataProvided )
+
+  if( Options->UseMetadata )
   {
-    inputProp.calculateImageProperties( Options->InputFilename, inputImg->width,
-      inputImg->height, Options->FocalLength );
+    // Automatically loads metadata from input file if necessary
+    if( !Options->MetadataProvided )
+    {
+      inputProp.calculateImageProperties( Options->InputFilename, inputImgMat.cols,
+        inputImgMat.rows, Options->FocalLength );
+    }
+    else
+    {
+      inputProp.calculateImageProperties( inputImgMat.cols, inputImgMat.rows,
+         Options->Altitude, Options->Pitch, Options->Roll, Options->FocalLength );
+    }
+  
+    if( !inputProp.hasMetadata() )
+    {
+      cerr << "ERROR: Failure to read image metadata for file ";
+      cerr << Options->InputFilenameNoDir << endl;
+      threadExit();
+      return NULL;
+    }
   }
   else
   {
-    inputProp.calculateImageProperties( inputImg->width, inputImg->height,
-       Options->Altitude, Options->Pitch, Options->Roll, Options->FocalLength );
+    inputProp.calculateImageProperties( inputImgMat.cols, inputImgMat.rows);
   }
-
-  if( !inputProp.hasMetadata() )
-  {
-    cerr << "ERROR: Failure to read image metadata for file ";
-    cerr << Options->InputFilenameNoDir << endl;
-    threadExit();
-    return NULL;
-  }
-#else
-  // Queries user for min/max radii to scan for
-  ImageProperties inputProp;
-
-  inputProp.calculateImageProperties( inputImg->width, inputImg->height );
-#endif
   
   // Get the min and max Scallop size from combined image properties and input parameters
-  float minRadPixels = Options->MinSearchRadius / inputProp.getAvgPixelSizeMeters();
-  float maxRadPixels = Options->MaxSearchRadius / inputProp.getAvgPixelSizeMeters();
+  float minRadPixels = ( Options->UseMetadata ? Options->MinSearchRadiusMeters
+    : Options->MinSearchRadiusPixels ) / inputProp.getAvgPixelSizeMeters();
+  float maxRadPixels = ( Options->UseMetadata ? Options->MaxSearchRadiusMeters
+    : Options->MaxSearchRadiusPixels ) / inputProp.getAvgPixelSizeMeters();
 
   // Threshold size scanning range
   if( maxRadPixels < 1.0 )
@@ -206,23 +216,29 @@ void *ProcessImage( void *InputArgs ) {
   float resizeFactor = Stats->returnMaxMinRadRequired() / minRadPixels;
 
   if( resizeFactor < 1.0f ) {
-    IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*inputImg->width),
-                                           (int)(resizeFactor*inputImg->height)),
-                                      inputImg->depth, inputImg->nChannels );
-    cvResize( inputImg, temp, CV_INTER_LINEAR );
-    cvReleaseImage( &inputImg );
-    inputImg = temp;
+    cv::Mat resizedImgMat;
+
+    cv::resize( inputImgMat, resizedImgMat,
+      cv::Size( (int)( resizeFactor*inputImgMat.cols ),
+                (int)( resizeFactor*inputImgMat.rows ) ) );
+
+    inputImgMat = resizedImgMat;
     minRadPixels = minRadPixels * resizeFactor;
     maxRadPixels = maxRadPixels * resizeFactor;
   } else {
     resizeFactor = 1.0f;
   }
 
+  // The remaining code uses legacy OpenCV API (IplImage)
+  IplImage inputImgIplWrapper = inputImgMat;
+  IplImage *inputImg = &inputImgIplWrapper;
+
   // Create processed mask - records which pixels belong to what
   IplImage *mask = cvCreateImage( cvGetSize( inputImg ), IPL_DEPTH_8U, 1 );
   cvSet( mask, cvScalar( 255 ) );
 
   // Records how many detections of each classification category we have
+  // within the current image
   int detections[TOTAL_DESIG];
   for( unsigned int i=0; i<TOTAL_DESIG; i++ )
   {
@@ -267,7 +283,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculate all required image gradients for later operations
-  GradientChain Gradients = createGradientChain( imgLab32f, imgGrey32f,
+  GradientChain gradients = createGradientChain( imgLab32f, imgGrey32f,
     imgGrey8u, imgRGB8u, color, minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
@@ -277,37 +293,37 @@ void *ProcessImage( void *InputArgs ) {
 //-----------------------Detect ROIs-----------------------------
 
   // Containers for initial interest points
-  CandidateVector ColorBlob;
-  CandidateVector Adaptive;
-  CandidateVector Template;
-  CandidateVector Canny;
+  CandidateVector cdsColorBlob;
+  CandidateVector cdsAdaptiveFilt;
+  CandidateVector cdsTemplateAprx;
+  CandidateVector cdsCannyEdge;
   
   // Perform Difference of Gaussian blob Detection on our color classifications
   if( Stats->processed > 5 )
-    detectColoredBlobs( color, ColorBlob ); //<-- Better for large # of images
+    detectColoredBlobs( color, cdsColorBlob ); //<-- Better for large # of images
   else 
-    detectSalientBlobs( color, ColorBlob ); //<-- Better for small # of images
+    detectSalientBlobs( color, cdsColorBlob ); //<-- Better for small # of images
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
-  // Perform Adaptive Filtering
-  performAdaptiveFiltering( color, Adaptive, minRadPixels, false );
+  // Perform cdsAdaptiveFilt Filtering
+  performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
-  // Template Matching Approx
-  findTemplateCandidates( Gradients, Template, inputProp, mask );
+  // cdsTemplateAprx Matching Approx
+  findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Stable Canny Edge Candidates
-  findCannyCandidates( Gradients, Canny );
+  // Stable cdsCannyEdge Edge Candidates
+  findCannyCandidates( gradients, cdsCannyEdge );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -320,7 +336,7 @@ void *ProcessImage( void *InputArgs ) {
   CandidateQueue OrderedCandidates;
 
   // Consolidate interest points
-  prioritizeCandidates( ColorBlob, Adaptive, Template, Canny,
+  prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx, cdsCannyEdge,
     UnorderedCandidates, OrderedCandidates, Stats );
     
 #ifdef ENABLE_BENCHMARKING
@@ -358,11 +374,10 @@ void *ProcessImage( void *InputArgs ) {
     removeBorderCandidates( UnorderedCandidates, imgRGB32f );
   }
 
-  /*if( Options.ShowVideoDisplay )
+  if( Options->ShowVideoDisplay )
   {
-    //I took this out to speed things and not complicate the display- smg 11/5/11
     displayInterestPointImage( imgRGB32f, UnorderedCandidates );
-  }*/
+  }
 
 //--------------------Extract Features---------------------------
 
@@ -374,7 +389,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Identifies edges around each IP
-  edgeSearch( Gradients, color, imgLab32f, UnorderedCandidates, imgRGB32f );
+  edgeSearch( gradients, color, imgLab32f, UnorderedCandidates, imgRGB32f );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -457,7 +472,7 @@ void *ProcessImage( void *InputArgs ) {
     }
   
     // Calculate expensive edges around each interesting point
-    expensiveEdgeSearch( Gradients, color, imgLab32f, imgRGB32f, Interesting );
+    expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, Interesting );
   
     // Perform cleanup by removing interest points which are part of another interest point
     removeInsidePoints( Interesting, LikelyObjects );
@@ -551,7 +566,7 @@ void *ProcessImage( void *InputArgs ) {
   // Deallocate memory used by thread
   deallocateCandidates( UnorderedCandidates );
   deallocateDetections( Objects );
-  deallocateGradientChain( Gradients );
+  deallocateGradientChain( gradients );
   hfDeallocResults( color );
   cvReleaseImage( &inputImg );
   cvReleaseImage( &imgRGB32f );
@@ -881,6 +896,11 @@ int runCoreDetector( const SystemParameters& settings )
       inputArgs[0].Roll = inputRoll[i];
     }
 
+    // Load image from file
+    cv::Mat image;
+    image = imread( inputFilenames[i], CV_LOAD_IMAGE_COLOR );
+    inputArgs[0].InputImage = image;
+
     // Execute processing
     ProcessImage( inputArgs );
 
@@ -944,8 +964,8 @@ class CoreDetector::Priv
 {
 public:
 
-  Priv() : counter(0) {}
-  ~Priv() {}
+  explicit Priv( const SystemParameters& settings );
+  ~Priv();
 
   ClassifierSystem* classifier;
   AlgorithmArgs *inputArgs;
@@ -953,15 +973,12 @@ public:
   unsigned counter;
 };
 
-CoreDetector::CoreDetector( const std::string& configFile )
+CoreDetector::Priv::Priv( const SystemParameters& sets )
 {
-  
-}
+  counter = 0;
 
-CoreDetector::CoreDetector( const SystemParameters& settings )
-{
   // Retrieve some contents from input
-  data->settings = settings;
+  settings = sets;
   string outputDir = settings.OutputDirectory;
   string outputFile = settings.OutputFilename;
   string listFilename = outputDir + outputFile;
@@ -971,8 +988,7 @@ CoreDetector::CoreDetector( const SystemParameters& settings )
   if( settings.OutputList ) {
     ofstream fout( listFilename.c_str() );
     if( !fout.is_open() ) {
-      cout << "ERROR: Could not open output list for writing!" << std::endl;
-      return;
+      throw std::runtime_error( "Could not open output list for writing" );
     }
     fout.close();
   }
@@ -983,8 +999,7 @@ CoreDetector::CoreDetector( const SystemParameters& settings )
   benchmarkingOutput.open( BenchmarkingFilename.c_str() );
 
   if( !benchmarkingOutput.is_open() ) {
-    cout << "ERROR: Could not write to benchmarking file!" << std::endl;
-    return false;
+    throw std::runtime_error( "Could not write to benchmarking file" );
   }
 #endif
 
@@ -993,32 +1008,28 @@ CoreDetector::CoreDetector( const SystemParameters& settings )
 
   ClassifierParameters cparams;
 
-  if( !ParseClassifierConfig( settings.ClassifierToUse, settings, cparams ) )
-  {
-    return;
+  if( !ParseClassifierConfig( settings.ClassifierToUse, settings, cparams ) ) {
+    throw std::runtime_error( "Unabled to read config for "+ settings.ClassifierToUse );
   }
 
   // Load classifier system based on config settings
-  data->classifier = loadClassifiers( settings, cparams );
+  classifier = loadClassifiers( settings, cparams );
 
-  if( data->classifier == NULL )
-  {
-    cout << "ERROR: Unabled to load classifier " << settings.ClassifierToUse << endl;
-    return;
+  if( classifier == NULL ) {
+    throw std::runtime_error( "Unabled to load classifier " + settings.ClassifierToUse );
   }
 
   // Load Statistics/Color filters
   cout << "Loading Colour Filters... ";
-  data->inputArgs = new AlgorithmArgs[THREADS];
+  inputArgs = new AlgorithmArgs[THREADS];
 
   for( int i=0; i < THREADS; i++ )
   {
-    data->inputArgs[i].CC = new ColorClassifier;
-    data->inputArgs[i].Stats = new ThreadStatistics;
+    inputArgs[i].CC = new ColorClassifier;
+    inputArgs[i].Stats = new ThreadStatistics;
 
-    if( !data->inputArgs[i].CC->loadFilters( settings.RootColorDIR, "_32f_rgb_v1.cfilt" ) ) {
-      cerr << "ERROR: Could not load colour filters!" << std::endl;
-      return;
+    if( !inputArgs[i].CC->loadFilters( settings.RootColorDIR, DEFAULT_COLORBANK_EXT ) ) {
+      throw std::runtime_error( "Could not load colour filters" );
     }
   }
 
@@ -1028,16 +1039,17 @@ CoreDetector::CoreDetector( const SystemParameters& settings )
   for( int i=0; i<THREADS; i++ )
   {
     // Set thread output options
-    data->inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
-    data->inputArgs[i].UseGTData = settings.UseFileForTraining;
-    data->inputArgs[i].GTData = NULL;
-    data->inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
-    data->inputArgs[i].EnableListOutput = settings.OutputList;
-    data->inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
-    data->inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
-    data->inputArgs[i].ScallopMode = true;
-    data->inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
-    data->inputArgs[i].ListFilename = listFilename;
+    inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
+    inputArgs[i].UseGTData = settings.UseFileForTraining;
+    inputArgs[i].GTData = NULL;
+    inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
+    inputArgs[i].EnableListOutput = settings.OutputList;
+    inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
+    inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
+    inputArgs[i].ScallopMode = true;
+    inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
+    inputArgs[i].ListFilename = listFilename;
+    inputArgs[i].FocalLength = settings.FocalLength;
   }
 
   // Initiate display window for output
@@ -1048,54 +1060,85 @@ CoreDetector::CoreDetector( const SystemParameters& settings )
 
   // Cycle through all input files
   cout << endl << "Ready to Process Files" << endl;
+}
 
+CoreDetector::Priv::~Priv()
+{
+  // Deallocate algorithm inputs
+  for( int i=0; i < THREADS; i++ ) {
+    delete inputArgs[i].Stats;
+    delete inputArgs[i].CC;
+  }
+
+  delete[] inputArgs;
+
+  // Deallocate loaded classifier systems
+  if( classifier )
+  {
+    delete classifier;
+  }
+
+  // Remove output display window
+  if( settings.EnableOutputDisplay )
+  {
+    killOuputDisplay();
+  }
+
+#ifdef ENABLE_BENCHMARKING
+  // Close benchmarking output file
+  benchmarkingOutput.close();
+#endif
+}
+
+CoreDetector::CoreDetector( const std::string& configFile )
+{
+  SystemParameters settings;
+
+  if( !ParseSystemConfig( settings, configFile ) )
+  {
+    throw std::runtime_error( "Unable to read system parameters file" );
+  }
+
+  data = new Priv( settings );
+}
+
+CoreDetector::CoreDetector( const SystemParameters& settings )
+{
+  data = new Priv( settings );
 }
 
 CoreDetector::~CoreDetector()
 {
   if( data )
   {
-    // Deallocate algorithm inputs
-    for( int i=0; i < THREADS; i++ ) {
-      delete data->inputArgs[i].Stats;
-      delete data->inputArgs[i].CC;
-    }
-
-    delete[] data->inputArgs;
-  
-    // Deallocate loaded classifier systems
-    if( data->classifier )
-    {
-      delete data->classifier;
-    }
-  
-    // Remove output display window
-    if( data->settings.EnableOutputDisplay )
-    {
-      killOuputDisplay();
-    }
-  
-#ifdef ENABLE_BENCHMARKING
-    // Close benchmarking output file
-    benchmarkingOutput.close();
-#endif
-  
     delete data;
   }
 }
 
 std::vector< Detection >
-CoreDetector::processFrame( const cv::Mat& image )
+CoreDetector::processFrame( const cv::Mat& image,
+ float pitch, float roll, float altitude )
 {
   // Always set the focal length
   data->counter++;
   std::string frameID = "streaming_frame" + INT_2_STR( data->counter );
 
   data->inputArgs[0].InputImage = image;
-  data->inputArgs[0].FocalLength = data->settings.FocalLength;
   data->inputArgs[0].InputFilename = frameID;
   data->inputArgs[0].OutputFilename = frameID;
   data->inputArgs[0].InputFilenameNoDir = frameID;
+
+  if( pitch != 0.0f || roll != 0.0f || altitude != 0.0f )
+  {
+    data->inputArgs[0].MetadataProvided = true;
+    data->inputArgs[0].Pitch = pitch;
+    data->inputArgs[0].Roll = roll;
+    data->inputArgs[0].Altitude = altitude;
+  }
+  else
+  {
+    data->inputArgs[0].MetadataProvided = false;
+  }
 
   // Execute processing
   ProcessImage( data->inputArgs );
@@ -1109,9 +1152,12 @@ CoreDetector::processFrame( const cv::Mat& image )
 }
 
 std::vector< Detection >
-CoreDetector::processFrame( std::string filename )
+CoreDetector::processFrame( std::string filename,
+ float pitch, float roll, float altitude )
 {
-  return std::vector< Detection >();
+  cv::Mat image;
+  image = imread( filename, CV_LOAD_IMAGE_COLOR );
+  processFrame( image, pitch, roll, altitude );
 }
 
 }

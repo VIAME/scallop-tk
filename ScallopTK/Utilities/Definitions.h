@@ -40,6 +40,7 @@ const std::string CONFIG_SEARCH_DIR2 = "/../Models/";
 const std::string DEFAULT_COLORBANK_DIR = "ColorFilterBanks/";
 const std::string DEFAULT_CLASSIFIER_DIR = "Classifiers/";
 const std::string DEFAULT_CONFIG_FILE = "SYSTEM_SETTINGS";
+const std::string DEFAULT_COLORBANK_EXT = "_32f_rgb_v1.cfilt";
 
 // Max search depth for reading metadata contained within JPEG files
 const int MAX_META_SEARCH_DEPTH = 10000;
