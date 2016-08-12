@@ -9,21 +9,20 @@ use_metadata = false
 ; Is metadata stored in the image or the file list?
 is_metadata_in_image = false
 
-; Minimum search radius (in meters if metadata is available, else pixels)
-min_search_radius = 4
+; Minimum search radius (used if metadata is available)
+min_search_radius_meters = 0.04
 
-; Maximum search radius (in meters if metadata is available, else pixels)
-max_search_radius = 200
+; Maximum search radius (used if metadata is available)
+max_search_radius_meters = 0.12
+
+; Minimum search radius (used if metadata is not available)
+min_search_radius_pixels = 4
+
+; Maximum search radius (used if metadata is not available)
+max_search_radius_pixels = 200
 
 ; The default classifier ID to use
-classifier_to_use = DEFAULT
-
-; Are we in training mode or process (testing) mode?
-is_training_mode = false
-
-; If we are in training mode, are we getting annotations from a file,
-; or should the internal GUI be enabled for annotations?
-use_file_for_training = true
+classifier_to_use = DEFAULT_ADA
 
 ; If training from files, the percentage of false points outside of
 ; annotations to use as false examples.

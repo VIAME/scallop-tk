@@ -5,10 +5,11 @@
 [options] ; all should be either {true, false}
 
 ; Execution mode of algorithm {true,false}
-training_mode=true
+training_mode = true
 
-; Training style if in training mode
-load_gt_file=true
+; If we are in training mode, are we getting annotations from a file,
+; or should the internal GUI be enabled for annotations?
+use_file_for_training = true
 
 ; Is the input a list or a directory?
 is_list=true

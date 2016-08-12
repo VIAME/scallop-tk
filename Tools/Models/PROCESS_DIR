@@ -16,14 +16,14 @@ use_metadata = false
 is_metadata_in_image = true
 
 ; Enable output window showing detections while processing?
-enable_display = true
+enable_output_display = true
 
 ; Enable output list describing detections?
 output_list = true
 
 ; Print out duplicate entries for the same IP if it may be in multiple categories?
-output_duplicate_classifications = true
+output_duplicate_class = true
 
 ; Output images showing detections?
-output_images = false
+output_detection_images = false
 

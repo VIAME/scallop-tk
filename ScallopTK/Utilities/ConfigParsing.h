@@ -16,13 +16,7 @@
 // Internal Include Files
 #include "ScallopTK/TPL/Config/SimpleIni.h"
 #include "ScallopTK/Utilities/Definitions.h"
-
-//File system
-#ifdef WIN32
-  #include "ScallopTK/Utilities/FilesystemWin32.h"
-#else
-  #include "ScallopTK/Utilities/FilesystemUnix.h"
-#endif
+#include "ScallopTK/Utilities/Filesystem.h"
 
 // Namespaces
 using namespace std;
@@ -83,7 +77,7 @@ inline void SplitPathAndFile( const string& input, string& path, string& file )
 }
 
 // Convert a csv style string into a vector of substrings
-inline std::vector< std::string > ConvertCSVLine( string line, bool ignore_empty = false )
+inline std::vector< std::string > ConvertCSVLine( string line, bool ignoreEmpty = false )
 {
   std::vector< std::string > parsed;
   stringstream strm(line);
@@ -93,7 +87,7 @@ inline std::vector< std::string > ConvertCSVLine( string line, bool ignore_empty
   {
     word = RemoveSpaces( word );
 
-    if( ignore_empty && word.size() == 0 )
+    if( ignoreEmpty&& word.size() == 0 )
       continue;
 
     parsed.push_back( word );
@@ -102,41 +96,67 @@ inline std::vector< std::string > ConvertCSVLine( string line, bool ignore_empty
   return parsed;
 }
 
-// Parse the contents of a process config file, adding them to params
-inline bool ParseModeConfig( string key, SystemParameters& params )
+// Find root system config file, returning whether or not it's found, and if so,
+// a full path to its location, and its folder
+inline bool FindSysConfig( string& path, string& folder, string hint = "" )
 {
-  // Find config directory
-  const std::string exePath = GetExectuablePath();
-  string ROOT, TMP;
-  SplitPathAndFile( exePath, ROOT, TMP );
+  path = std::string();
+  folder = std::string();
 
-  const std::string DIR1 = ROOT + CONFIG_SEARCH_DIR1;
-  const std::string DIR2 = ROOT + CONFIG_SEARCH_DIR2;
-
-  const std::string DIR1DEFAULT = ROOT + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
-  const std::string DIR2DEFAULT = ROOT + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
-
-  string configDir = "";
-
-  if( !DoesFileExist( DIR1DEFAULT ) )
+  if( hint.empty() )
   {
-    if( DoesFileExist( DIR2DEFAULT ) )
+    const std::string exePath = GetExectuablePath();
+
+    string root, tmp;
+    SplitPathAndFile( exePath, root, tmp );
+
+    const std::string DIR1 = root + CONFIG_SEARCH_DIR1;
+    const std::string DIR2 = root + CONFIG_SEARCH_DIR2;
+
+    const std::string DIR1DEFAULT = root + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
+    const std::string DIR2DEFAULT = root + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
+
+    if( !DoesFileExist( DIR1DEFAULT ) )
     {
-      configDir = DIR2;
+      if( DoesFileExist( DIR2DEFAULT ) )
+      {
+        folder = DIR2;
+      }
+      else
+      {
+        cerr << "CRITICAL ERROR: Could not find Models folder" << endl;
+        return false;
+      }
     }
     else
     {
-      cerr << "CRITICAL ERROR: Could not find Models folder" << endl;
-      return false;
+      folder = DIR1;
     }
+
+    path = folder + DEFAULT_CONFIG_FILE;
   }
   else
   {
-    configDir = DIR1;
+    if( DoesFileExist( hint ) )
+    {
+      path = hint;
+      
+      std::string tmp;
+      SplitPathAndFile( path, folder, tmp );
+    }
+    else
+    {
+      cerr << "CRITICAL ERROR: Could not load config file " << path << endl;
+      return false;
+    }
   }
+}
 
+// Parse the contents of a process config file, adding them to params
+inline bool ParseModeConfig( string key, SystemParameters& params )
+{
   // Calculate location of config file
-  string filename = configDir + key;
+  string filename = params.RootConfigDIR + key;
 
   try
   {
@@ -151,13 +171,14 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
     }
 
     // Read file contents
-    params.IsTrainingMode = !strcmp( rdr.GetValue("options", "training_mode", NULL), "true" );
-  
+    params.IsTrainingMode = !strcmp( rdr.GetValue( "options", "training_mode", NULL ), "true" );
+
     if( params.IsTrainingMode )
     {
-      params.UseFileForTraining = !strcmp( rdr.GetValue("options", "load_gt_file", NULL), "true" );
-      params.IsInputDirectory = !strcmp( rdr.GetValue("options", "is_list", NULL), "false" );
-      params.IsMetadataInImage = !strcmp( rdr.GetValue("options", "is_metadata_in_image", NULL), "true" );
+      params.UseFileForTraining = !strcmp( rdr.GetValue( "options", "use_file_for_training", NULL ), "true" );
+      params.IsInputDirectory = !strcmp( rdr.GetValue( "options", "is_list", NULL ), "false" );
+      params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
+      params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
       params.EnableOutputDisplay = false;
       params.OutputList = true;
       params.OutputDuplicateClass = false;
@@ -167,16 +188,17 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
     else
     {
       params.UseFileForTraining = false;
-      params.IsInputDirectory = !strcmp( rdr.GetValue("options", "is_list", NULL), "false" );
-      params.IsMetadataInImage = !strcmp( rdr.GetValue("options", "is_metadata_in_image", NULL), "true" );
-      params.EnableOutputDisplay = !strcmp( rdr.GetValue("options", "enable_display", NULL), "true" );
-      params.OutputList = !strcmp( rdr.GetValue("options", "output_list", NULL), "true" );
-      params.OutputDuplicateClass = !strcmp( rdr.GetValue("options", "output_duplicate_classifications", NULL), "true" );
-      params.OutputDetectionImages = !strcmp( rdr.GetValue("options", "output_images", NULL), "true" );
-      params.NumThreads = atoi( rdr.GetValue("options", "num_threads", "1" ) );
+      params.IsInputDirectory = !strcmp( rdr.GetValue( "options", "is_list", NULL ), "false" );
+      params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
+      params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
+      params.EnableOutputDisplay = !strcmp( rdr.GetValue( "options", "enable_output_display", NULL ), "true" );
+      params.OutputList = !strcmp( rdr.GetValue( "options", "output_list", NULL ), "true" );
+      params.OutputDuplicateClass = !strcmp( rdr.GetValue( "options", "output_duplicate_class", NULL ), "true" );
+      params.OutputDetectionImages = !strcmp( rdr.GetValue( "options", "output_detection_images", NULL ), "true" );
+      params.NumThreads = atoi( rdr.GetValue( "options", "num_threads", "1" ) );
     }
   }
-  catch(...)
+  catch( ... )
   {
     cout << "CRITICAL ERROR: Could not load system config file - " << key << endl;
     return false;
@@ -193,51 +215,9 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
   std::string configDir;
 
   // Find config directory
-  if( location.empty() )
+  if( !FindSysConfig( filename, configDir, location ) )
   {
-    const std::string exePath = GetExectuablePath();
-    string ROOT, TMP;
-    SplitPathAndFile( exePath, ROOT, TMP );
-
-    const std::string DIR1 = ROOT + CONFIG_SEARCH_DIR1;
-    const std::string DIR2 = ROOT + CONFIG_SEARCH_DIR2;
-
-    const std::string DIR1DEFAULT = ROOT + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
-    const std::string DIR2DEFAULT = ROOT + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
-
-    if( !DoesFileExist( DIR1DEFAULT ) )
-    {
-      if( DoesFileExist( DIR2DEFAULT ) )
-      {
-        configDir = DIR2;
-      }
-      else
-      {
-        cerr << "CRITICAL ERROR: Could not find Models folder" << endl;
-        return false;
-      }
-    }
-    else
-    {
-      configDir = DIR1;
-    }
-
-    filename = configDir + DEFAULT_CONFIG_FILE;
-  }
-  else
-  {
-    if( DoesFileExist( location ) )
-    {
-      filename = location;
-      
-      std::string tmp;
-      SplitPathAndFile( location, configDir, tmp );
-    }
-    else
-    {
-      cerr << "CRITICAL ERROR: Could not load config file " << location << endl;
-      return false;
-    }
+    return false;
   }
 
   try
@@ -253,11 +233,26 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
     }
 
     // Read file contents
-    params.RootColorDIR = rdr.GetValue("options", "root_histogram_dir", NULL);
-    params.RootClassifierDIR = rdr.GetValue("options", "root_classifier_dir", NULL);
-    params.FocalLength = atof( rdr.GetValue("options", "focal_length", NULL) );
-    params.TrainingPercentKeep = atof( rdr.GetValue("options", "training_false_keep_percentage", NULL) );
-    params.LookAtBorderPoints = !strcmp( rdr.GetValue("options", "look_at_border_points", NULL), "true" );
+    params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
+    params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
+    params.MinSearchRadiusMeters = atof( rdr.GetValue( "options", "min_search_radius_meters", NULL ) );
+    params.MaxSearchRadiusMeters = atof( rdr.GetValue( "options", "max_search_radius_meters", NULL ) );
+    params.MinSearchRadiusPixels = atof( rdr.GetValue( "options", "min_search_radius_pixels", NULL ) );
+    params.MaxSearchRadiusPixels = atof( rdr.GetValue( "options", "max_search_radius_pixels", NULL ) );
+    params.ClassifierToUse = rdr.GetValue( "options", "classifier_to_use", NULL );
+    params.IsTrainingMode = false;
+    params.TrainingPercentKeep = atof( rdr.GetValue( "options", "training_percent_keep", NULL ) );
+    params.LookAtBorderPoints = !strcmp( rdr.GetValue( "options", "look_at_border_points", NULL ), "true" );
+    params.EnableOutputDisplay = !strcmp( rdr.GetValue( "options", "enable_output_display", NULL ), "true" );
+    params.OutputList = !strcmp( rdr.GetValue( "options", "output_list", NULL ), "true" );
+    params.OutputDuplicateClass = !strcmp( rdr.GetValue( "options", "output_duplicate_class", NULL ), "true" );
+    params.OutputProposalImages = !strcmp( rdr.GetValue( "options", "output_proposal_images", NULL ), "true" );
+    params.OutputDetectionImages = !strcmp( rdr.GetValue( "options", "output_detection_images", NULL ), "true" );
+    params.NumThreads = atoi( rdr.GetValue( "options", "num_threads", "1" ) );
+    params.FocalLength = atof( rdr.GetValue( "options", "focal_length", NULL ) );
+    params.RootConfigDIR = configDir;
+    params.RootClassifierDIR = rdr.GetValue( "options", "root_classifier_dir", NULL );
+    params.RootColorDIR = rdr.GetValue( "options", "root_color_dir", NULL );
 
     if( params.RootClassifierDIR == "[DEFAULT]" )
     {
@@ -268,7 +263,7 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
       params.RootColorDIR = configDir + DEFAULT_COLORBANK_DIR;
     }
   }
-  catch(...)
+  catch( ... )
   {
     cout << "CRITICAL ERROR: Could not load system config file - SYSTEM_CONFIG" << endl;
     return false;
@@ -280,73 +275,6 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
 // Parse the contents of a classifier config file
 inline bool ParseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
 {
-  // Find config directory
-  const std::string exePath = GetExectuablePath();
-  string ROOT, TMP;
-  SplitPathAndFile( exePath, ROOT, TMP );
-  const std::string DIR1 = ROOT + "/data/ConfigFiles/";
-  const std::string DIR2 = ROOT + "/../data/ConfigFiles/";
-  const std::string DIR1DEFAULT = ROOT + "/data/ConfigFiles/" + key;
-  const std::string DIR2DEFAULT = ROOT +"/../data/ConfigFiles/" + key;
-  string configDir = "";
-
-  if( !DoesFileExist( DIR1DEFAULT ) )
-  {
-    if( DoesFileExist( DIR2DEFAULT ) )
-    {
-      configDir = DIR2;
-    }
-  }
-  else
-  {
-    configDir = DIR1;
-  }
-
-  // Calculate location of config file
-  string filename = configDir + key;
-
-  try
-  {
-    // Open file
-    CSimpleIniA rdr;
-    rdr.SetUnicode();
-    SI_Error rc = rdr.LoadFile(filename.c_str());
-    if( rc < 0 )
-    {
-      cout << endl << endl;
-      cout << "CRITICAL ERROR: Could not load classifier config file - " << key << endl;
-      return false;
-    }
-
-    // Read file contents
-    params.ClassifierSubdir = rdr.GetValue("classifiers", "CLASSIFIER_SUBDIR", NULL);
-    params.L1Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C1IDS", NULL), true );
-    params.L1Files = ConvertCSVLine( rdr.GetValue("classifiers", "C1FILES", NULL), true );
-    params.L1SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C1CATEGORY", NULL), true );
-    params.L2Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C2IDS", NULL), true );
-    params.L2SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CATEGORY", NULL), true );
-    params.L2SuppTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CLFSTYLE", NULL), true );
-    params.L2Files = ConvertCSVLine( rdr.GetValue("classifiers", "C2FILES", NULL), true );
-    params.EnabledSDSS = !strcmp( rdr.GetValue("classifiers", "ENABLE_SAND_DOLLAR_SUPPRESSION_SYS", NULL), "true" );
-    params.Threshold = atof( rdr.GetValue("classifiers", "THRESHOLD", "0.0") );
-
-    // Check vector sizes
-    if( params.L1Keys.size() != params.L1Files.size() || 
-      params.L1Keys.size() != params.L1SpecTypes.size() ||
-      params.L2Files.size()!= params.L2SpecTypes.size() ||
-        params.L2Keys.size() != params.L2SuppTypes.size() || 
-        params.L2Keys.size() != params.L2Files.size() )
-    {
-      cout << "CRITICAL ERROR: Classifier lists in config file " << key << " are not the same length!" << endl;
-      return false;
-    }
-  }
-  catch(...)
-  {
-    cout << "CRITICAL ERROR: Could not load classifier config file - " << key << endl;
-    return false;
-  }
-  
   // Append paths to files
   vector< string >& L1Files = params.L1Files;
   vector< string >& L2Files = params.L2Files;
@@ -416,8 +344,8 @@ inline bool ParseGTFile( string filename, GTEntryList& output )
 
 inline void InitializeDefault( SystemParameters& settings )
 {
-  settings.RootColorDIR = "data/ColorFilterBanks/";
-  settings.RootClassifierDIR = "data/Classifiers/";
+  settings.RootColorDIR = "";
+  settings.RootClassifierDIR = "";
   settings.IsTrainingMode = false;
   settings.UseFileForTraining = false;
   settings.IsInputDirectory = true;

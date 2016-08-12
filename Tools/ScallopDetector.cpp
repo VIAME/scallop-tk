@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // Title: Scallop Detector
 // Author: Matthew Dawkins
-// Description: Run the core scallop detection pipeline
+// Description: Run the core detection pipeline in an executable
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ int main( int argc, char** argv )
 
   // Validate number of specified threads
   if( settings.NumThreads < 1 || settings.NumThreads > MAX_THREADS ) {
-    cerr << "\nWARNING: Invalid number of threads. Defaulting to 1.\n";
+    cerr << "\nWARNING: Invalid number of threads. Defaulting to 1." << endl;
     settings.NumThreads = 1;
   }
 
@@ -145,7 +145,7 @@ int main( int argc, char** argv )
   if( settings.NumThreads != 1 ) {
     cerr << endl;
     cerr << "WARNING: Windows version does not support threading at this time. ";
-    cerr << "WARNING: Defaulting to 1 thread.\n";
+    cerr << "WARNING: Defaulting to 1 thread." << endl;
     settings.NumThreads = 1;
   }
 #endif
@@ -157,7 +157,7 @@ int main( int argc, char** argv )
     if( settings.NumThreads != 1 ) {
       cerr << endl;
       cerr << "WARNING: Threading serves no purpose in training mode. ";
-      cerr << "WARNING: Defaulting to 1 thread.\n";
+      cerr << "WARNING: Defaulting to 1 thread." << endl;
       settings.NumThreads = 1;
     }
   }

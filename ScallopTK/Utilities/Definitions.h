@@ -21,10 +21,6 @@
 //                         Common Defines and Macros
 //------------------------------------------------------------------------------
 
-// Enables automatic reading of metadata from image file
-//  - For any HabCam data this should be on -
-#define AUTO_READ_METADATA 1
-
 // Convert an integer to a string
 #define INT_2_STR( x ) static_cast< std::ostringstream & >( \
         ( std::ostringstream() << std::dec << x ) ).str()
@@ -37,7 +33,7 @@
 const float PI  = 3.14159265f;
 const float INF = 1E+37f;
 
-// Default search directories for config files
+// Default search directories for config files for binaries
 const std::string CONFIG_SEARCH_DIR1 = "/Models/";
 const std::string CONFIG_SEARCH_DIR2 = "/../Models/";
 
@@ -58,7 +54,7 @@ const int PNG      = 0x05;   //.png
 
 // Desired maximum pixel count covering the min object search radius,
 // this is an optimization which speeds up all operations by performing
-// an initial resize of the input image.
+// an downscale of the input image, if possible.
 const float MAX_PIXELS_FOR_MIN_RAD = 10.0;
 
 // A downsizing image resize factor must be lower than 95% to validate
@@ -176,6 +172,9 @@ struct SystemParameters
   // Are input images coming from a directory or a filelist
   bool IsInputDirectory;
 
+  // Root directory containing all config files and models
+  std::string RootConfigDIR;
+
   // Root directory for color filters
   std::string RootColorDIR;
   
@@ -188,14 +187,20 @@ struct SystemParameters
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
 
-  // The classifier ID to use
+  // The main classifier ID to use
   std::string ClassifierToUse;
 
-  // Minimum search radius (in meters if metadata is available, else pixels)
-  float MinSearchRadius;
+  // Minimum search radius in meters (Used if metadata is available)
+  float MinSearchRadiusMeters;
 
-  // Maximum search radius (in meters if metadata is available, else pixels)
-  float MaxSearchRadius;
+  // Maximum search radius in meters (used if metadata is available)
+  float MaxSearchRadiusMeters;
+
+  // Minimum search radius in meters (Used if metadata is not available)
+  float MinSearchRadiusPixels;
+
+  // Maximum search radius in meters (used if metadata is not available)
+  float MaxSearchRadiusPixels;
 
   // Are we in training mode or process (testing) mode?
   bool IsTrainingMode;

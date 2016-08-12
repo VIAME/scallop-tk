@@ -175,7 +175,9 @@ void *ProcessImage( void *InputArgs ) {
   }
 #else
   // Queries user for min/max radii to scan for
-  ImageProperties inputProp( inputImg->width, inputImg->height );
+  ImageProperties inputProp;
+
+  inputProp.calculateImageProperties( inputImg->width, inputImg->height );
 #endif
   
   // Get the min and max Scallop size from combined image properties and input parameters
