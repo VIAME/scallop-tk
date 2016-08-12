@@ -275,6 +275,61 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
 // Parse the contents of a classifier config file
 inline bool ParseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
 {
+  // Find config directory
+  const std::string filename = settings.RootClassifierDIR + key;
+
+  if( !DoesFileExist( filename ) )
+  {
+    cerr << "CRITICAL ERROR: Cannot load " << key << " classifier param file" << endl;
+    return false;
+  }
+
+  try
+  {
+    // Open file
+    CSimpleIniA rdr;
+    rdr.SetUnicode();
+    SI_Error rc = rdr.LoadFile( filename.c_str() );
+    if( rc < 0 )
+    {
+      cout << endl << endl;
+      cout << "CRITICAL ERROR: Could not load classifier config file - " << key << endl;
+      return false;
+    }
+
+    // Read file contents
+    params.UseCNNClassifier = !strcmp( rdr.GetValue( "classifiers", "USE_CNN_CLASSIFIER", NULL ), "true" );
+    params.ClassifierSubdir = rdr.GetValue("classifiers", "CLASSIFIER_SUBDIR", NULL);
+    params.L1Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C1IDS", NULL), true );
+    params.L1Files = ConvertCSVLine( rdr.GetValue("classifiers", "C1FILES", NULL), true );
+    params.L1SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C1CATEGORY", NULL), true );
+    params.L2Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C2IDS", NULL), true );
+    params.L2SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CATEGORY", NULL), true );
+    params.L2SuppTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CLFSTYLE", NULL), true );
+    params.L2Files = ConvertCSVLine( rdr.GetValue("classifiers", "C2FILES", NULL), true );
+    params.EnabledSDSS = !strcmp( rdr.GetValue("classifiers", "ENABLE_SAND_DOLLAR_SUPPRESSION_SYS", NULL), "true" );
+    params.Threshold = atof( rdr.GetValue("classifiers", "THRESHOLD", "0.0") );
+
+    // Check vector sizes
+    if( !params.UseCNNClassifier )
+    {
+      if( params.L1Keys.size() != params.L1Files.size() || 
+        params.L1Keys.size() != params.L1SpecTypes.size() ||
+        params.L2Files.size()!= params.L2SpecTypes.size() ||
+          params.L2Keys.size() != params.L2SuppTypes.size() || 
+          params.L2Keys.size() != params.L2Files.size() )
+      {
+        cout << "CRITICAL ERROR: Classifier lists in config file " << key << " are not the same length!" << endl;
+        return false;
+      }
+    }
+  }
+  catch(...)
+  {
+    cout << "CRITICAL ERROR: Could not load classifier config file - " << key << endl;
+    return false;
+  }
+  
   // Append paths to files
   vector< string >& L1Files = params.L1Files;
   vector< string >& L2Files = params.L2Files;
@@ -291,7 +346,7 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
       L2Files[i] = settings.RootClassifierDIR + params.ClassifierSubdir + L2Files[i];
     else
       L2Files[i] = settings.RootClassifierDIR + L2Files[i];
-  } 
+  }
 
   return true;
 }
