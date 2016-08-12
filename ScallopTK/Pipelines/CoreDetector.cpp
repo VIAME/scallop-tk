@@ -332,12 +332,12 @@ void *ProcessImage( void *InputArgs ) {
 //---------------------Consolidate ROIs--------------------------
 
   // Containers for sorted IPs
-  CandidateVector UnorderedCandidates;
-  CandidateQueue OrderedCandidates;
+  CandidateVector unorderedCandidates;
+  CandidateQueue orderedCandidates;
 
   // Consolidate interest points
   prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx, cdsCannyEdge,
-    UnorderedCandidates, OrderedCandidates, Stats );
+    unorderedCandidates, orderedCandidates, Stats );
     
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -366,30 +366,30 @@ void *ProcessImage( void *InputArgs ) {
     }
     
     // Remove any detected Candidates which conflict with markups
-    RemoveOverlapAndMerge( UnorderedCandidates, GTDetections, Options->TrainingPercentKeep );
+    RemoveOverlapAndMerge( unorderedCandidates, GTDetections, Options->TrainingPercentKeep );
   }
 
   if( !Options->ProcessBorderPoints )
   {
-    removeBorderCandidates( UnorderedCandidates, imgRGB32f );
+    removeBorderCandidates( unorderedCandidates, imgRGB32f );
   }
 
   if( Options->ShowVideoDisplay )
   {
-    displayInterestPointImage( imgRGB32f, UnorderedCandidates );
+    displayInterestPointImage( imgRGB32f, unorderedCandidates );
   }
 
 //--------------------Extract Features---------------------------
 
   // Initializes Candidate stats used for classification
-  initalizeCandidateStats( UnorderedCandidates, inputImg->height, inputImg->width );
+  initalizeCandidateStats( unorderedCandidates, inputImg->height, inputImg->width );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Identifies edges around each IP
-  edgeSearch( gradients, color, imgLab32f, UnorderedCandidates, imgRGB32f );
+  edgeSearch( gradients, color, imgLab32f, unorderedCandidates, imgRGB32f );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -397,7 +397,7 @@ void *ProcessImage( void *InputArgs ) {
 
   // Creates an unoriented gs HoG descriptor around each IP
   HoGFeatureGenerator gsHoG( imgGrey32f, minRadPixels, maxRadPixels, 0 );
-  gsHoG.Generate( UnorderedCandidates );
+  gsHoG.Generate( unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -405,15 +405,15 @@ void *ProcessImage( void *InputArgs ) {
 
   // Creates an unoriented sal HoG descriptor around each IP
   HoGFeatureGenerator salHoG( color->SaliencyMap, minRadPixels, maxRadPixels, 1 );
-  salHoG.Generate( UnorderedCandidates );
+  salHoG.Generate( unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculates size based features around each IP
-  for( int i=0; i<UnorderedCandidates.size(); i++ ) {
-    calculateSizeFeatures( UnorderedCandidates[i], inputProp, resizeFactor);
+  for( int i=0; i<unorderedCandidates.size(); i++ ) {
+    calculateSizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -421,9 +421,9 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates color based features around each IP
-  createColorQuadrants( imgGrey32f, UnorderedCandidates );
-  for( int i=0; i<UnorderedCandidates.size(); i++ ) {
-    calculateColorFeatures( imgRGB32f, color, UnorderedCandidates[i] );
+  createColorQuadrants( imgGrey32f, unorderedCandidates );
+  for( int i=0; i<unorderedCandidates.size(); i++ ) {
+    calculateColorFeatures( imgRGB32f, color, unorderedCandidates[i] );
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -431,7 +431,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates gabor based features around each IP
-  calculateGaborFeatures( imgGrey32f, UnorderedCandidates );
+  calculateGaborFeatures( imgGrey32f, unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -446,7 +446,7 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if( !getDesignationsFromUser( OrderedCandidates, imgRGB32f, mask, detections,
+    if( !getDesignationsFromUser( orderedCandidates, imgRGB32f, mask, detections,
            minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
       trainingExitFlag = true;
@@ -455,15 +455,15 @@ void *ProcessImage( void *InputArgs ) {
   else if( Options->IsTrainingMode )
   {
     // Append all extracted features to file
-    dumpCandidateFeatures( Options->ListFilename, UnorderedCandidates );
+    dumpCandidateFeatures( Options->ListFilename, unorderedCandidates );
   }
   else
   {
     // Standard mode, use loaded classifiers to perform initial classifications
-    for( unsigned int i=0; i<UnorderedCandidates.size(); i++ ) {
+    for( unsigned int i=0; i<unorderedCandidates.size(); i++ ) {
   
       // Classify ip
-      Candidate *cur = UnorderedCandidates[i];
+      Candidate *cur = unorderedCandidates[i];
       int interest = classifyCandidate( cur, Options->ClassifierGroup );
       
       // Update Scallop List
@@ -520,8 +520,8 @@ void *ProcessImage( void *InputArgs ) {
   // If in training mode use designations to distinguish
   if( Options->IsTrainingMode )
   {
-    for( unsigned int i=0; i<UnorderedCandidates.size(); i++ ) {
-      Candidate *cur = UnorderedCandidates[i];
+    for( unsigned int i=0; i<unorderedCandidates.size(); i++ ) {
+      Candidate *cur = unorderedCandidates[i];
       int id = cur->classification;
       if( id == 18028 || id == 18034 || id == 2 )
       {
@@ -564,7 +564,7 @@ void *ProcessImage( void *InputArgs ) {
 //-------------------------Clean Up------------------------------
   
   // Deallocate memory used by thread
-  deallocateCandidates( UnorderedCandidates );
+  deallocateCandidates( unorderedCandidates );
   deallocateDetections( Objects );
   deallocateGradientChain( gradients );
   hfDeallocResults( color );
