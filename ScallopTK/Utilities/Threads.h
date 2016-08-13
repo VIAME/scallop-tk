@@ -2,8 +2,8 @@
 // Title: Thread.h - Helper functions for threaded processing on Linux
 //------------------------------------------------------------------------------
 
-#ifndef SCALLOP_TK_THREAD_H
-#define SCALLOP_TK_THREAD_H
+#ifndef SCALLOP_TK_THREADS_H_
+#define SCALLOP_TK_THREADS_H_
 
 // C/C++ Includes
 #include <iostream>

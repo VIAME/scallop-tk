@@ -1,5 +1,5 @@
-#ifndef SCALLOP_TK_HISTFILTER_H_
-#define SCALLOP_TK_HISTFILTER_H_
+#ifndef SCALLOP_TK_HISTOGRAM_FILTERING_H_
+#define SCALLOP_TK_HISTOGRAM_FILTERING_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

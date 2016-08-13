@@ -1,6 +1,6 @@
 
-#ifndef SCALLOP_TK_TIMERS_H
-#define SCALLOP_TK_TIMERS_H
+#ifndef SCALLOP_TK_BENCHMARKING_H_
+#define SCALLOP_TK_BENCHMARKING_H_
 
 // C/C++ Includes
 #include <iostream>

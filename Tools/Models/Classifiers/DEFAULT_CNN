@@ -35,7 +35,7 @@ CLASSIFIER_SUBDIR = CNN/
 ;                                
 
 
-C1IDS      =  NONE, SCALLOP
+C1IDS      =  UNKNOWN, SCALLOP
 C1FILES    =  DefaultCNN.prototxt, DefaultCNN.caffemodel
 C1CATEGORY =  NONE, ALL
 

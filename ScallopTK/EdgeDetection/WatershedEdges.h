@@ -1,5 +1,5 @@
-#ifndef SCALLOP_TK_WATERSHED_H_
-#define SCALLOP_TK_WATERSHED_H_
+#ifndef SCALLOP_TK_WATERSHED_EDGES_H_
+#define SCALLOP_TK_WATERSHED_EDGES_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

@@ -1,5 +1,5 @@
-#ifndef SCALLOP_TK_GAUSSEDGE_H_
-#define SCALLOP_TK_GAUSSEDGE_H_
+#ifndef SCALLOP_TK_GAUSSIAN_EDGES_H_
+#define SCALLOP_TK_GAUSSIAN_EDGES_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files

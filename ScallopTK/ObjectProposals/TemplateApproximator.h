@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// Title: Template3.h
+// Title: TemplateApproximator.h
 // Author: Matthew Dawkins
 // Description: Double Donut Detection
 //------------------------------------------------------------------------------
 
-#ifndef SCALLOP_TK_TEMPLATE4_H_
-#define SCALLOP_TK_TEMPLATE4_H_
+#ifndef SCALLOP_TK_TEMPLATE_APPROXIMATOR_H_
+#define SCALLOP_TK_TEMPLATE_APPROXIMATOR_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files
@@ -32,7 +32,7 @@
 #include "ScallopTK/EdgeDetection/GaussianEdges.h"
 
 //Benchmarking
-#ifdef TEMPLATE_ENABLE_BENCHMARKINGING
+#ifdef TEMPLATE_BENCHMARKING
   #include "ScallopTK/Utilities/Benchmarking.h"
 #endif
 
@@ -46,6 +46,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& cds, ImageProperties& imgProp, IplImage* mask = NULL );
+void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& cds,
+  ImageProperties& imgProp, IplImage* mask = NULL );
 
 #endif
