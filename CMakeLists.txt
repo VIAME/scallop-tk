@@ -49,6 +49,11 @@ if( ENABLE_CAFFE )
   find_package( Caffe REQUIRED )
   add_definitions( -DUSE_CAFFE )
   include_directories( SYSTEM ${Caffe_INCLUDE_DIRS} )
+
+  option( CAFFE_CPU_ONLY "Set to true if your caffe was built with CPU only" OFF )
+  if( CAFFE_CPU_ONLY )
+    add_definitions( -DCPU_ONLY )
+  endif()
 endif()
 
 # Add options for other misc things

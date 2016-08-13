@@ -31,12 +31,12 @@ typedef CBoostedCommittee SingleAdaTree;
 struct SingleAdaClassifier
 {
   // ID of classifier object
-  std::string ID;
+  std::string id;
   
   // The type of the classifier ( 0 - main, 1-3 suppression style )
-  int Type;
+  int type;
   
-  // The adaboost classifier itself
+  // The adaboost decesion tree itself
   SingleAdaTree adaTree;
   
   // Special cases:
@@ -57,6 +57,8 @@ class AdaClassifier : public Classifier
 
 public:
 
+  typedef std::vector< SingleAdaClassifier > AdaVector;
+
   AdaClassifier() {}
   ~AdaClassifier() {}
 
@@ -76,11 +78,14 @@ public:
 
 private:
 
+  // Helper function
+  int classifyCandidate( IplImage* image, Candidate* candidate );
+
   // Tier 1 classifeirs
-  std::vector< SingleAdaClassifier > MainClassifiers;
+  AdaVector MainClassifiers;
   
   // Tier 2 classifiers
-  std::vector< SingleAdaClassifier > SuppressionClassifiers;
+  AdaVector SuppressionClassifiers;
   
   // Is this system aimed at scallops or something entirely different?
   bool IsScallopDirected;

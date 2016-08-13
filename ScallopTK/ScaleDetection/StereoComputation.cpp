@@ -2,7 +2,6 @@
 #include "StereoComputation.h"
 
 #include "ScallopTK/Utilities/HelperFunctions.h"
-#include "ScallopTK/TPL/Homography/ScottCamera.h"
 
 using namespace std;
 
@@ -10,7 +9,7 @@ using namespace std;
 //                            Function Definitions
 //------------------------------------------------------------------------------
 
-void computeDepthMap( IplImage* leftImg, IplImage* rightImg, IplImage* depthMap )
+void computeDepthMap( cv::Mat& leftImg, cv::Mat& rightImg, cv::Mat& depthMap )
 {
 
 }

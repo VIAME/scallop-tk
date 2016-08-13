@@ -47,10 +47,13 @@ void printCandidateInfo( int desig, Candidate *cd );
 void exitTrainingMode();
 
 // Get designations from user in GUI mode
-bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates, IplImage *display_img, IplImage *mask,
-                int *Detections, float minRad, float maxRad, string img_name );
-bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *display_img, IplImage *mask,
-                int *Detections, float minRad, float maxRad, string img_name );
+bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates,
+  IplImage *displayImg, IplImage *mask, int *Detections,
+  float minRad, float maxRad, string img_name );
+
+bool getDesignationsFromUser(CandidateQueue& OrderedCandidates,
+  IplImage *displayImg, IplImage *mask, int *Detections,
+  float minRad, float maxRad, string img_name );
 
 // Print out features to given file in GT mode
 void dumpCandidateFeatures( string file_name, CandidatePtrVector& cd );

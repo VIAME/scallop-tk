@@ -6,12 +6,6 @@
 //                               Include Files
 //------------------------------------------------------------------------------
 
-//Standard C/C++
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <fstream>
-
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"
 
@@ -19,6 +13,6 @@
 //                            Function Declarations
 //------------------------------------------------------------------------------
 
-void computeDepthMap( IplImage* leftImg, IplImage* rightImg, IplImage* depthMap );
+void computeDepthMap( cv::Mat& leftImg, cv::Mat& rightImg, cv::Mat& depthMap );
 
 #endif

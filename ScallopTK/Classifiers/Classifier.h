@@ -48,7 +48,7 @@ public:
 
 // Load a new classifier
 Classifier* loadClassifiers( const SystemParameters& sysParams,
-    ClassifierParameters& clsParams );
+  const ClassifierParameters& clsParams );
 
 // Suppress inside (duplicate) points which probably correspond to the same object
 void removeInsidePoints( CandidatePtrVector& input,

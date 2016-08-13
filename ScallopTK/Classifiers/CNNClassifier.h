@@ -11,6 +11,9 @@
 //OpenCV
 #include <cv.h>
 
+//Caffe
+#include <caffe/net.hpp>
+
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"
 #include "ScallopTK/Classifiers/Classifier.h"
@@ -23,8 +26,8 @@ class CNNClassifier : public Classifier
 {
 public:
 
-  CNNClassifier() {}
-  ~CNNClassifier() {}
+  CNNClassifier();
+  ~CNNClassifier();
 
   // Load the classifier system from a file
   virtual bool loadClassifiers(
@@ -39,8 +42,13 @@ public:
   virtual void classifyCandidates( IplImage* image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive );
+
 private:
 
+  caffe::Net< float >* initialClfr;
+
+  bool suppressionEnabled;
+  caffe::Net< float >* suppressionClfr;
   
 };
 

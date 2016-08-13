@@ -3,7 +3,6 @@ set( ScallopTK_Library_Source
 
   Classifiers/Classifier.h               Classifiers/Classifier.cpp
   Classifiers/AdaClassifier.h            Classifiers/AdaClassifier.cpp
-  Classifiers/CNNClassifier.h            Classifiers/CNNClassifier.cpp
   Classifiers/TrainingUtils.h            Classifiers/TrainingUtils.cpp
 
   EdgeDetection/EdgeLinking.h            EdgeDetection/EdgeLinking.cpp
@@ -59,10 +58,16 @@ if( ENABLE_VISUAL_DEBUGGER )
     Utilities/VisualDebugger.h           Utilities/VisualDebugger.cpp )
 endif()
 
+if( ENABLE_CAFFE )
+  set( ScallopTK_Library_Source
+    ${ScallopTK_Library_Source}
+    Classifiers/CNNClassifier.h          Classifiers/CNNClassifier.cpp )
+endif()
+
 add_library( ScallopTK ${ScallopTK_Library_Source} )
 target_link_libraries( ScallopTK ${OpenCV_LIBS} )
 
-if( USE_CAFFE )
+if( ENABLE_CAFFE )
   target_link_libraries( ScallopTK ${Caffe_LIBRARIES} )
 endif()
 

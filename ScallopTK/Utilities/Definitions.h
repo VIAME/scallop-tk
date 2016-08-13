@@ -146,6 +146,7 @@ const unsigned int COLOR_FEATURES = 122;
 const unsigned int GABOR_FEATURES = 36;
 const unsigned int SIZE_FEATURES  = 9;
 const unsigned int EDGE_FEATURES  = 137;
+const unsigned int HOG_FEATURES   = 1764;
 const unsigned int NUM_HOG        = 2;
 
 // Sand dollar suppression system factor

@@ -5,6 +5,8 @@
 # Caffe_INCLUDE_DIRS - The path to the Caffe header files
 # Caffe_LIBRARIES    - The full path to the Caffe library
 
+set( Caffe_DIR "" CACHE PATH "Path to root caffe CMake build" )
+
 if( Caffe_DIR )
 
   find_package( Caffe NO_MODULE )

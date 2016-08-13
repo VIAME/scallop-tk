@@ -5,8 +5,11 @@
 //Scallop Includes
 #include "ScallopTK/Classifiers/Classifier.h"
 #include "ScallopTK/Classifiers/AdaClassifier.h"
-#include "ScallopTK/Classifiers/CNNClassifier.h"
 #include "ScallopTK/Utilities/Threads.h"
+
+#ifdef USE_CAFFE
+#include "ScallopTK/Classifiers/CNNClassifier.h"
+#endif
 
 //Standard C/C++
 #include <vector>
@@ -27,14 +30,22 @@ Classifier* loadClassifiers(
 {
   Classifier* output;
 
-  if( clsParams.UseCNNClassifier )
-  {
-    output = new CNNClassifier();
-  }
-  else
+  if( !clsParams.UseCNNClassifier )
   {
     output = new AdaClassifier();
   }
+#ifdef USE_CAFFE
+  else
+  {
+    output = new CNNClassifier();
+  }
+#else
+  else
+  {
+    cerr << "ERROR: A build with caffe is required to use CNN classifier" << endl;
+    return NULL;
+  }
+#endif
 
   if( !output->loadClassifiers( sysParams, clsParams ) )
   {
