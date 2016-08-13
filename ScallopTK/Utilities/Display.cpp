@@ -70,13 +70,13 @@ void displayResultsImage( IplImage* img, vector<Detection*>& cds, string Filenam
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<cds.size(); i++ ) {  
     CvScalar color;
-    if( cds[i]->IsBrownScallop )
+    if( cds[i]->isBrownScallop )
       color = cvScalar(0,1,0); 
-    else if( cds[i]->IsWhiteScallop )
+    else if( cds[i]->isWhiteScallop )
       color = cvScalar(1,1,1); 
-    else if( cds[i]->IsBuriedScallop )
+    else if( cds[i]->isBuriedScallop )
       color = cvScalar(0.8,0.5,0.2); 
-    else if( cds[i]->IsDollar )
+    else if( cds[i]->isSandDollar )
       color = cvScalar(0,0,1);
     else 
       color = cvScalar(0.1,0.5,0.6);

@@ -426,13 +426,13 @@ void deallocateCandidates( vector<Candidate*> &kps ) {
   for( unsigned int i=0; i < kps.size(); i++ ) 
     if( kps[i] != NULL ) {
       
-      if( kps[i]->SummaryImage != NULL )
-        cvReleaseImage( &kps[i]->SummaryImage );
-      if( kps[i]->ColorQuadrants != NULL )
-        cvReleaseImage( &kps[i]->ColorQuadrants );
+      if( kps[i]->summaryImage != NULL )
+        cvReleaseImage( &kps[i]->summaryImage );
+      if( kps[i]->colorQuadrants != NULL )
+        cvReleaseImage( &kps[i]->colorQuadrants );
       for( unsigned int j=0; j<NUM_HOG; j++ )
-        if( kps[i]->HoGResult[j] != NULL )
-          cvReleaseMat( &kps[i]->HoGResult[j] );
+        if( kps[i]->hogResults[j] != NULL )
+          cvReleaseMat( &kps[i]->hogResults[j] );
 
       delete kps[i];
     }
@@ -488,13 +488,13 @@ void saveScallops( IplImage *img, vector<Detection*>& kps, const string& fn ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {  
     CvScalar color;
-    if( kps[i]->IsBrownScallop )
+    if( kps[i]->isBrownScallop )
       color = cvScalar(0,1,0); 
-    else if( kps[i]->IsWhiteScallop )
+    else if( kps[i]->isWhiteScallop )
       color = cvScalar(1,1,1); 
-    else if( kps[i]->IsBuriedScallop )
+    else if( kps[i]->isBuriedScallop )
       color = cvScalar(0.8,0.5,0.2); 
-    else if( kps[i]->IsDollar )
+    else if( kps[i]->isSandDollar )
       color = cvScalar(0,0,1);
     else 
       color = cvScalar(0.1,0.5,0.6);
@@ -596,7 +596,7 @@ void showIPNW( IplImage* img, Candidate *ip ) {
   cvEllipse(copy, cvPoint( (int)ip->c, (int)ip->r ), 
     cvSize( ip->minor, ip->major ), 
     (ip->angle), 0, 360, cvScalar(0,255,0), 2 );
-  /*if( ip->has_edge_features )
+  /*if( ip->hasEdgeFeatures )
     cvEllipse(copy, cvPoint( (int)ip->nc, (int)ip->nr ), 
       cvSize( ip->nminor, ip->nmajor ), 
       (ip->nangle), 0, 360, cvScalar(0,180,30), 1 );*/
@@ -613,13 +613,13 @@ void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth 
   for( int i=0; i<cds.size(); i++ ) {
 
     // Initialize Candidate Variables
-    cds[i]->is_active = true;
-    cds[i]->SummaryImage = NULL;
-    cds[i]->ColorQuadrants = NULL;
-    cds[i]->has_edge_features = false;
-    cds[i]->is_corner = false;
+    cds[i]->isActive = true;
+    cds[i]->summaryImage = NULL;
+    cds[i]->colorQuadrants = NULL;
+    cds[i]->hasEdgeFeatures = false;
+    cds[i]->isCorner = false;
     for( unsigned int j=0; j<NUM_HOG; j++ )
-      cds[i]->HoGResult[j] = NULL;
+      cds[i]->hogResults[j] = NULL;
 
     // Determine if Candidate is on image border
     const double ICS_MAJOR_INC_FACTOR = 1.33;
@@ -628,13 +628,13 @@ void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth 
     int lc = cds[i]->c - cds[i]->major * ICS_MAJOR_INC_FACTOR;
     int uc = cds[i]->c + cds[i]->major * ICS_MAJOR_INC_FACTOR;
     if( lr < 0 || lc < 0 || ur < 0 || uc < 0 )
-      cds[i]->is_corner = true;
+      cds[i]->isCorner = true;
     else if( lr >= imheight || lc >= imwidth || ur >= imheight || uc >= imwidth )
-      cds[i]->is_corner = true;
+      cds[i]->isCorner = true;
 
     // Determine which octets around IP are beyond border
     const double ICS_MAJOR_INC_FACTOR_2 = 1.33;
-    if( cds[i]->is_corner ) {
+    if( cds[i]->isCorner ) {
       float ptr[8] = { 0.38268f, -0.38268f, 0.38268f, -0.38268f, 0.92388f, -0.92388f, 0.92388f, -0.92388f };
       float ptc[8] = { 0.92388f, 0.92388f, -0.92388f, -0.92388f, 0.38268f, 0.38268f, -0.38268f, -0.38268f };
       for( int j=0; j<8; j++ ) {
@@ -644,19 +644,19 @@ void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth 
         ptr[j] = ptr[j] + cds[i]->r;
         ptc[j] = ptc[j] + cds[i]->c;
         if( ptr[j] < 0 || ptc[j] < 0 || ptc[j] >= imwidth || ptr[j] >= imheight )
-          cds[i]->is_side_border[oct] = true;
+          cds[i]->isSideBorder[oct] = true;
         else 
-          cds[i]->is_side_border[oct] = false;
+          cds[i]->isSideBorder[oct] = false;
       }
     } else {
       for( int j=0; j<8; j++ )
-        cds[i]->is_side_border[j] = false;
+        cds[i]->isSideBorder[j] = false;
     }
 
     // Make sure Candidate is of sufficient size
     const double MIN_PIX_TO_DETECT = 3;
     if( cds[i]->major < MIN_PIX_TO_DETECT )
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
   }
 }
 

@@ -80,7 +80,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     int scan_size = r_range * c_range;
 
     if( r_range < 1 || c_range < 1 ) {
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
       continue;
     }
 
@@ -286,7 +286,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
         // Check to see if we should skip this quadrant
         int octant = determine8quads( c + rel_c, r + rel_r );
-        if( cd->is_side_border[octant] )
+        if( cd->isSideBorder[octant] )
           continue;
 
         if( (bin->imageData + bin->widthStep*r)[c] == EDGEL ) {
@@ -329,7 +329,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
           // Init quadrant
           for( int p = 0; p<8; p++ )
-            ctr->covers_oct[p] = false;
+            ctr->coversOct[p] = false;
 
           // Calculate edge weight and what quadrants cntr is in
           float costsum = 0.0f;
@@ -340,7 +340,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
             int ca = c + rel_c;
             costsum += ((float*)(cost->imageData + cost->widthStep*r))[c];
             int oct = determine8quads( c+rel_c, r+rel_r );
-            ctr->covers_oct[oct] = true;
+            ctr->coversOct[oct] = true;
           }
           ctr->mag = costsum;
           if( costsum > best_mag ) {
@@ -370,7 +370,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     components.push_back( cntrs[best_ind] );
     bool oct_satisfied[8];
     for( int q = 0; q < 8; q++ ) {
-      oct_satisfied[q] = cntrs[best_ind]->covers_oct[q] || cd->is_side_border[q];
+      oct_satisfied[q] = cntrs[best_ind]->coversOct[q] || cd->isSideBorder[q];
     }
     cntrs.erase( cntrs.begin() + best_ind );
 
@@ -383,7 +383,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
         for( int c = 0; c < cntrs.size(); c++ ) {
 
-          if( cntrs[c]->covers_oct[q] && cntrs[c]->mag > max_val ) {
+          if( cntrs[c]->coversOct[q] && cntrs[c]->mag > max_val ) {
             max_val = cntrs[c]->mag;
             max_ind = c;
           }
@@ -394,7 +394,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
           components.push_back( ct );
           cntrs.erase( cntrs.begin() + max_ind );
           for( int o = 0; o < 8; o++ ) {
-            oct_satisfied[o] = oct_satisfied[o] || ct->covers_oct[o];
+            oct_satisfied[o] = oct_satisfied[o] || ct->coversOct[o];
           }
         }
       }
@@ -424,7 +424,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
     // Regress ellipse if possible
     if( total_pts > 6 ) {
-      cd->has_edge_features = true;
+      cd->hasEdgeFeatures = true;
       CvPoint2D32f* input = (CvPoint2D32f*)malloc(total_pts*sizeof(CvPoint2D32f));
       int pos = 0;
       for( int j = 0; j < components.size(); j++ ) {
@@ -455,7 +455,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     } else {
 
       // Not enough edgel information
-      cd->has_edge_features = false;
+      cd->hasEdgeFeatures = false;
     }
 
 #ifdef SS_DISPLAY 

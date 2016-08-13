@@ -9,26 +9,26 @@ void printCandidateInfo( int desig, Candidate *cd ) {
 
   // Print Size features
   for( int i=0; i<SIZE_FEATURES; i++ ) {
-    data_file << cd->SizeFeatures[i] << " ";
+    data_file << cd->sizeFeatures[i] << " ";
   }
 
   // Print color features
   for( int i=0; i<COLOR_FEATURES; i++ )
-    data_file << cd->ColorFeatures[i] << " ";
+    data_file << cd->colorFeatures[i] << " ";
 
   // Print edge features
   for( int i=0; i<EDGE_FEATURES; i++ )
-    data_file << cd->EdgeFeatures[i] << " ";
+    data_file << cd->edgeFeatures[i] << " ";
 
   // Print HoG1
-  CvMat* mat = cd->HoGResult[0];
+  CvMat* mat = cd->hogResults[0];
   for( int i=0; i<1764; i++ ) {
     float value = ((float*)(mat->data.ptr))[i];
     data_file << value << " " ;
   }
 
   // Print HoG2
-  mat = cd->HoGResult[1];
+  mat = cd->hogResults[1];
   for( int i=0; i<1764; i++ ) {
     float value = ((float*)(mat->data.ptr))[i];
     data_file << value << " " ;
@@ -36,7 +36,7 @@ void printCandidateInfo( int desig, Candidate *cd ) {
 
   // Print Gabor
   for( int i=0; i<GABOR_FEATURES; i++ )
-    data_file << cd->GaborFeatures[i] << " ";
+    data_file << cd->gaborFeatures[i] << " ";
 
   // End line
   data_file << "\n";
@@ -95,7 +95,7 @@ bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *
 
     Candidate *cd = UnorderedCandidates[i];
 
-    if( !cd->is_active )
+    if( !cd->isActive )
       continue;
 
     //Skip if small
@@ -117,7 +117,7 @@ bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *
     }
 
     //Show interest point
-    showIPNW( display_img, cd->ColorQuadrants, cd );
+    showIPNW( display_img, cd->colorQuadrants, cd );
 
     //Get User input
     std::cout << "INFO: " << i << " of " << UnorderedCandidates.size() << " ";
@@ -207,7 +207,7 @@ bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *
 #ifdef SAVE_INTEREST_POINTS
   ofstream ip_out( ip_file_out.c_str(), ios::app );
   for( unsigned int i = 0; i < UnorderedCandidates.size(); i++ ) {
-    if( !UnorderedCandidates[i]->is_active )
+    if( !UnorderedCandidates[i]->isActive )
       continue;
     ip_out << img_name << " ";
     ip_out << UnorderedCandidates[i]->designation << " ";
@@ -251,7 +251,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
     Candidate *cd = OrderedCandidates.top();
     OrderedCandidates.pop();
 
-    if( !cd->is_active )
+    if( !cd->isActive )
       continue;
 
     //Skip if small
@@ -282,7 +282,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
         continue;
     }
     if( skipcorner ) {
-      if( cd->is_corner )
+      if( cd->isCorner )
         continue;
     }
 
@@ -453,7 +453,7 @@ void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd )
   for( int c = 0; c < cd.size(); c++ ) 
   {
     // Check to make sure not inactive
-    if( cd[c]->is_active == false )
+    if( cd[c]->isActive == false )
       continue;
     
     // Print desig
@@ -461,26 +461,26 @@ void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd )
   
     // Print Size features
     for( int i=0; i<SIZE_FEATURES; i++ ) {
-      ip_out << cd[c]->SizeFeatures[i] << " ";
+      ip_out << cd[c]->sizeFeatures[i] << " ";
     }
   
     // Print color features
     for( int i=0; i<COLOR_FEATURES; i++ )
-      ip_out << cd[c]->ColorFeatures[i] << " ";
+      ip_out << cd[c]->colorFeatures[i] << " ";
   
     // Print edge features
     for( int i=0; i<EDGE_FEATURES; i++ )
-      ip_out << cd[c]->EdgeFeatures[i] << " ";
+      ip_out << cd[c]->edgeFeatures[i] << " ";
   
     // Print HoG1
-    CvMat* mat = (cd[c])->HoGResult[0];
+    CvMat* mat = (cd[c])->hogResults[0];
     for( int i=0; i<1764; i++ ) {
       float value = ((float*)(mat->data.ptr))[i];
       ip_out << value << " " ;
     }
   
     // Print HoG2
-    mat = cd[c]->HoGResult[1];
+    mat = cd[c]->hogResults[1];
     for( int i=0; i<1764; i++ ) {
       float value = ((float*)(mat->data.ptr))[i];
       ip_out << value << " " ;
@@ -488,7 +488,7 @@ void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd )
   
     // Print Gabor
     for( int i=0; i<GABOR_FEATURES; i++ )
-      ip_out << cd[c]->GaborFeatures[i] << " ";
+      ip_out << cd[c]->gaborFeatures[i] << " ";
   
     // End line
     ip_out << "\n";

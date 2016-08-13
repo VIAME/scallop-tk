@@ -50,7 +50,7 @@ public:
 class CompareRank {
 public:
   bool operator() ( const Candidate* cd1, const Candidate* cd2 ) {
-    if( cd1->method_rank > cd2->method_rank )
+    if( cd1->methodRank > cd2->methodRank )
       return true;
     return false;
   }

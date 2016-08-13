@@ -55,25 +55,31 @@ const int PNG      = 0x05;   //.png
 
 // Desired maximum pixel count covering the min object search radius,
 // this is an optimization which speeds up all operations by performing
-// an downscale of the input image, if possible.
+// a downscale of the input image, if possible.
 const float MAX_PIXELS_FOR_MIN_RAD = 10.0;
 
-// A downsizing image resize factor must be lower than 95% to validate
-// and actually perform the resize for computational benefit (otherwise
-// it doesn't really pay)
-const float RESIZE_FACTOR_REQUIRED = 0.95f;
+// A downsizing image resize factor must be lower than x% to validate
+// and actually perform the resize for computational or accuracy benefits
+// (otherwise it doesn't really pay). Note, this can also be greater than
+// 1 for some problems.
+const float RESIZE_FACTOR_REQUIRED = 0.975f;
 
 // Default image scale factors for assorted operations, this is applied
 // on top of any initial image filtering resize optimizations. Units are
-// relative measure w.r.t. base image size.
-const float OSF_COLOR_CLASS = 1.0;
-const float OSF_COLOR_DOG   = 2.0;
-const float OSF_TEMPLATE    = 1.0;
-const float OSF_ADAPTIVE    = 1.0;
-const float OSF_WATERSHED   = 1.0;
-const float OSF_CLUST       = 1.0;
-const float OSF_TEXTONS     = 1.0;
-const float OSF_HOG         = 1.0;
+// relative measure as to the number of pixels minimum object search
+// radius should take up.
+const float MPFMR_COLOR_CLASS = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_COLOR_DOG   = 2.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_TEMPLATE    = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_ADAPTIVE    = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_WATERSHED   = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_CLUST       = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_TEXTONS     = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_HOG         = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+
+// Properties for gradient calculations
+const float LAB_GRAD_SIGMA     = 1.35f;
+const float ENV_GRAD_SIGMA     = 1.85f;
 
 // Histogram Update Propterties for Fast Read/Merge
 // These are approximates which don't mean that much.
@@ -87,10 +93,6 @@ const int DEFAULT_ENVI_SKIP     = 5;
 const int DEFAULT_OBJ_SKIP      = 2;
 // -Default merge ratio for syncing old w/ new histogram
 const float DEFAULT_MERGE_RATIO = 0.08f;
-
-// Properties for gradient calculations
-const float LAB_GRAD_SIGMA     = 1.35f;
-const float ENV_GRAD_SIGMA     = 1.85f;
 
 // Special type definitions for input classification files
 const std::string BROWN_SCALLOP  = "BROWN";
@@ -305,9 +307,9 @@ struct ScanPoint {
 };
 
 struct Contour {
-  float mag; // Contour Magnitude
-  int label; // Contour Label in Binary Image
-  bool covers_oct[8]; // Contour octant coverage around an IP center
+  float mag;                  // Contour Magnitude
+  int label;                  // Contour Label in Binary Image
+  bool coversOct[8];          // Contour octant coverage around an IP center
   std::vector<ScanPoint> pts; // Vector of points comprising Contour
 };
 
@@ -315,8 +317,11 @@ struct Contour {
 //                         Interest Point Definition
 //------------------------------------------------------------------------------
 
-// Candidate Point
-// Stores location, stats for classification, and classification results         
+// Candidate Point (Object Proposal) and associated information
+//
+// This object stores location, stats for classification, features extracted
+// around the candidate location, and preliminary classification results for
+// the candidate.        
 struct Candidate
 {
 
@@ -339,35 +344,35 @@ struct Candidate
   // IP Detection Method and Magnitude of said Method
   unsigned int method;
   double magnitude;
-  unsigned int method_rank;
+  unsigned int methodRank;
 
   // Is the Candidate a corner entry
-  bool is_corner; //is the Candidate on an image boundary
-  bool is_side_border[8]; // which octants are outside the image
+  bool isCorner; //is the Candidate on an image boundary
+  bool isSideBorder[8]; // which octants are outside the image
 
   // Features for classification  
-  bool is_active;
-  double ColorFeatures[COLOR_FEATURES];
-  double GaborFeatures[GABOR_FEATURES];
-  double SizeFeatures[SIZE_FEATURES];
-  CvMat *HoGResult[NUM_HOG];
-  double major_meters;
+  bool isActive;
+  double colorFeatures[COLOR_FEATURES];
+  double gaborFeatures[GABOR_FEATURES];
+  double sizeFeatures[SIZE_FEATURES];
+  CvMat *hogResults[NUM_HOG];
+  double majorAxisMeters;
 
   // Used for color detectors
-  IplImage *SummaryImage;
-  IplImage *ColorQuadrants;
-  int ColorQR, ColorQC;
-  int ColorBinCount[COLOR_BINS];
+  IplImage *summaryImage;
+  IplImage *colorQuadrants;
+  int colorQR, colorQC;
+  int colorBinCount[COLOR_BINS];
 
   // Edge Based Features
-  bool has_edge_features;
-  double EdgeFeatures[EDGE_FEATURES];
+  bool hasEdgeFeatures;
+  double edgeFeatures[EDGE_FEATURES];
 
   // Expensive edge search results
   float innerColorAvg[3];
   float outerColorAvg[3];
-  Contour *best_cntr;
-  Contour *full_cntr;
+  Contour *bestContour;
+  Contour *fullContour;
 
   // User entered designation, Candidate filename if in training mode
   int designation;
@@ -375,7 +380,7 @@ struct Candidate
 
   // Stats for final classification
   unsigned int classification;
-  double class_magnitudes[MAX_CLASSIFIERS];
+  double classMagnitudes[MAX_CLASSIFIERS];
 };
 
 // An actual Detection according to our algorithm, used just for post processing
@@ -396,13 +401,13 @@ struct Detection
 
   // Possible Object IDs and classification Detection values
   std::vector< std::string > IDs;
-  std::vector< double > ClassificationValues;
+  std::vector< double > classificationValues;
   
   // Does the best match fall into any of these categories?
-  bool IsBrownScallop;
-  bool IsWhiteScallop;
-  bool IsBuriedScallop;
-  bool IsDollar;
+  bool isBrownScallop;
+  bool isWhiteScallop;
+  bool isBuriedScallop;
+  bool isSandDollar;
 };
 
 #endif

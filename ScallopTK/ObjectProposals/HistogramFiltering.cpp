@@ -472,7 +472,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
   hfResults *results;
 
   // Perform Class-by-Class Classification
-  float resizeFactor = OSF_COLOR_CLASS / minRad;
+  float resizeFactor = MPFMR_COLOR_CLASS / minRad;
   if( resizeFactor < RESIZE_FACTOR_REQUIRED ) {
     IplImage *temp = cvCreateImage( cvSize((int)(resizeFactor*img->width),(int)(resizeFactor*img->height)),
                                         img->depth, img->nChannels );
@@ -511,7 +511,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
 void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
   
   // Add border unto classification results and resize if needed
-  float resize_factor = OSF_COLOR_DOG/color->minRad;
+  float resize_factor = MPFMR_COLOR_DOG/color->minRad;
   IplImage* input;
   float minRad = color->minRad;
   float maxRad = color->maxRad;
@@ -546,7 +546,7 @@ void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
 void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds ) {
   
   // Add border unto classification results and resize if needed
-  float resize_factor = OSF_COLOR_DOG/color->minRad;
+  float resize_factor = MPFMR_COLOR_DOG/color->minRad;
   IplImage* input;
   float minRad = color->minRad;
   float maxRad = color->maxRad;

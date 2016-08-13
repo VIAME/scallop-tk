@@ -22,7 +22,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 /*void performGaborFiltering( Candidate *cd ) {
 
   // Return if invalid
-  if( !cd->is_active )
+  if( !cd->isActive )
     return;
 
   // Create linear filters
@@ -41,7 +41,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
 
   // Filter 64x64 images
   for( int i=0; i<NUM_FILTERS; i++ )
-    cvFilter2D( cd->SummaryImage, results[i], filterBank[i] );
+    cvFilter2D( cd->summaryImage, results[i], filterBank[i] );
 
   // Collect results at designated points 
   int index = 0;
@@ -49,11 +49,11 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
   float features[entries];
   for( int i=0; i<NUM_FILTERS; i++ ) {
     cvSmooth( results[i], results[i], CV_BLUR, 7, 7 );
-    cd->GaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[0][0]))[samppos[0][1]];
-    cd->GaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[1][0]))[samppos[1][1]];
-    cd->GaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[2][0]))[samppos[2][1]];
-    cd->GaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[3][0]))[samppos[3][1]];
-    cd->GaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[4][0]))[samppos[4][1]];
+    cd->gaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[0][0]))[samppos[0][1]];
+    cd->gaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[1][0]))[samppos[1][1]];
+    cd->gaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[2][0]))[samppos[2][1]];
+    cd->gaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[3][0]))[samppos[3][1]];
+    cd->gaborFeatures[index++] = ((float*)(results[i]->imageData+results[i]->widthStep*samppos[4][0]))[samppos[4][1]];
   }
 
   //showIP( unused, results[0], cd );
@@ -66,7 +66,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
   }
 }*/
 
-void calculateGaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds ) {
+void calculategaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds ) {
 
   // Create linear filters
   CvMat *filterBank[NUM_FILTERS];
@@ -100,7 +100,7 @@ void calculateGaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds ) {
   // Collect results at designated points 
   for( unsigned int i = 0; i < cds.size(); i++ ) {
 
-    if( !cds[i]->is_active )
+    if( !cds[i]->isActive )
       continue;
 
     Candidate *cd = cds[i];
@@ -112,49 +112,49 @@ void calculateGaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds ) {
       int r = cd->r;
       int c = cd->c;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
       // Samp pos 2
       r = cd->r + cd->major * 0.63;
       c = cd->c;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
       // Samp pos 3
       r = cd->r;
       c = cd->c + cd->major * 0.63;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
       // Samp pos 4
       r = cd->r;
       c = cd->c - cd->major * 0.63;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
       // Samp pos 5
       r = cd->r - cd->major * 0.63;
       c = cd->c;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
       // Samp pos 6
       r = cd->r + cd->major;
       c = cd->c;
       if( r > 0 && c > 0 && r < imheight && c < imwidth )
-        cd->GaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
+        cd->gaborFeatures[index++] = (img_ptr[j]+fl_step*r)[c];
       else 
-        cd->GaborFeatures[index++] = 0.0f;
+        cd->gaborFeatures[index++] = 0.0f;
 
     }
   }

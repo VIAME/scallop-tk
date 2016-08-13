@@ -115,9 +115,9 @@ void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds ) 
 
   // Create base of pyramid (3-level incrementally scaled) if need to
   float lvl_intvl = ( Gradients.maxRad - Gradients.minRad ) / 3;
-  float resize_factor1 = OSF_WATERSHED / Gradients.minRad;
-  float resize_factor2 = OSF_WATERSHED / (Gradients.minRad + lvl_intvl);
-  float resize_factor3 = OSF_WATERSHED / (Gradients.minRad + 2*lvl_intvl);
+  float resize_factor1 = MPFMR_WATERSHED / Gradients.minRad;
+  float resize_factor2 = MPFMR_WATERSHED / (Gradients.minRad + lvl_intvl);
+  float resize_factor3 = MPFMR_WATERSHED / (Gradients.minRad + 2*lvl_intvl);
   IplImage *level[3];
   level[0] = Gradients.WatershedInput;
   if( resize_factor1 < 0.97f ) {

@@ -254,13 +254,15 @@ IplImage *mergeAbs3Chan( IplImage *input ) {
 }*/
 
 // Create a chain of all gradient images we need across all operations
-GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f, IplImage *img_gs_8u, IplImage *img_rgb_8u, hfResults *color, float minRad, float maxRad ) {
+GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f,
+  IplImage *img_gs_8u, IplImage *img_rgb_8u, hfResults *color,
+  float minRad, float maxRad ) {
 
   // Create chain
   GradientChain output;
 
   // Resize input img if needed
-  float maxMinRequired = max( OSF_WATERSHED, OSF_TEMPLATE );
+  float maxMinRequired = max( MPFMR_WATERSHED, MPFMR_TEMPLATE );
   float resize_factor = maxMinRequired / minRad;
   IplImage *input = img_lab;
   if( resize_factor < RESIZE_FACTOR_REQUIRED ) {
@@ -281,7 +283,7 @@ GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f, IplI
   output.scale = resize_factor;
 
   // Create Lab derivatives
-  float adj_sigma_1 = LAB_GRAD_SIGMA * minRad / OSF_TEMPLATE;
+  float adj_sigma_1 = LAB_GRAD_SIGMA * minRad / MPFMR_TEMPLATE;
   output.dxColorSig1 = gaussDerivHorizontal( input, adj_sigma_1 );
   output.dyColorSig1 = gaussDerivVerticle( input, adj_sigma_1 );
   output.dxMergedSig1 = mergeAbs3Chan( output.dxColorSig1 );

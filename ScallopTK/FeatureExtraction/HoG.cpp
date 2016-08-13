@@ -42,7 +42,7 @@ HoGFeatureGenerator::~HoGFeatureGenerator() {
 void HoGFeatureGenerator::Generate( vector<Candidate*>& cds ) {
   for( unsigned int i=0; i<cds.size(); i++ ) {
     if( !GenerateSingle( cds[i] ) ) {
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
     }
   }
 }
@@ -72,7 +72,7 @@ bool HoGFeatureGenerator::GenerateSingle( Candidate* cd ) {
   //cout << lower_c << " " << upper_c << " " << integrals[0]->width << endl;
 
   // Calculate HoG Windows
-  cd->HoGResult[output_index] = calculateHOG_window(integrals, cvRect(lower_c, lower_r, window_width, window_height), 
+  cd->hogResults[output_index] = calculateHOG_window(integrals, cvRect(lower_c, lower_r, window_width, window_height), 
     HOG_NORMALIZATION_METHOD, bins );
 
   return true;

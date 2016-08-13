@@ -112,30 +112,30 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
    
 }*/
 
-void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
+void calculatesizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
 
-  if( !cd->is_active )
+  if( !cd->isActive )
     return;
-  float major_meters, minor_meters, area_msq, perimeter_m;
+  float majorAxisMeters, minor_meters, area_msq, perimeter_m;
   float aPS = ip.getAvgPixelSizeMeters() / initResize;
-  major_meters = cd->major * aPS;
+  majorAxisMeters = cd->major * aPS;
   minor_meters = cd->minor * aPS;
-  cd->major_meters = major_meters;
-  perimeter_m = 2*PI*sqrt( (major_meters*major_meters + minor_meters*minor_meters)/2 );
-  area_msq = PI * major_meters * minor_meters;
-  cd->SizeFeatures[0] = area_msq;
-  cd->SizeFeatures[1] = perimeter_m;
-  cd->SizeFeatures[2] = major_meters;
-  cd->SizeFeatures[3] = minor_meters;
-  cd->SizeFeatures[4] = cd->major;
-  cd->SizeFeatures[5] = cd->minor;
-  cd->SizeFeatures[6] = cd->major / cd->minor;
-  if( cd->has_edge_features && cd->nminor != 0 ) {
-    cd->SizeFeatures[7] = cd->nmajor / cd->nminor;
-    cd->SizeFeatures[8] = cd->nmajor / cd->major;
+  cd->majorAxisMeters = majorAxisMeters;
+  perimeter_m = 2*PI*sqrt( (majorAxisMeters*majorAxisMeters + minor_meters*minor_meters)/2 );
+  area_msq = PI * majorAxisMeters * minor_meters;
+  cd->sizeFeatures[0] = area_msq;
+  cd->sizeFeatures[1] = perimeter_m;
+  cd->sizeFeatures[2] = majorAxisMeters;
+  cd->sizeFeatures[3] = minor_meters;
+  cd->sizeFeatures[4] = cd->major;
+  cd->sizeFeatures[5] = cd->minor;
+  cd->sizeFeatures[6] = cd->major / cd->minor;
+  if( cd->hasEdgeFeatures && cd->nminor != 0 ) {
+    cd->sizeFeatures[7] = cd->nmajor / cd->nminor;
+    cd->sizeFeatures[8] = cd->nmajor / cd->major;
   } else {
-    cd->SizeFeatures[7] = 1;
-    cd->SizeFeatures[8] = 1;
+    cd->sizeFeatures[7] = 1;
+    cd->sizeFeatures[8] = 1;
   }
 
 }

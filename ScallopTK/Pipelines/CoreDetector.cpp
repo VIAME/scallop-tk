@@ -414,7 +414,7 @@ void *ProcessImage( void *InputArgs ) {
 
   // Calculates size based features around each IP
   for( int i=0; i<unorderedCandidates.size(); i++ ) {
-    calculateSizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
+    calculatesizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -422,9 +422,9 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates color based features around each IP
-  createColorQuadrants( imgGrey32f, unorderedCandidates );
+  createcolorQuadrants( imgGrey32f, unorderedCandidates );
   for( int i=0; i<unorderedCandidates.size(); i++ ) {
-    calculateColorFeatures( imgRGB32f, color, unorderedCandidates[i] );
+    calculatecolorFeatures( imgRGB32f, color, unorderedCandidates[i] );
   }
 
 #ifdef ENABLE_BENCHMARKING
@@ -432,7 +432,7 @@ void *ProcessImage( void *InputArgs ) {
 #endif
 
   // Calculates gabor based features around each IP
-  calculateGaborFeatures( imgGrey32f, unorderedCandidates );
+  calculategaborFeatures( imgGrey32f, unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
   ExecutionTimes.push_back( getTimeSinceLastCall() );
@@ -496,13 +496,13 @@ void *ProcessImage( void *InputArgs ) {
   {
     for( unsigned int i=0; i<Objects.size(); i++ ) {
       Detection *cur = Objects[i];
-      if( cur->IsBrownScallop ) {
+      if( cur->isBrownScallop ) {
         detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
-      } else if( cur->IsWhiteScallop ) {
+      } else if( cur->isWhiteScallop ) {
         detections[SCALLOP_WHITE]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
-      } else if( cur->IsBuriedScallop ) {
+      } else if( cur->isBuriedScallop ) {
         detections[SCALLOP_BURIED]++;
         updateMaskRing( mask, cur->r, cur->c, cur->angle,
           cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );

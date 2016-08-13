@@ -43,7 +43,7 @@ struct Classifier
   
   // Special cases:
   //  - Is the classifier aimed at dollars?
-  bool IsDollar;
+  bool isSandDollar;
   //  - Is the classifier aimed at ALL scallops?
   bool IsScallop;
   //  - More specifically, is the classifier aimed at just white scallops?

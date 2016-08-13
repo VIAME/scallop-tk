@@ -13,19 +13,19 @@
 ThreadStatistics::ThreadStatistics() {
 
   // Calculate resize min - todo: binary merge next time n.t.i.m.
-  global_min_rad = max( OSF_COLOR_DOG, OSF_TEMPLATE );
-  if( global_min_rad < OSF_COLOR_CLASS ) 
-    global_min_rad = OSF_COLOR_CLASS;
-  if( global_min_rad < OSF_ADAPTIVE )
-    global_min_rad = OSF_ADAPTIVE;
-  if( global_min_rad < OSF_WATERSHED )
-    global_min_rad = OSF_WATERSHED;
-  if( global_min_rad < OSF_CLUST )
-    global_min_rad = OSF_CLUST;
-  if( global_min_rad < OSF_TEXTONS )
-    global_min_rad = OSF_TEXTONS;
-  if( global_min_rad < OSF_HOG )
-    global_min_rad = OSF_HOG;
+  global_min_rad = max( MPFMR_COLOR_DOG, MPFMR_TEMPLATE );
+  if( global_min_rad < MPFMR_COLOR_CLASS ) 
+    global_min_rad = MPFMR_COLOR_CLASS;
+  if( global_min_rad < MPFMR_ADAPTIVE )
+    global_min_rad = MPFMR_ADAPTIVE;
+  if( global_min_rad < MPFMR_WATERSHED )
+    global_min_rad = MPFMR_WATERSHED;
+  if( global_min_rad < MPFMR_CLUST )
+    global_min_rad = MPFMR_CLUST;
+  if( global_min_rad < MPFMR_TEXTONS )
+    global_min_rad = MPFMR_TEXTONS;
+  if( global_min_rad < MPFMR_HOG )
+    global_min_rad = MPFMR_HOG;
 
   // 0 inits
   ScallopDensity = 0.0f;

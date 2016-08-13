@@ -52,13 +52,13 @@ void prioritizeCandidates( CandidateVector& Blob,
   std::sort( Template.begin(), Template.end(), CompareCandidates() );
   std::sort( Canny.begin(), Canny.end(), CompareCandidates() );
   for( unsigned int i = 0; i < Blob.size(); i++ )
-    Blob[i]->method_rank = i;
+    Blob[i]->methodRank = i;
   for( unsigned int i = 0; i < Adaptive.size(); i++ )
-    Adaptive[i]->method_rank = i;
+    Adaptive[i]->methodRank = i;
   for( unsigned int i = 0; i < Template.size(); i++ )
-    Template[i]->method_rank = i;
+    Template[i]->methodRank = i;
   for( unsigned int i = 0; i < Canny.size(); i++ )
-    Canny[i]->method_rank = i;
+    Canny[i]->methodRank = i;
 
   // Insert Templated IP into kd-tree
   for( unsigned int i=0; i < Template.size(); i++ ) {

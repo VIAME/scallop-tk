@@ -74,7 +74,11 @@ const float KERNEL_SIZE_PER_SIGMA = 6;
 
 IplImage *gaussDerivVerticle( IplImage *input, double sigma );
 IplImage *gaussDerivHorizontal( IplImage *input, double sigma );
-GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f, IplImage *img_gs_8u, IplImage *img_rgb_8u, hfResults *color, float minRad, float maxRad );
+
+GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f,
+  IplImage *img_gs_8u, IplImage *img_rgb_8u, hfResults *color,
+  float minRad, float maxRad );
+
 void deallocateGradientChain( GradientChain& chain );
 
 

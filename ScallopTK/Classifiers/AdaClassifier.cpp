@@ -5,7 +5,7 @@
 int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
 
   // Exit if inactive flag set
-  if( !cd->is_active )
+  if( !cd->isActive )
     return 0;
 
   // Build input to classifier
@@ -14,26 +14,26 @@ int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
 
   // Print Size features
   for( int i=0; i<SIZE_FEATURES; i++ ) {
-    input[pos++] = cd->SizeFeatures[i];
+    input[pos++] = cd->sizeFeatures[i];
   }
 
   // Print color features
   for( int i=0; i<COLOR_FEATURES; i++ )
-    input[pos++] = cd->ColorFeatures[i];
+    input[pos++] = cd->colorFeatures[i];
 
   // Print edge features
   for( int i=0; i<EDGE_FEATURES; i++ )
-    input[pos++] = cd->EdgeFeatures[i];
+    input[pos++] = cd->edgeFeatures[i];
 
   // Print HoG1
-  CvMat* mat = cd->HoGResult[0];
+  CvMat* mat = cd->hogResults[0];
   for( int i=0; i<1764; i++ ) {
     float value = ((float*)(mat->data.ptr))[i];
     input[pos++] = value;
   }
 
   // Print HoG2
-  mat = cd->HoGResult[1];
+  mat = cd->hogResults[1];
   for( int i=0; i<1764; i++ ) {
     float value = ((float*)(mat->data.ptr))[i];
     input[pos++] = value;
@@ -41,7 +41,7 @@ int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
 
   // Print Gabor features
   for( int i=0; i<GABOR_FEATURES; i++ )
-    input[pos++] = cd->GaborFeatures[i];
+    input[pos++] = cd->gaborFeatures[i];
 
   // Classify our interest point based on the above features
   std::vector< Classifier >& MainClassifiers = Classifiers->MainClassifiers;
@@ -51,10 +51,10 @@ int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
   double max = -1.0;
   for( int i = 0; i < MainClassifiers.size(); i++ )
   {
-    cd->class_magnitudes[pos] = MainClassifiers[i].Clsfr.Predict( input );
-    if( cd->class_magnitudes[pos] > max )
+    cd->classMagnitudes[pos] = MainClassifiers[i].Clsfr.Predict( input );
+    if( cd->classMagnitudes[pos] > max )
     {
-      max = cd->class_magnitudes[pos];
+      max = cd->classMagnitudes[pos];
       idx = pos;
     }
     pos++;
@@ -65,10 +65,10 @@ int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers ) {
 
     for( int i = 0; i < SuppressionClassifiers.size(); i++ )
     {
-      cd->class_magnitudes[pos] = SuppressionClassifiers[i].Clsfr.Predict( input );
-      if( cd->class_magnitudes[pos] > max )
+      cd->classMagnitudes[pos] = SuppressionClassifiers[i].Clsfr.Predict( input );
+      if( cd->classMagnitudes[pos] > max )
       {
-        max = cd->class_magnitudes[pos];
+        max = cd->classMagnitudes[pos];
         idx = pos;
       }
       pos++;
@@ -91,7 +91,7 @@ bool compareCandidateSize( Candidate* cd1, Candidate* cd2  ) {
 
 // Sorting function 2 - sort based on classification magnitude
 bool sortByMag( Candidate* cd1, Candidate* cd2 ) {
-  if( cd1->class_magnitudes[cd1->classification] > cd2->class_magnitudes[cd2->classification] )
+  if( cd1->classMagnitudes[cd1->classification] > cd2->classMagnitudes[cd2->classification] )
     return true;
   return false;
 }
@@ -351,7 +351,7 @@ ClassifierSystem* loadClassifiers( const SystemParameters& sparams, ClassifierPa
     fclose(file_rdr);
 
     // Set special conditions
-    MainClass.IsDollar = ( cparams.L1SpecTypes[i] == SAND_DOLLAR );
+    MainClass.isSandDollar = ( cparams.L1SpecTypes[i] == SAND_DOLLAR );
     MainClass.IsScallop = ( cparams.L1SpecTypes[i] == ALL_SCALLOP );
     MainClass.IsWhite = ( cparams.L1SpecTypes[i] == WHITE_SCALLOP );
     MainClass.IsBrown = ( cparams.L1SpecTypes[i] == BROWN_SCALLOP );
@@ -393,7 +393,7 @@ ClassifierSystem* loadClassifiers( const SystemParameters& sparams, ClassifierPa
     fclose(file_rdr);
 
     // Set special conditions
-    SuppClass.IsDollar = ( cparams.L2SpecTypes[i] == SAND_DOLLAR );
+    SuppClass.isSandDollar = ( cparams.L2SpecTypes[i] == SAND_DOLLAR );
     SuppClass.IsScallop = ( cparams.L2SpecTypes[i] == ALL_SCALLOP );
     SuppClass.IsWhite = ( cparams.L2SpecTypes[i] == WHITE_SCALLOP );
     SuppClass.IsBrown = ( cparams.L2SpecTypes[i] == BROWN_SCALLOP );
@@ -450,7 +450,7 @@ bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, cons
     
     // Sort possible classifications in descending value based on classification values
     vector<int> sorted_ind;
-    getSortedIDs( sorted_ind, cds[i]->ClassificationValues );
+    getSortedIDs( sorted_ind, cds[i]->classificationValues );
     
     // Output all possible classifications if enabled    
     for( unsigned int j=0; j<cds[i]->IDs.size(); j++ )
@@ -461,7 +461,7 @@ bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, cons
       float maj = cds[i]->major / resize_factor;
       float minor = cds[i]->minor / resize_factor;
       fout << this_fn << "," << r << "," << c << "," << maj << "," << minor << "," << cds[i]->angle << ",";
-      fout << cds[i]->IDs[cind] << "," << cds[i]->ClassificationValues[cind] << "," << int(j+1) << endl;
+      fout << cds[i]->IDs[cind] << "," << cds[i]->classificationValues[cind] << "," << int(j+1) << endl;
     }
   }
   // so the full output string is (imagename y x major_axis minor_axis angle class class-confidence rank) 
@@ -479,8 +479,8 @@ void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bo
   // Suppress clam responses
   if( clams ) {
     for( int ind = input.size()-1; ind >= 0; ind-- ) {
-      double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-      double clamClassMag = input[ind]->class_magnitudes[ CLAM ];
+      double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+      double clamClassMag = input[ind]->classMagnitudes[ CLAM ];
       if( scallopClassMag < clamClassMag ) {
         input.erase( input.begin() + ind );
       }
@@ -490,8 +490,8 @@ void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bo
   // Suppress dollar responses
   if( dollars ) {
     for( int ind = input.size()-1; ind >= 0; ind-- ) {
-      double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-      double dollarClassMag = input[ind]->class_magnitudes[ DOLLAR ];
+      double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+      double dollarClassMag = input[ind]->classMagnitudes[ DOLLAR ];
       if( scallopClassMag < dollarClassMag ) {
         input.erase( input.begin() + ind );
       }
@@ -501,8 +501,8 @@ void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bo
   // Suppress urchin responses
   if( urchins ) {
     for( int ind = input.size()-1; ind >= 0; ind-- ) {
-      double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-      double urchinClassMag = input[ind]->class_magnitudes[ URCHIN ];
+      double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+      double urchinClassMag = input[ind]->classMagnitudes[ URCHIN ];
       if( scallopClassMag < urchinClassMag ) {
         input.erase( input.begin() + ind );
       }
@@ -512,8 +512,8 @@ void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bo
   // Suppress sac responses
   if( sacs ) {
     for( int ind = input.size()-1; ind >= 0; ind-- ) {
-      double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-      double sacClassMag = input[ind]->class_magnitudes[ SAC ];
+      double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+      double sacClassMag = input[ind]->classMagnitudes[ SAC ];
       if( scallopClassMag < sacClassMag ) {
         input.erase( input.begin() + ind );
       }
@@ -523,8 +523,8 @@ void cullSimilarObjects( vector<Candidate*>& input, bool clams, bool dollars, bo
   // Suppress misc other responses
   if( misc ) {
     for( int ind = input.size()-1; ind >= 0; ind-- ) {
-      double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-      double miscClassMag = input[ind]->class_magnitudes[ UNCLASSIFIED ];
+      double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+      double miscClassMag = input[ind]->classMagnitudes[ UNCLASSIFIED ];
       if( scallopClassMag < miscClassMag ) {
         input.erase( input.begin() + ind );
       }
@@ -540,8 +540,8 @@ void sandDollarSuppression( vector<Candidate*>& input, bool& scallopMode ) {
   // perform suppression
   for( unsigned int ind = 0; ind < input.size(); ind++ ) {
 
-    double scallopClassMag = input[ind]->class_magnitudes[ input[ind]->classification ];
-    double dollarClassMag = input[ind]->class_magnitudes[ DOLLAR ];
+    double scallopClassMag = input[ind]->classMagnitudes[ input[ind]->classification ];
+    double dollarClassMag = input[ind]->classMagnitudes[ DOLLAR ];
 
     if( scallopMode ) {
 
@@ -605,28 +605,28 @@ vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSyst
     else
       clfr = &(Classifiers->SuppressionClassifiers[best_class-MainSize]);
 
-    obj->IsBrownScallop = clfr->IsScallop || clfr->IsBrown;
-    obj->IsWhiteScallop = clfr->IsWhite;
-    obj->IsDollar = clfr->IsDollar;
-    obj->IsBuriedScallop = clfr->IsBuried;
+    obj->isBrownScallop = clfr->IsScallop || clfr->IsBrown;
+    obj->isWhiteScallop = clfr->IsWhite;
+    obj->isSandDollar = clfr->isSandDollar;
+    obj->isBuriedScallop = clfr->IsBuried;
 
     double best_main_class_val = -10.0;
     for( int j = 0; j < MainSize; j++ ) {
-      if( input[i]->class_magnitudes[j] >= 0 ) {
+      if( input[i]->classMagnitudes[j] >= 0 ) {
         obj->IDs.push_back( Classifiers->MainClassifiers[j].ID );
-        obj->ClassificationValues.push_back( input[i]->class_magnitudes[j] );
-        if( input[i]->class_magnitudes[j] >= best_main_class_val )
-          best_main_class_val = input[i]->class_magnitudes[j];
+        obj->classificationValues.push_back( input[i]->classMagnitudes[j] );
+        if( input[i]->classMagnitudes[j] >= best_main_class_val )
+          best_main_class_val = input[i]->classMagnitudes[j];
       }
     }
     
     for( int j = MainSize; j < MainSize + SuppSize; j++ ) {
-      if( input[i]->class_magnitudes[j] >= 0 ) {
+      if( input[i]->classMagnitudes[j] >= 0 ) {
         obj->IDs.push_back( Classifiers->SuppressionClassifiers[j].ID );
         if( Classifiers->SuppressionClassifiers[j].Type != DESIRED_VS_OBJ )
-          obj->ClassificationValues.push_back( input[i]->class_magnitudes[j] );
+          obj->classificationValues.push_back( input[i]->classMagnitudes[j] );
         else
-          obj->ClassificationValues.push_back( best_main_class_val * (1.0 + input[i]->class_magnitudes[j] ) );
+          obj->classificationValues.push_back( best_main_class_val * (1.0 + input[i]->classMagnitudes[j] ) );
       }
     }    
     output.push_back( obj );

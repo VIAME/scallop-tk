@@ -117,7 +117,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     int c_range = uc - lc;
 
     if( r_range < 1 || c_range < 1 ) {
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
       continue;
     }
 
@@ -303,7 +303,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     for( int p = 0; p < 8; p++ ) {
 
       // Check to make sure we found a seed pt in this quadrant
-      if( best_mag[p] == 0 || cd->is_side_border[p] )
+      if( best_mag[p] == 0 || cd->isSideBorder[p] )
         continue;
 
       int r = best_r[p];
@@ -378,7 +378,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
     // Regress ellipse if possible
     if( total_pts > 6 ) {
-      cd->has_edge_features = true;
+      cd->hasEdgeFeatures = true;
       CvPoint2D32f* input = (CvPoint2D32f*)malloc(total_pts*sizeof(CvPoint2D32f));
       int pos = 0;
       for( int j = 0; j < cntrs.size(); j++ ) {
@@ -415,7 +415,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
         cvSize( kp->major, kp->minor ), 
         (kp->angle), 0, 360, cvScalar(0,0,1), 1 );
 
-      if( cds[i]->major > 12 && cds[i]->major < 30 && cds[i]->is_corner )
+      if( cds[i]->major > 12 && cds[i]->major < 30 && cds[i]->isCorner )
         showIP( rgb, temp, cds[i] );
       cvReleaseImage( &temp );
       delete kp;
@@ -474,14 +474,14 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
       // Insert into feature vector
       if( MSE > -2.5 && MSE < 2.5 )
-        cd->EdgeFeatures[0] = MSE;
+        cd->edgeFeatures[0] = MSE;
       else 
-        cd->EdgeFeatures[0] = 2.5;
+        cd->edgeFeatures[0] = 2.5;
       for( int j=0; j<8; j++ )
         if( regMSE[j] > -2.5 && regMSE[j] < 2.5 )
-          cd->EdgeFeatures[j+1] = regMSE[j];
+          cd->edgeFeatures[j+1] = regMSE[j];
         else
-          cd->EdgeFeatures[j+1] = 2.5;
+          cd->edgeFeatures[j+1] = 2.5;
       
       // Calculate features around best 2 edge Contours
 
@@ -582,37 +582,37 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
         // Insert into feature vector
         int pos = 9;
-        cd->EdgeFeatures[pos++] = (int)cd->has_edge_features;
+        cd->edgeFeatures[pos++] = (int)cd->hasEdgeFeatures;
         for( int j=2; j<=10; j+=2 ) {
-          cd->EdgeFeatures[pos++] = avgL[j];
-          cd->EdgeFeatures[pos++] = avgA[j];
-          cd->EdgeFeatures[pos++] = avgB[j];
+          cd->edgeFeatures[pos++] = avgL[j];
+          cd->edgeFeatures[pos++] = avgA[j];
+          cd->edgeFeatures[pos++] = avgB[j];
         }
-        cd->EdgeFeatures[pos++] = (avgL[4]+avgL[6]+avgL[8])/3;
-        cd->EdgeFeatures[pos++] = (avgA[4]+avgA[6]+avgA[8])/3;
-        cd->EdgeFeatures[pos++] = (avgB[4]+avgB[6]+avgB[8])/3;
+        cd->edgeFeatures[pos++] = (avgL[4]+avgL[6]+avgL[8])/3;
+        cd->edgeFeatures[pos++] = (avgA[4]+avgA[6]+avgA[8])/3;
+        cd->edgeFeatures[pos++] = (avgB[4]+avgB[6]+avgB[8])/3;
         int gradStart = pos;
         for( int j=0; j<12; j++ ) {
-          cd->EdgeFeatures[pos++] = avgL[j+1]-avgL[j];
-          cd->EdgeFeatures[pos++] = avgA[j+1]-avgA[j];
-          cd->EdgeFeatures[pos++] = avgB[j+1]-avgB[j];
+          cd->edgeFeatures[pos++] = avgL[j+1]-avgL[j];
+          cd->edgeFeatures[pos++] = avgA[j+1]-avgA[j];
+          cd->edgeFeatures[pos++] = avgB[j+1]-avgB[j];
         }
-        cd->EdgeFeatures[pos++] = avgL[8]-avgL[4];
-        cd->EdgeFeatures[pos++] = avgA[8]-avgA[4];
-        cd->EdgeFeatures[pos++] = avgB[8]-avgB[4];
+        cd->edgeFeatures[pos++] = avgL[8]-avgL[4];
+        cd->edgeFeatures[pos++] = avgA[8]-avgA[4];
+        cd->edgeFeatures[pos++] = avgB[8]-avgB[4];
         //Avg grad
         float avgGradL = 0.0f;
         float avgGradA = 0.0f;
         float avgGradB = 0.0f;
         for( int j=0; j<12; j++ ) {
           int strt = gradStart+j*3;
-          avgGradL = avgGradL + cd->EdgeFeatures[strt+0];
-          avgGradA = avgGradA + cd->EdgeFeatures[strt+1];
-          avgGradB = avgGradB + cd->EdgeFeatures[strt+2];
+          avgGradL = avgGradL + cd->edgeFeatures[strt+0];
+          avgGradA = avgGradA + cd->edgeFeatures[strt+1];
+          avgGradB = avgGradB + cd->edgeFeatures[strt+2];
         }
-        cd->EdgeFeatures[pos++] = avgGradL/12;
-        cd->EdgeFeatures[pos++] = avgGradA/12;
-        cd->EdgeFeatures[pos++] = avgGradB/12;
+        cd->edgeFeatures[pos++] = avgGradL/12;
+        cd->edgeFeatures[pos++] = avgGradA/12;
+        cd->edgeFeatures[pos++] = avgGradB/12;
         //Avg double deriv
         float avgDDL = 0.0f;
         float avgDDA = 0.0f;
@@ -620,17 +620,17 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
         for( int j=0; j<11; j++ ) {
           int strt = gradStart+j*3;
           int strt2 = strt+3;
-          avgDDL += cd->EdgeFeatures[strt2+0]-cd->EdgeFeatures[strt+0];
-          avgDDA += cd->EdgeFeatures[strt2+1]-cd->EdgeFeatures[strt+1];
-          avgDDB += cd->EdgeFeatures[strt2+2]-cd->EdgeFeatures[strt+2];
+          avgDDL += cd->edgeFeatures[strt2+0]-cd->edgeFeatures[strt+0];
+          avgDDA += cd->edgeFeatures[strt2+1]-cd->edgeFeatures[strt+1];
+          avgDDB += cd->edgeFeatures[strt2+2]-cd->edgeFeatures[strt+2];
         }
-        cd->EdgeFeatures[pos++] = avgDDL/11;
-        cd->EdgeFeatures[pos++] = avgDDA/11;
-        cd->EdgeFeatures[pos++] = avgDDB/11;
+        cd->edgeFeatures[pos++] = avgDDL/11;
+        cd->edgeFeatures[pos++] = avgDDA/11;
+        cd->edgeFeatures[pos++] = avgDDB/11;
 
       } else {
         for( int j=9; j<73; j++ )
-          cd->EdgeFeatures[j] = 0;
+          cd->edgeFeatures[j] = 0;
       }
 
       // Second best entry
@@ -716,37 +716,37 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
 
         // Insert into feature vector
         int pos = 73;
-        cd->EdgeFeatures[pos++] = (int)cd->has_edge_features;
+        cd->edgeFeatures[pos++] = (int)cd->hasEdgeFeatures;
         for( int j=2; j<=10; j+=2 ) {
-          cd->EdgeFeatures[pos++] = avgL[j];
-          cd->EdgeFeatures[pos++] = avgA[j];
-          cd->EdgeFeatures[pos++] = avgB[j];
+          cd->edgeFeatures[pos++] = avgL[j];
+          cd->edgeFeatures[pos++] = avgA[j];
+          cd->edgeFeatures[pos++] = avgB[j];
         }
-        cd->EdgeFeatures[pos++] = (avgL[4]+avgL[6]+avgL[8])/3;
-        cd->EdgeFeatures[pos++] = (avgA[4]+avgA[6]+avgA[8])/3;
-        cd->EdgeFeatures[pos++] = (avgB[4]+avgB[6]+avgB[8])/3;
+        cd->edgeFeatures[pos++] = (avgL[4]+avgL[6]+avgL[8])/3;
+        cd->edgeFeatures[pos++] = (avgA[4]+avgA[6]+avgA[8])/3;
+        cd->edgeFeatures[pos++] = (avgB[4]+avgB[6]+avgB[8])/3;
         int gradStart = pos;
         for( int j=0; j<12; j++ ) {
-          cd->EdgeFeatures[pos++] = avgL[j+1]-avgL[j];
-          cd->EdgeFeatures[pos++] = avgA[j+1]-avgA[j];
-          cd->EdgeFeatures[pos++] = avgB[j+1]-avgB[j];
+          cd->edgeFeatures[pos++] = avgL[j+1]-avgL[j];
+          cd->edgeFeatures[pos++] = avgA[j+1]-avgA[j];
+          cd->edgeFeatures[pos++] = avgB[j+1]-avgB[j];
         }
-        cd->EdgeFeatures[pos++] = avgL[8]-avgL[4];
-        cd->EdgeFeatures[pos++] = avgA[8]-avgA[4];
-        cd->EdgeFeatures[pos++] = avgB[8]-avgB[4];
+        cd->edgeFeatures[pos++] = avgL[8]-avgL[4];
+        cd->edgeFeatures[pos++] = avgA[8]-avgA[4];
+        cd->edgeFeatures[pos++] = avgB[8]-avgB[4];
         //Avg grad
         float avgGradL = 0.0f;
         float avgGradA = 0.0f;
         float avgGradB = 0.0f;
         for( int j=0; j<12; j++ ) {
           int strt = gradStart+j*3;
-          avgGradL = avgGradL + cd->EdgeFeatures[strt+0];
-          avgGradA = avgGradA + cd->EdgeFeatures[strt+1];
-          avgGradB = avgGradB + cd->EdgeFeatures[strt+2];
+          avgGradL = avgGradL + cd->edgeFeatures[strt+0];
+          avgGradA = avgGradA + cd->edgeFeatures[strt+1];
+          avgGradB = avgGradB + cd->edgeFeatures[strt+2];
         }
-        cd->EdgeFeatures[pos++] = avgGradL/12;
-        cd->EdgeFeatures[pos++] = avgGradA/12;
-        cd->EdgeFeatures[pos++] = avgGradB/12;
+        cd->edgeFeatures[pos++] = avgGradL/12;
+        cd->edgeFeatures[pos++] = avgGradA/12;
+        cd->edgeFeatures[pos++] = avgGradB/12;
         //Avg double deriv
         float avgDDL = 0.0f;
         float avgDDA = 0.0f;
@@ -754,17 +754,17 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
         for( int j=0; j<11; j++ ) {
           int strt = gradStart+j*3;
           int strt2 = strt+3;
-          avgDDL += cd->EdgeFeatures[strt2+0]-cd->EdgeFeatures[strt+0];
-          avgDDA += cd->EdgeFeatures[strt2+1]-cd->EdgeFeatures[strt+1];
-          avgDDB += cd->EdgeFeatures[strt2+2]-cd->EdgeFeatures[strt+2];
+          avgDDL += cd->edgeFeatures[strt2+0]-cd->edgeFeatures[strt+0];
+          avgDDA += cd->edgeFeatures[strt2+1]-cd->edgeFeatures[strt+1];
+          avgDDB += cd->edgeFeatures[strt2+2]-cd->edgeFeatures[strt+2];
         }
-        cd->EdgeFeatures[pos++] = avgDDL/11;
-        cd->EdgeFeatures[pos++] = avgDDA/11;
-        cd->EdgeFeatures[pos++] = avgDDB/11;
+        cd->edgeFeatures[pos++] = avgDDL/11;
+        cd->edgeFeatures[pos++] = avgDDA/11;
+        cd->edgeFeatures[pos++] = avgDDB/11;
 
       } else {
         for( int j=73; j<137; j++ )
-          cd->EdgeFeatures[j] = 0;
+          cd->edgeFeatures[j] = 0;
       }
 
       // Adjust new position for offset
@@ -778,9 +778,9 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
     } else {
 
       // Not enough edgel information
-      cd->has_edge_features = false;
+      cd->hasEdgeFeatures = false;
       for( int j=0; j<137; j++ )
-        cd->EdgeFeatures[j] = 0;
+        cd->edgeFeatures[j] = 0;
     }
 
 #ifdef SS_ENABLE_BENCHMARKINGING

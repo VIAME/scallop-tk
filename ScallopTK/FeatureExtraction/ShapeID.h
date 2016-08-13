@@ -34,6 +34,6 @@
 //------------------------------------------------------------------------------
 
 void calculateShapeFeatures( Candidate *cd, IplImage *unused );
-void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize );
+void calculatesizeFeatures( Candidate *cd, ImageProperties& ip, float initResize );
 
 #endif

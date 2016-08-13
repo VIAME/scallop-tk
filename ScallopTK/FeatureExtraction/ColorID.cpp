@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 
 
-void createOrientedSummaryImages( IplImage *base, vector<Candidate*>& cds ) {
+void createOrientedsummaryImages( IplImage *base, vector<Candidate*>& cds ) {
   int n = 64;
   for( int i=0; i<cds.size(); i++ ) {
 
@@ -58,7 +58,7 @@ void createOrientedSummaryImages( IplImage *base, vector<Candidate*>& cds ) {
 
     //EXIT CASES - Region too small 
     if( c_max <= 0 || r_max <= 0  || c_min >= base->width || r_min >= base->height || c_size < 3 || r_size < 3 ) {
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
       continue;
     }
         
@@ -83,12 +83,12 @@ void createOrientedSummaryImages( IplImage *base, vector<Candidate*>& cds ) {
     cvGetAffineTransform( inputs, outputs, &map_matrix ); 
 
     // Create scaled new iamge
-    cds[i]->SummaryImage = cvCreateImage( cvSize( n, n ), base->depth, base->nChannels );    
-    cvWarpAffine( base, cds[i]->SummaryImage, &map_matrix, CV_INTER_LINEAR | CV_WARP_FILL_OUTLIERS,  cvScalarAll(0));
+    cds[i]->summaryImage = cvCreateImage( cvSize( n, n ), base->depth, base->nChannels );    
+    cvWarpAffine( base, cds[i]->summaryImage, &map_matrix, CV_INTER_LINEAR | CV_WARP_FILL_OUTLIERS,  cvScalarAll(0));
   }
 }
 
-void createColorQuadrants( IplImage *base, vector<Candidate*>& cds ) {
+void createcolorQuadrants( IplImage *base, vector<Candidate*>& cds ) {
 
   // Constants
   float R1_RATIO = 0.74f;
@@ -141,24 +141,24 @@ void createColorQuadrants( IplImage *base, vector<Candidate*>& cds ) {
     
     // EXIT CASES - Region too small 
     if( c_max <= 0 || r_max <= 0  || c_min >= base->width || r_min >= base->height || c_size < 3 || r_size < 3 ) {
-      cds[i]->is_active = false;
+      cds[i]->isActive = false;
       continue;
     }
 
     // Create mask
-    cds[i]->ColorQR = r_min;
-    cds[i]->ColorQC = c_min;
-    cds[i]->ColorQuadrants = cvCreateImage( cvSize(c_size, r_size), IPL_DEPTH_8U, 1 );
+    cds[i]->colorQR = r_min;
+    cds[i]->colorQC = c_min;
+    cds[i]->colorQuadrants = cvCreateImage( cvSize(c_size, r_size), IPL_DEPTH_8U, 1 );
     for( unsigned int j=0; j<COLOR_BINS; j++ ) 
-      cds[i]->ColorBinCount[j] = 0;
-    drawColorRing( cds[i]->ColorQuadrants, cds[i]->r-r_min, cds[i]->c-c_min, cds[i]->angle, 
-      in_major, in_minor, cent_major, out_major, cds[i]->ColorBinCount );
+      cds[i]->colorBinCount[j] = 0;
+    drawColorRing( cds[i]->colorQuadrants, cds[i]->r-r_min, cds[i]->c-c_min, cds[i]->angle, 
+      in_major, in_minor, cent_major, out_major, cds[i]->colorBinCount );
 
   }
 }
 
-void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd ) {
-  if( !cd->is_active )
+void calculatecolorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd ) {
+  if( !cd->isActive )
     return;
   assert( color_img->width == color_class->NetScallops->width );
 
@@ -182,15 +182,15 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
   int gcounter5 = 0;
   int gcounter6 = 0;
   for( int i=16; i<32; i++ )
-    entries += cd->ColorBinCount[i];
+    entries += cd->colorBinCount[i];
 
   //START PASS - Collect all color data from both images in this pass
   //Optimize w/ pointer ops later
   int kindex = 0;
-  IplImage* mask = cd->ColorQuadrants;
+  IplImage* mask = cd->colorQuadrants;
   IplImage* cc = color_class->NetScallops;
-  int rskip = cd->ColorQR;
-  int cskip = cd->ColorQC;
+  int rskip = cd->colorQR;
+  int cskip = cd->colorQC;
   for( int r=0; r<mask->height; r++ ) {
     for( int c=0; c<mask->width; c++ ) {
       int regionID = ((char*)(mask->imageData + mask->widthStep*r))[c];
@@ -221,41 +221,41 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
 
   // Get average value for each region
   for( int i=0; i<COLOR_BINS; i++ ) {
-    if( cd->ColorBinCount[i] != 0 ) {
-      class_regions[i] = class_regions[i] / cd->ColorBinCount[i];
-      color_regionsCh1[i] = color_regionsCh1[i] / cd->ColorBinCount[i];
-      color_regionsCh2[i] = color_regionsCh2[i] / cd->ColorBinCount[i];
-      color_regionsCh3[i] = color_regionsCh3[i] / cd->ColorBinCount[i];
+    if( cd->colorBinCount[i] != 0 ) {
+      class_regions[i] = class_regions[i] / cd->colorBinCount[i];
+      color_regionsCh1[i] = color_regionsCh1[i] / cd->colorBinCount[i];
+      color_regionsCh2[i] = color_regionsCh2[i] / cd->colorBinCount[i];
+      color_regionsCh3[i] = color_regionsCh3[i] / cd->colorBinCount[i];
     } else if( i <= 8 && i != 0 ) {
       class_regions[i] = class_regions[i-1];
       color_regionsCh1[i] = color_regionsCh1[i-1];
       color_regionsCh2[i] = color_regionsCh2[i-1];
       color_regionsCh3[i] = color_regionsCh3[i-1];
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     } else if( i <= 15 && i > 8 ) {
       class_regions[i] = class_regions[i-1];
       color_regionsCh1[i] = color_regionsCh1[i-1];
       color_regionsCh2[i] = color_regionsCh2[i-1];
       color_regionsCh3[i] = color_regionsCh3[i-1];
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     } else if( i == 8 ) {
       class_regions[i] = class_regions[0];
       color_regionsCh1[i] = color_regionsCh1[0];
       color_regionsCh2[i] = color_regionsCh2[0];
       color_regionsCh3[i] = color_regionsCh3[0];
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     } else if( i <= 31 && i > 16 ) {
       class_regions[i] = class_regions[i-1];
       color_regionsCh1[i] = color_regionsCh1[i-1];
       color_regionsCh2[i] = color_regionsCh2[i-1];
       color_regionsCh3[i] = color_regionsCh3[i-1];
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     } else if( i == 16 ) {
       class_regions[i] = class_regions[8];
       color_regionsCh1[i] = color_regionsCh1[8];
       color_regionsCh2[i] = color_regionsCh2[8];
       color_regionsCh3[i] = color_regionsCh3[8];
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     } else {
       // probabalistically never reached
       //Heavy environmental lvl
@@ -264,13 +264,13 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
       color_regionsCh1[i] = 0.43;
       color_regionsCh2[i] = 0.47;
       color_regionsCh3[i] = 0.48;
-      cd->ColorBinCount[i] = 1;
+      cd->colorBinCount[i] = 1;
     }
   }
 
   // Create color feature matrix - part 1 - classifier edge differences u2 - u1
   for( int i=0; i<8; i++ )
-    cd->ColorFeatures[i] = class_regions[16+i] - class_regions[8+i];
+    cd->colorFeatures[i] = class_regions[16+i] - class_regions[8+i];
 
   // part 2 - net class radial dir - bins 8->15, bins 16->23, bins 24->31
   float inside_class_avg = 0.0f;
@@ -279,9 +279,9 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
 
     // calc slice avg
     float slice_avg;
-    int count_sum = cd->ColorBinCount[24+i] + cd->ColorBinCount[16+i];
-    slice_avg = class_regions[24+i]*cd->ColorBinCount[24+i] + 
-          class_regions[16+i]*cd->ColorBinCount[16+i];
+    int count_sum = cd->colorBinCount[24+i] + cd->colorBinCount[16+i];
+    slice_avg = class_regions[24+i]*cd->colorBinCount[24+i] + 
+          class_regions[16+i]*cd->colorBinCount[16+i];
     slice_avg = slice_avg / count_sum;
 
     // update total avg
@@ -290,9 +290,9 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
     inside_class_avg = inside_class_avg / inside_class_entries;
 
     // insert feature entries
-    cd->ColorFeatures[i+8] = slice_avg - class_regions[8+i];
-    cd->ColorFeatures[i+16] = slice_avg;
-    cd->ColorFeatures[i+24] = class_regions[8+i];
+    cd->colorFeatures[i+8] = slice_avg - class_regions[8+i];
+    cd->colorFeatures[i+16] = slice_avg;
+    cd->colorFeatures[i+24] = class_regions[8+i];
   }
 
   // part 3 - net class full template - bins 32, 33, 34
@@ -300,25 +300,25 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
   for( int i=0; i<8; i++ )
     outside_class_avg = outside_class_avg + class_regions[8+i];
   outside_class_avg = outside_class_avg / 8;
-  cd->ColorFeatures[32] = inside_class_avg - outside_class_avg;
-  cd->ColorFeatures[33] = outside_class_avg;
-  cd->ColorFeatures[34] = inside_class_avg;
+  cd->colorFeatures[32] = inside_class_avg - outside_class_avg;
+  cd->colorFeatures[33] = outside_class_avg;
+  cd->colorFeatures[34] = inside_class_avg;
 
   // part 4 - color edge differences u2 - u1 - bins 35 - 42, bins 43-50, bins 51-58
   for( int i=0; i<8; i++ ) {
-    cd->ColorFeatures[i+35] = color_regionsCh1[16+i] - color_regionsCh1[8+i];
-    cd->ColorFeatures[i+43] = color_regionsCh2[16+i] - color_regionsCh2[8+i];
-    cd->ColorFeatures[i+51] = color_regionsCh3[16+i] - color_regionsCh3[8+i];
+    cd->colorFeatures[i+35] = color_regionsCh1[16+i] - color_regionsCh1[8+i];
+    cd->colorFeatures[i+43] = color_regionsCh2[16+i] - color_regionsCh2[8+i];
+    cd->colorFeatures[i+51] = color_regionsCh3[16+i] - color_regionsCh3[8+i];
   }
 
   // part 5 - color edge groups - bins 59-106
   for( int i=0; i<8; i++ ) {
-    cd->ColorFeatures[i+59] = color_regionsCh1[16+i];
-    cd->ColorFeatures[i+67] = color_regionsCh2[16+i];
-    cd->ColorFeatures[i+75] = color_regionsCh3[16+i];
-    cd->ColorFeatures[i+83] = color_regionsCh1[8+i];
-    cd->ColorFeatures[i+91] = color_regionsCh2[8+i];
-    cd->ColorFeatures[i+99] = color_regionsCh3[8+i];
+    cd->colorFeatures[i+59] = color_regionsCh1[16+i];
+    cd->colorFeatures[i+67] = color_regionsCh2[16+i];
+    cd->colorFeatures[i+75] = color_regionsCh3[16+i];
+    cd->colorFeatures[i+83] = color_regionsCh1[8+i];
+    cd->colorFeatures[i+91] = color_regionsCh2[8+i];
+    cd->colorFeatures[i+99] = color_regionsCh3[8+i];
   }
 
   // part 6 - total color - bins 107-109, 110-112, 113-115
@@ -341,18 +341,18 @@ void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candid
   avg_inner_color[1] = avg_inner_color[1] / 16;
   avg_inner_color[2] = avg_inner_color[2] / 16;
   for( int i=0; i<3; i++ ) {
-    cd->ColorFeatures[i+107] = avg_inner_color[i] - avg_outer_color[i];
-    cd->ColorFeatures[i+110] = avg_inner_color[i];
-    cd->ColorFeatures[i+113] = avg_outer_color[i];
+    cd->colorFeatures[i+107] = avg_inner_color[i] - avg_outer_color[i];
+    cd->colorFeatures[i+110] = avg_inner_color[i];
+    cd->colorFeatures[i+113] = avg_outer_color[i];
   }  
 
   // part 7 - color trace values
-  cd->ColorFeatures[116] = (float)gcounter1 / entries;
-  cd->ColorFeatures[117] = (float)gcounter2 / entries;
-  cd->ColorFeatures[118] = (float)gcounter3 / entries;
-  cd->ColorFeatures[119] = (float)gcounter4 / entries;
-  cd->ColorFeatures[120] = (float)gcounter5 / entries;
-  cd->ColorFeatures[121] = (float)gcounter6 / entries;
+  cd->colorFeatures[116] = (float)gcounter1 / entries;
+  cd->colorFeatures[117] = (float)gcounter2 / entries;
+  cd->colorFeatures[118] = (float)gcounter3 / entries;
+  cd->colorFeatures[119] = (float)gcounter4 / entries;
+  cd->colorFeatures[120] = (float)gcounter5 / entries;
+  cd->colorFeatures[121] = (float)gcounter6 / entries;
 
   // calculate avg regional colors used for expensive edge selection process
   cd->innerColorAvg[0] = avg_inner_color[0];

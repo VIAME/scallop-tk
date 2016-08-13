@@ -630,7 +630,7 @@ void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, flo
 void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, ImageProperties& imgProp, IplImage* mask ) {
 
   // Normalize image scale
-  float resize_factor = OSF_TEMPLATE / grad.minRad;
+  float resize_factor = MPFMR_TEMPLATE / grad.minRad;
   IplImage *dx = grad.dx;
   IplImage *dy = grad.dy;
   if( resize_factor < RESIZE_FACTOR_REQUIRED ) {
