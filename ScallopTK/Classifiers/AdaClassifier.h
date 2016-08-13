@@ -45,11 +45,11 @@ struct SingleAdaClassifier
   //  - Is the classifier aimed at ALL scallops?
   bool isScallop;
   //  - More specifically, is the classifier aimed at just white scallops?
-  bool IsWhite;
+  bool isWhite;
   //  - Is the classifier aimed at just brown scallops?
-  bool IsBrown;
+  bool isBrown;
   //  - Is the classifier aimed at just buried scallops
-  bool IsBuried;
+  bool isBuried;
 };
 
 class AdaClassifier : public Classifier

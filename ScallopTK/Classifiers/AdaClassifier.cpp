@@ -37,12 +37,12 @@
     // Set special conditions
     MainClass.isSandDollar = ( cparams.L1SpecTypes[i] == SAND_DOLLAR );
     MainClass.isScallop = ( cparams.L1SpecTypes[i] == ALL_SCALLOP );
-    MainClass.IsWhite = ( cparams.L1SpecTypes[i] == WHITE_SCALLOP );
-    MainClass.IsBrown = ( cparams.L1SpecTypes[i] == BROWN_SCALLOP );
-    MainClass.IsBuried = ( cparams.L1SpecTypes[i] == BURIED_SCALLOP );
+    MainClass.isWhite = ( cparams.L1SpecTypes[i] == WHITE_SCALLOP );
+    MainClass.isBrown = ( cparams.L1SpecTypes[i] == BROWN_SCALLOP );
+    MainClass.isBuried = ( cparams.L1SpecTypes[i] == BURIED_SCALLOP );
     
     // Set is scallop classifier flag
-    if( MainClass.IsWhite || MainClass.IsBrown || MainClass.IsBuried || MainClass.isScallop )
+    if( MainClass.isWhite || MainClass.isBrown || MainClass.isBuried || MainClass.isScallop )
     {
       output->IsScallopDirected = true;
     }
@@ -79,9 +79,9 @@
     // Set special conditions
     SuppClass.isSandDollar = ( cparams.L2SpecTypes[i] == SAND_DOLLAR );
     SuppClass.isScallop = ( cparams.L2SpecTypes[i] == ALL_SCALLOP );
-    SuppClass.IsWhite = ( cparams.L2SpecTypes[i] == WHITE_SCALLOP );
-    SuppClass.IsBrown = ( cparams.L2SpecTypes[i] == BROWN_SCALLOP );
-    SuppClass.IsBuried = ( cparams.L2SpecTypes[i] == BURIED_SCALLOP );
+    SuppClass.isWhite = ( cparams.L2SpecTypes[i] == WHITE_SCALLOP );
+    SuppClass.isBrown = ( cparams.L2SpecTypes[i] == BROWN_SCALLOP );
+    SuppClass.isBuried = ( cparams.L2SpecTypes[i] == BURIED_SCALLOP );
 
     // Add classifier to system
     output->SuppressionClassifiers.push_back( SuppClass );  
