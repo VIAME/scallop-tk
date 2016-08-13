@@ -37,7 +37,7 @@ struct SingleAdaClassifier
   int Type;
   
   // The adaboost classifier itself
-  SingleAdaTree Clsfr;
+  SingleAdaTree adaTree;
   
   // Special cases:
   //  - Is the classifier aimed at dollars?
@@ -61,8 +61,9 @@ public:
   ~AdaClassifier() {}
 
   // Load the classifier system from a file
-  bool loadClassifiers( const SystemParameters& sysParams,
-    ClassifierParameters& clsParams );
+  bool loadClassifiers(
+    const SystemParameters& sysParams,
+    const ClassifierParameters& clsParams );
 
   // Classify candidates points according to internal classifier
   //

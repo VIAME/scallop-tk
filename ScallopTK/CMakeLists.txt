@@ -31,6 +31,7 @@ set( ScallopTK_Library_Source
   Pipelines/CoreDetector.h               Pipelines/CoreDetector.cpp
 
   ScaleDetection/ImageProperties.h       ScaleDetection/ImageProperties.cpp
+  ScaleDetection/StereoComputation.h     ScaleDetection/StereoComputation.cpp
 
   TPL/AdaBoost/BoostedCommittee.h        TPL/AdaBoost/BoostedCommittee.cpp
   TPL/AdaBoost/IWeakHypothesis.h

@@ -23,14 +23,22 @@ class CNNClassifier : public Classifier
 {
 public:
 
-  explicit CNNClassifier() {}
+  CNNClassifier() {}
   ~CNNClassifier() {}
 
+  // Load the classifier system from a file
+  virtual bool loadClassifiers(
+    const SystemParameters& sysParams,
+    const ClassifierParameters& clsParams );
+
   // Classify candidates points according to internal classifier
-  void classifyCandidates( IplImage* image,
+  //
+  // Image should contain the input image
+  // Candidates the input candidates to score
+  // Positive will contain any candidates with positive classifications
+  virtual void classifyCandidates( IplImage* image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive );
-
 private:
 
   

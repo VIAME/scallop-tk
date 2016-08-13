@@ -31,7 +31,7 @@
     }
 
     // Actually load classifier
-    MainClass.Clsfr.LoadFromFile(file_rdr);
+    MainClass.adaTree.LoadFromFile(file_rdr);
     fclose(file_rdr);
 
     // Set special conditions
@@ -73,7 +73,7 @@
     }
 
     // Actually load classifier
-    SuppClass.Clsfr.LoadFromFile(file_rdr);
+    SuppClass.adaTree.LoadFromFile(file_rdr);
     fclose(file_rdr);
 
     // Set special conditions
@@ -148,7 +148,7 @@ int classifyCandidate( Candidate *cd, Classifier* Classifiers ) {
   double max = -1.0;
   for( int i = 0; i < MainClassifiers.size(); i++ )
   {
-    cd->classMagnitudes[pos] = MainClassifiers[i].Clsfr.Predict( input );
+    cd->classMagnitudes[pos] = MainClassifiers[i].adaTree.Predict( input );
     if( cd->classMagnitudes[pos] > max )
     {
       max = cd->classMagnitudes[pos];
@@ -162,7 +162,7 @@ int classifyCandidate( Candidate *cd, Classifier* Classifiers ) {
 
     for( int i = 0; i < SuppressionClassifiers.size(); i++ )
     {
-      cd->classMagnitudes[pos] = SuppressionClassifiers[i].Clsfr.Predict( input );
+      cd->classMagnitudes[pos] = SuppressionClassifiers[i].adaTree.Predict( input );
       if( cd->classMagnitudes[pos] > max )
       {
         max = cd->classMagnitudes[pos];
