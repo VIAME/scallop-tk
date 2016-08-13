@@ -109,7 +109,7 @@ void calcCoverage( cp_circle& cir, vector<cp_point>& pts ) {
   cir.coverage = (double)cir.csize*cir.csize / cir.rad;
 }
 
-void findCannyCandidates( GradientChain& grad, std::vector<Candidate*>& cds ) {
+void findCannyCandidates( GradientChain& grad, CandidatePtrVector& cds ) {
 
   // Read canny edge stats from gradient image
   IplImage *canny = grad.cannyEdges;

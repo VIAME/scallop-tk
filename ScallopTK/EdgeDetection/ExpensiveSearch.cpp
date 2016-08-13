@@ -46,7 +46,7 @@ inline float dirActFunc( const float& normalizedDirOffset ) {
 }
 
 void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color, 
-  IplImage *ImgLab32f, IplImage *img_rgb_32f, vector<Candidate*> cds ) {
+  IplImage *ImgLab32f, IplImage *img_rgb_32f, CandidatePtrVector cds ) {
 
   assert( color->SaliencyMap->width == ImgLab32f->width );
 

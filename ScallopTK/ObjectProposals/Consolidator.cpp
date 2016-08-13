@@ -34,11 +34,11 @@ void AddDFS( struct kdnode *ptr, CandidateQueue& Ordered );
 //                            Function Definitions
 //------------------------------------------------------------------------------
 
-void prioritizeCandidates( CandidateVector& Blob, 
-               CandidateVector& Adaptive,
-               CandidateVector& Template,
-               CandidateVector& Canny,
-               CandidateVector& Unordered,
+void prioritizeCandidates( CandidatePtrVector& Blob, 
+               CandidatePtrVector& Adaptive,
+               CandidatePtrVector& Template,
+               CandidatePtrVector& Canny,
+               CandidatePtrVector& Unordered,
                CandidateQueue& Ordered,
                ThreadStatistics *GS ) {
 

@@ -33,8 +33,8 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void createOrientedsummaryImages( IplImage *base, vector<Candidate*>& cds );
-void createcolorQuadrants( IplImage *base, vector<Candidate*>& cds );
+void createOrientedsummaryImages( IplImage *base, CandidatePtrVector& cds );
+void createcolorQuadrants( IplImage *base, CandidatePtrVector& cds );
 void calculatecolorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd );
 
 #endif

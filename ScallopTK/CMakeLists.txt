@@ -1,6 +1,7 @@
 
 set( ScallopTK_Library_Source
 
+  Classifiers/Classifier.h               Classifiers/Classifier.cpp
   Classifiers/AdaClassifier.h            Classifiers/AdaClassifier.cpp
   Classifiers/CNNClassifier.h            Classifiers/CNNClassifier.cpp
   Classifiers/TrainingUtils.h            Classifiers/TrainingUtils.cpp

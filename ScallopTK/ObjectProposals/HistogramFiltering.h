@@ -231,8 +231,8 @@ private:
 void hfDeallocResults( hfResults* res );
 
 // Detects blobs in our color-classification results
-void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds );
-void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds );
+void detectColoredBlobs( hfResults* color, CandidatePtrVector& cds );
+void detectSalientBlobs( hfResults* color, CandidatePtrVector& cds );
 
 // Quickly approximates the percentiles p1 and p2 in the single chan 32f image img
 void quickPercentiles( IplImage* img, float p1, float p2, float &op1, float& op2 );

@@ -123,7 +123,7 @@ inline double dist_squared( CvPoint p1, CvPoint p2 ) {
 }
 
 
-int findStableMatches( CvSeq *seq, float minRad, float maxRad, vector<Candidate*>& kps, IplImage* bin ) {
+int findStableMatches( CvSeq *seq, float minRad, float maxRad, CandidatePtrVector& kps, IplImage* bin ) {
 
   // Return value
   int retVal = -1;

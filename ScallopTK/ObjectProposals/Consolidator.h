@@ -1,9 +1,3 @@
-//------------------------------------------------------------------------------
-// Title: 
-// Author:
-// Description: 
-//------------------------------------------------------------------------------
-
 #ifndef SCALLOP_TK_CONSOLIDATOR_H_
 #define SCALLOP_TK_CONSOLIDATOR_H_
 
@@ -56,20 +50,14 @@ public:
   }
 };
 
-typedef priority_queue<Candidate*, vector<Candidate*>, CompareRank> CandidateQueue;
-typedef vector<Candidate*> CandidateVector;
-typedef vector<Detection*> DetectionVector;
+typedef priority_queue<Candidate*, CandidatePtrVector, CompareRank> CandidateQueue;
 
 //------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void prioritizeCandidates( CandidateVector& Blob, 
-               CandidateVector& Adaptive,
-               CandidateVector& Template,
-               CandidateVector& Canny,
-               CandidateVector& Unordered,
-               CandidateQueue& Ordered,
-               ThreadStatistics *GS );
+void prioritizeCandidates( CandidatePtrVector& Blob, CandidatePtrVector& Adaptive,
+  CandidatePtrVector& Template, CandidatePtrVector& Canny, CandidatePtrVector& Unordered,
+  CandidateQueue& Ordered, ThreadStatistics *GS );
 
 #endif

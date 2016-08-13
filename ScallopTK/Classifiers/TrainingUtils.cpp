@@ -76,7 +76,7 @@ void exitTrainingMode() {
   data_file.close();
 }
 
-bool getDesignationsFromUser(vector<Candidate*>& UnorderedCandidates, IplImage *display_img, IplImage *mask,
+bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates, IplImage *display_img, IplImage *mask,
                 int *Detections, float minRad, float maxRad, string img_name ) {
   
   // Variables                
@@ -445,7 +445,7 @@ bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *displa
   return true;
 }
 
-void dumpCandidateFeatures( string file_name, vector<Candidate*>& cd )
+void dumpCandidateFeatures( string file_name, CandidatePtrVector& cd )
 {
   // Open stream
   ofstream ip_out( file_name.c_str(), ios::app );

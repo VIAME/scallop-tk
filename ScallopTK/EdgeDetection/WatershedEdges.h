@@ -26,6 +26,6 @@
 //------------------------------------------------------------------------------
 
 void extractWatershedEdge( IplImage *img, Candidate* kp );
-void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds );
+void extractScallopContours( GradientChain& Gradients, CandidatePtrVector cds );
 
 #endif

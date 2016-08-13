@@ -46,7 +46,7 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& cds,
+void findTemplateCandidates( GradientChain& grad, CandidatePtrVector& cds,
   ImageProperties& imgProp, IplImage* mask = NULL );
 
 #endif

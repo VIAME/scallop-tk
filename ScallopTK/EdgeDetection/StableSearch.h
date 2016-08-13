@@ -35,7 +35,7 @@
 void edgeSearch( GradientChain& Gradients,
                  hfResults* color,
                  IplImage *ImgLab32f,
-                 vector<Candidate*> cds,
+                 CandidatePtrVector cds,
                  IplImage *rgb );
 
 #endif

@@ -58,7 +58,7 @@ void cullNonImages( vector<string>& fn_list ) {
 }
 
 //Display Candidates within some rdange
-void showCandidates( IplImage *img, std::vector<Candidate*>& kps, float min, float max ) {  
+void showCandidates( IplImage *img, CandidatePtrVector& kps, float min, float max ) {  
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {  
     if( kps[i]->major < min || kps[i]->major > max ) continue;
@@ -71,7 +71,7 @@ void showCandidates( IplImage *img, std::vector<Candidate*>& kps, float min, flo
   cvReleaseImage( &local );
 }
 
-void showCandidatesNW( IplImage *img, std::vector<Candidate*>& kps, float min, float max ) {  
+void showCandidatesNW( IplImage *img, CandidatePtrVector& kps, float min, float max ) {  
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {
     if( kps[i] == NULL ) continue;
@@ -422,7 +422,7 @@ void drawColorRing( IplImage *input, float r, float c, float angle, float major1
 }
 
 //Deallocates Candidate vector
-void deallocateCandidates( vector<Candidate*> &kps ) {
+void deallocateCandidates( CandidatePtrVector &kps ) {
   for( unsigned int i=0; i < kps.size(); i++ ) 
     if( kps[i] != NULL ) {
       
@@ -439,7 +439,7 @@ void deallocateCandidates( vector<Candidate*> &kps ) {
   kps.empty();
 }
 
-void showScallopsNW( IplImage *img, vector<Candidate*>& kps ) {
+void showScallopsNW( IplImage *img, CandidatePtrVector& kps ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {  
     CvScalar color;
@@ -462,7 +462,7 @@ void showScallopsNW( IplImage *img, vector<Candidate*>& kps ) {
   cvReleaseImage( &local );
 }
 
-void showScallops( IplImage *img, vector<Candidate*>& kps ) {
+void showScallops( IplImage *img, CandidatePtrVector& kps ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {  
     CvScalar color;
@@ -484,7 +484,7 @@ void showScallops( IplImage *img, vector<Candidate*>& kps ) {
   cvReleaseImage( &local );
 }
 
-void saveScallops( IplImage *img, vector<Detection*>& kps, const string& fn ) {
+void saveScallops( IplImage *img, DetectionPtrVector& kps, const string& fn ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {  
     CvScalar color;
@@ -523,7 +523,7 @@ void saveImage( IplImage *img, const string &fn ) {
 }
 
 
-void saveCandidates( IplImage *img, vector<Candidate*>& cds, const string& fn ) {
+void saveCandidates( IplImage *img, CandidatePtrVector& cds, const string& fn ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<cds.size(); i++ ) {
     if( cds[i] == NULL ) continue;
@@ -609,7 +609,7 @@ void showIPNW( IplImage* img, Candidate *ip ) {
   cvReleaseImage( &copy );
 }
 
-void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth ) {
+void initalizeCandidateStats( CandidatePtrVector cds, int imheight, int imwidth ) {
   for( int i=0; i<cds.size(); i++ ) {
 
     // Initialize Candidate Variables
@@ -660,7 +660,7 @@ void initalizeCandidateStats( vector<Candidate*> cds, int imheight, int imwidth 
   }
 }
 
-void removeBorderCandidates( vector<Candidate*>& cds, IplImage *img )
+void removeBorderCandidates( CandidatePtrVector& cds, IplImage *img )
 {
   // Top down greedy search - very slow but who cares its for training only
   for( int j = cds.size() - 1; j >= 0; j-- )

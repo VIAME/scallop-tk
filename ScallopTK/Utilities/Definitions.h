@@ -412,4 +412,10 @@ struct Detection
   bool isSandDollar;
 };
 
+typedef std::vector<Candidate*> CandidatePtrVector;
+typedef std::vector<Detection*> DetectionPtrVector;
+
+typedef std::vector<Candidate> CandidateVector;
+typedef std::vector<Detection> DetectionVector;
+
 #endif

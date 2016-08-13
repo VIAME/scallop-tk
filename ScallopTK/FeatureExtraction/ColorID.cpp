@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 
 
-void createOrientedsummaryImages( IplImage *base, vector<Candidate*>& cds ) {
+void createOrientedsummaryImages( IplImage *base, CandidatePtrVector& cds ) {
   int n = 64;
   for( int i=0; i<cds.size(); i++ ) {
 
@@ -88,7 +88,7 @@ void createOrientedsummaryImages( IplImage *base, vector<Candidate*>& cds ) {
   }
 }
 
-void createcolorQuadrants( IplImage *base, vector<Candidate*>& cds ) {
+void createcolorQuadrants( IplImage *base, CandidatePtrVector& cds ) {
 
   // Constants
   float R1_RATIO = 0.74f;

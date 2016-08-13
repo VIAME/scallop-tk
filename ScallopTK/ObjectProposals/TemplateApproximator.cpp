@@ -53,7 +53,7 @@ IplImage *gaussDerivHorizontal( IplImage *input, double sigma );
 IplImage *createT4Scale( IplImage *dx, IplImage *dy, float radius, float offset );
 IplImage *createT4ScaleC( IplImage *dx, IplImage *dy, float radius, int offset );
 void detectT4Extremum( IplImage** ss, Candidates& cds, SSInfo& ssinfo );
-void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, float resize_factor,
+void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, float resize_factor,
       float minRad, float maxRad, int height, int width, ImageProperties& imgProp, SSInfo& ssinfo );
 
 //------------------------------------------------------------------------------
@@ -474,7 +474,7 @@ void detectT4Extremum( IplImage** ss, Candidates& cds, SSInfo& ssinfo )
 }
 
 //Todo: package arguments in imageProperties - cleanup function
-void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, float resize_factor,
+void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, float resize_factor,
       float minRad, float maxRad, int height, int width, ImageProperties& imgProp, SSInfo& ssinfo ) {
 
   // Constants
@@ -626,7 +626,7 @@ void interpolateIP( IplImage **ss, Candidates& cds, vector<Candidate*>& kps, flo
 
 
 //Find Double-Donut Candidate
-void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, ImageProperties& imgProp, IplImage* mask ) {
+void findTemplateCandidates( GradientChain& grad, CandidatePtrVector& kps, ImageProperties& imgProp, IplImage* mask ) {
 
   // Normalize image scale
   float resize_factor = MPFMR_TEMPLATE / grad.minRad;
@@ -692,7 +692,7 @@ void findTemplateCandidates( GradientChain& grad, std::vector<Candidate*>& kps, 
 }
 
 //Find quick hough kp
-void findQHCandidates( IplImage *img_gs, std::vector<Candidate*>& kps, float minRad, float maxRad ) {
+void findQHCandidates( IplImage *img_gs, CandidatePtrVector& kps, float minRad, float maxRad ) {
 
   // Normalize image scale
   CvMemStorage* storage = cvCreateMemStorage(0);

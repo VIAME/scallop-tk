@@ -44,8 +44,7 @@
 #include "ScallopTK/FeatureExtraction/Gabor.h"
 
 #include "ScallopTK/Classifiers/TrainingUtils.h"
-#include "ScallopTK/Classifiers/AdaClassifier.h"
-#include "ScallopTK/Classifiers/CNNClassifier.h"
+#include "ScallopTK/Classifiers/Classifier.h"
 
 // Number of worker threads
 int THREADS;
@@ -110,7 +109,7 @@ struct AlgorithmArgs {
   ThreadStatistics *Stats;
 
   // Container for loaded classifier system to use on this image
-  ClassifierSystem *ClassifierGroup;
+  Classifier *ClassifierGroup;
 
   // Did we last see a scallop or sand dollar cluster?
   bool ScallopMode;
@@ -294,10 +293,10 @@ void *ProcessImage( void *InputArgs ) {
 //-----------------------Detect ROIs-----------------------------
 
   // Containers for initial interest points
-  CandidateVector cdsColorBlob;
-  CandidateVector cdsAdaptiveFilt;
-  CandidateVector cdsTemplateAprx;
-  CandidateVector cdsCannyEdge;
+  CandidatePtrVector cdsColorBlob;
+  CandidatePtrVector cdsAdaptiveFilt;
+  CandidatePtrVector cdsTemplateAprx;
+  CandidatePtrVector cdsCannyEdge;
   
   // Perform Difference of Gaussian blob Detection on our color classifications
   if( Stats->processed > 5 )
@@ -333,7 +332,7 @@ void *ProcessImage( void *InputArgs ) {
 //---------------------Consolidate ROIs--------------------------
 
   // Containers for sorted IPs
-  CandidateVector unorderedCandidates;
+  CandidatePtrVector unorderedCandidates;
   CandidateQueue orderedCandidates;
 
   // Consolidate interest points
@@ -349,7 +348,7 @@ void *ProcessImage( void *InputArgs ) {
   if( Options->IsTrainingMode && Options->UseGTData )
   {
     // Mark which interest points are in this image
-    CandidateVector GTDetections;
+    CandidatePtrVector GTDetections;
     for( int i = 0; i < Options->GTData->size(); i++ )
     {
       GTEntry& Pt = (*Options->GTData)[i];
@@ -440,9 +439,9 @@ void *ProcessImage( void *InputArgs ) {
   
 //----------------------Classify ROIs----------------------------
 
-  CandidateVector Interesting;
-  CandidateVector LikelyObjects;
-  DetectionVector Objects;
+  CandidatePtrVector interestingCds;
+  CandidatePtrVector likelyObjects;
+  DetectionPtrVector Objects;
 
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
@@ -460,26 +459,17 @@ void *ProcessImage( void *InputArgs ) {
   }
   else
   {
-    // Standard mode, use loaded classifiers to perform initial classifications
-    for( unsigned int i=0; i<unorderedCandidates.size(); i++ ) {
+    // Classify candidates, returning ones with positive classifications
+    Options->ClassifierGroup->classifyCandidates( imgRGB8u, unorderedCandidates, interestingCds );
   
-      // Classify ip
-      Candidate *cur = unorderedCandidates[i];
-      int interest = classifyCandidate( cur, Options->ClassifierGroup );
-      
-      // Update Scallop List
-      if( interest > 0 )
-        Interesting.push_back( cur );
-    }
-  
-    // Calculate expensive edges around each interesting point
-    expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, Interesting );
+    // Calculate expensive edges around each interesting candidate point
+    expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
   
     // Perform cleanup by removing interest points which are part of another interest point
-    removeInsidePoints( Interesting, LikelyObjects );
+    removeInsidePoints( interestingCds, likelyObjects );
   
     // Interpolate correct object categories
-    Objects = interpolateResults( LikelyObjects, Options->ClassifierGroup, Options->InputFilename );
+    Objects = interpolateResults( likelyObjects, Options->ClassifierGroup, Options->InputFilename );
 
     // Display Detections
     if( Options->ShowVideoDisplay ) {
@@ -492,7 +482,7 @@ void *ProcessImage( void *InputArgs ) {
 //-----------------------Update Stats----------------------------
 
   // Update Detection variables and mask
-  if( !Options->IsTrainingMode && Options->ClassifierGroup->IsScallopDirected )
+  if( !Options->IsTrainingMode /*&& Options->ClassifierGroup->IsScallopDirected()*/ )
   {
     for( unsigned int i=0; i<Objects.size(); i++ ) {
       Detection *cur = Objects[i];
@@ -785,7 +775,7 @@ int runCoreDetector( const SystemParameters& settings )
 #endif
 
   // Storage map for loaded classifier styles
-  map< string, ClassifierSystem* > classifiers;
+  map< string, Classifier* > classifiers;
 
   // Preload all required classifiers just in case there's a mistake
   // in a config file (so it doesn't die midstream)
@@ -805,7 +795,7 @@ int runCoreDetector( const SystemParameters& settings )
         }
 
         // Load classifier system based on config settings
-        ClassifierSystem* LoadedSystem = loadClassifiers( settings, cparams );
+        Classifier* LoadedSystem = loadClassifiers( settings, cparams );
 
         if( LoadedSystem == NULL )
         {
@@ -927,7 +917,7 @@ int runCoreDetector( const SystemParameters& settings )
   delete[] inputArgs;
 
   // Deallocate loaded classifier systems
-  map< string, ClassifierSystem* >::iterator p = classifiers.begin();
+  map< string, Classifier* >::iterator p = classifiers.begin();
   while( p != classifiers.end() )
   {
     delete p->second;
@@ -968,7 +958,7 @@ public:
   explicit Priv( const SystemParameters& settings );
   ~Priv();
 
-  ClassifierSystem* classifier;
+  Classifier* classifier;
   AlgorithmArgs *inputArgs;
   SystemParameters settings;
   unsigned counter;

@@ -19,34 +19,34 @@ IplImage*** mergeDoGChannels( IplImage*** DoGTrap, int octvs, int intvls );
 IplImage*** absDoGChannels( IplImage*** DoGTrap, int octvs, int intvls );
 
 //Candidate selection and filtering
-void detectExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad  );
-void detectMinExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad  );
-void detectMaxExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad  );
+void detectExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad  );
+void detectMinExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad  );
+void detectMaxExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad  );
 bool interpExtremum( IplImage*** DoGTrap, int octv, int intvl, int r, int c, int intvls, double contr_thr, DoG_Candidate& point );
 void interpStep( IplImage*** DoGTrap, int octv, int intvl, int r, int c, double* xi, double* xr, double* xc );
 CvMat* deriv3D( IplImage*** DoGTrap, int octv, int intvl, int r, int c );
 CvMat* hessian3D( IplImage*** DoGTrap, int octv, int intvl, int r, int c );
 double interpContr( IplImage*** DoGTrap, int octv, int intvl, int r, int c, double xi, double xr, double xc );
 int isTooEdgeLike( IplImage* DoG, int r, int c, int curv_thr );
-void calcFeatureScales( std::vector<Candidate*>& kps, double sigma, int intvls );
+void calcFeatureScales( CandidatePtrVector& kps, double sigma, int intvls );
 
 //Orientation Assignment
 double dominantOrientation( double* hist, int n );
 void smoothHistogram( double* hist, int n );
 int calcGradientMagOri( IplImage* img, int r, int c, double* mag, double* ori );
 double* orientationHist( IplImage* img, int r, int c, int n, int rad, double sigma);
-void calculateOrientation( std::vector<Candidate*>& kps, IplImage*** gaussTrap );
-void addOriToFeature( double* hist, int n, double mag_thr, Candidate* point, std::vector<Candidate*>& kps );
+void calculateOrientation( CandidatePtrVector& kps, IplImage*** gaussTrap );
+void addOriToFeature( double* hist, int n, double mag_thr, Candidate* point, CandidatePtrVector& kps );
 
 //Helper functions
-void adjustForScale( std::vector<Candidate*>& kps, bool upscale, float maxRad );
+void adjustForScale( CandidatePtrVector& kps, bool upscale, float maxRad );
 void releaseTrap( IplImage**** pyr, int octvs, int n );
 
 //------------------------------------------------------------------------------
 //                       Main DoG Function Definition
 //------------------------------------------------------------------------------
 
-bool findDoGCandidates( IplImage* input, std::vector<Candidate*>& kps, float minRad, float maxRad, int mode ) {
+bool findDoGCandidates( IplImage* input, CandidatePtrVector& kps, float minRad, float maxRad, int mode ) {
 
   //Calculate gaussian trapezoid characteristics
   bool upscale = (minRad < DOG_UPSCALE_THRESHOLD ? 1 : 0);
@@ -290,7 +290,7 @@ int isMin( IplImage*** DoGTrap, int octv, int intvl, int r, int c )
 }
 
 //Detect and Filter Scale Space Extrenum
-void detectMinExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad )
+void detectMinExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad )
 {
   for( int o = 0; o < octvs; o++ ) {
     for( int i = 1; i <= intvls; i++ ) {
@@ -327,7 +327,7 @@ void detectMinExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr
 }
 
 //Detect and Filter Scale Space Extrenum
-void detectMaxExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad )
+void detectMaxExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad )
 {
   for( int o = 0; o < octvs; o++ ) {
     for( int i = 1; i <= intvls; i++ ) {
@@ -364,7 +364,7 @@ void detectMaxExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr
 }
 
 //Detect and Filter Scale Space Extrenum
-void detectExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, std::vector<Candidate*>& kps, float minRad, float maxRad )
+void detectExtremum( IplImage*** DoGTrap, int octvs, int intvls, double contr_thr, int curv_thr, CandidatePtrVector& kps, float minRad, float maxRad )
 {
   for( int o = 0; o < octvs; o++ ) {
     for( int i = 1; i <= intvls; i++ ) {
@@ -570,7 +570,7 @@ int isTooEdgeLike( IplImage* DoG, int r, int c, int curv_thr )
 }
 
 //Calculate Candidate scales at the subscale level
-void calcFeatureScales( std::vector<Candidate*>& kps, double sigma, int intvls )
+void calcFeatureScales( CandidatePtrVector& kps, double sigma, int intvls )
 {
   for( unsigned int i=0; i < kps.size(); i++ )
   {
@@ -581,7 +581,7 @@ void calcFeatureScales( std::vector<Candidate*>& kps, double sigma, int intvls )
 }
 
 //Adjust scales if we initially upscaled our base image
-void adjustForScale( std::vector<Candidate*>& kps, bool upscale, float maxRad )
+void adjustForScale( CandidatePtrVector& kps, bool upscale, float maxRad )
 {
   if( upscale ) {
     for( unsigned int i = 0; i < kps.size(); i++ )
@@ -607,7 +607,7 @@ void adjustForScale( std::vector<Candidate*>& kps, bool upscale, float maxRad )
 #ifdef UNUSED_FOR_NOW
 
 //Calculate Candidate orientation
-void calculateOrientation( std::vector<Candidate*>& kps, IplImage*** gaussTrap )
+void calculateOrientation( CandidatePtrVector& kps, IplImage*** gaussTrap )
 {
   /*
   unsigned int init_size = kps.size();
@@ -628,7 +628,7 @@ void calculateOrientation( std::vector<Candidate*>& kps, IplImage*** gaussTrap )
   }*/
 }
 
-void addOriToFeature( double* hist, int n, double mag_thr, Candidate* point, std::vector<Candidate*>& kps )
+void addOriToFeature( double* hist, int n, double mag_thr, Candidate* point, CandidatePtrVector& kps )
 {
   /*double PI2 = CV_PI * 2.0;
   bool first = true;

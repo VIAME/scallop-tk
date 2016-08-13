@@ -39,7 +39,7 @@ HoGFeatureGenerator::~HoGFeatureGenerator() {
     cvReleaseImage(&integrals[k]);
 }
 
-void HoGFeatureGenerator::Generate( vector<Candidate*>& cds ) {
+void HoGFeatureGenerator::Generate( CandidatePtrVector& cds ) {
   for( unsigned int i=0; i<cds.size(); i++ ) {
     if( !GenerateSingle( cds[i] ) ) {
       cds[i]->isActive = false;
@@ -109,7 +109,7 @@ void calculateCHoG( Candidate *cd, IplImage *base ) {
     cvReleaseImage(&integrals[k]);
 }
 
-void HoGTest( IplImage *gs, vector<Candidate*> cds ) {
+void HoGTest( IplImage *gs, CandidatePtrVector cds ) {
   IplImage **integrals = calculateIntegralHOG(gs);
   for( int i=0; i<cds.size(); i++ ) {    
     calculateHOG_window(integrals, cvRect(-40, 0, 124, 64), -1, 8, 8);

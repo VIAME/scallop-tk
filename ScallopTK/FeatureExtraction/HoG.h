@@ -47,7 +47,7 @@ public:
   void SetOptions( float add_ratio, float bins_per_dim );
 
   // Generates descriptors for all Candidates
-  void Generate( vector<Candidate*>& cds );
+  void Generate( CandidatePtrVector& cds );
 
   // Generates descriptors for a single Candidate
   bool GenerateSingle( Candidate *cd );
@@ -73,6 +73,6 @@ private:
 //void calculateRHoG( Candidate *cd, IplImage *base );
 //void calculateCHoG( Candidate *cd, IplImage *base );
 //void calculateRHoG16( Candidate *cd, IplImage *base );
-//void HoGTest( IplImage *gs, vector<Candidate*> cds );
+//void HoGTest( IplImage *gs, CandidatePtrVector cds );
 
 #endif

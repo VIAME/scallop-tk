@@ -508,7 +508,7 @@ hfResults *ColorClassifier::performColorClassification( IplImage* img, float min
   return results;
 }
 
-void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
+void detectColoredBlobs( hfResults* color, CandidatePtrVector& cds ) {
   
   // Add border unto classification results and resize if needed
   float resize_factor = MPFMR_COLOR_DOG/color->minRad;
@@ -543,7 +543,7 @@ void detectColoredBlobs( hfResults* color, vector<Candidate*>& cds ) {
   cvReleaseImage( &input );
 }
 
-void detectSalientBlobs( hfResults* color, vector<Candidate*>& cds ) {
+void detectSalientBlobs( hfResults* color, CandidatePtrVector& cds ) {
   
   // Add border unto classification results and resize if needed
   float resize_factor = MPFMR_COLOR_DOG/color->minRad;

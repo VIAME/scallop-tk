@@ -72,7 +72,7 @@ const int DOG_ALL = 0x02;
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-bool findDoGCandidates( IplImage* input, vector<Candidate*>& kps,
+bool findDoGCandidates( IplImage* input, CandidatePtrVector& kps,
   float minRad, float maxRad, int mode = DOG_ALL );
 
 //------------------------------------------------------------------------------

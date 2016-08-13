@@ -29,6 +29,6 @@
 
 int findStableMatches( CvSeq *seq,
                        float minRad, float maxRad,
-                       vector<Candidate*>& kps, IplImage* bin );
+                       CandidatePtrVector& kps, IplImage* bin );
 
 #endif

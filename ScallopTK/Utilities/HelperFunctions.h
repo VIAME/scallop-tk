@@ -33,15 +33,15 @@ using namespace std;
 void showImage( IplImage* img );
 void showImageNW( IplImage* img );
 void showImages( IplImage* img1, IplImage *img2 );
-void showCandidates( IplImage *img, vector<Candidate*>& kps,
+void showCandidates( IplImage *img, CandidatePtrVector& kps,
   float min = 0.0f, float max = INF );
-void showCandidatesNW( IplImage *img, vector<Candidate*>& kps,
+void showCandidatesNW( IplImage *img, CandidatePtrVector& kps,
   float min = 0.0f, float max = INF );
-void showScallops( IplImage *img, vector<Candidate*>& kps );
-void saveScallops( IplImage *img, vector<Detection*>& kps,
+void showScallops( IplImage *img, CandidatePtrVector& kps );
+void saveScallops( IplImage *img, DetectionPtrVector& kps,
   const string& fn );
-void showScallopsNW( IplImage *img, vector<Candidate*>& kps );
-void saveCandidates( IplImage *img, vector<Candidate*>& kps,
+void showScallopsNW( IplImage *img, CandidatePtrVector& kps );
+void saveCandidates( IplImage *img, CandidatePtrVector& kps,
   const string& fn );
 void saveImage( IplImage *img, const string &fn );
 void showIPNW( IplImage* img, Candidate *ip );
@@ -50,7 +50,7 @@ void showIP( IplImage* img, IplImage *img2, Candidate *ip );
 void showIPNW( IplImage* img, IplImage *img2, Candidate *ip );
 
 // Memory Functions
-void deallocateCandidates( vector<Candidate*> &kps );
+void deallocateCandidates( CandidatePtrVector &kps );
 Candidate *copyCandidate( Candidate* kp );
 int getImageType( const string& filename );
 
@@ -77,10 +77,10 @@ inline void rgb2gray( IplImage *src, IplImage *dst );
 void printMat( CvMat *A );
 void showImageRange( IplImage* img );
 void calcMinMax( IplImage *img );
-void initalizeCandidateStats( vector<Candidate*> cds,
+void initalizeCandidateStats( CandidatePtrVector cds,
   int imheight, int imwidth );
 float quickMedian( IplImage* img, int max_to_sample );
-void removeBorderCandidates( vector<Candidate*>& cds, IplImage *img );
+void removeBorderCandidates( CandidatePtrVector& cds, IplImage *img );
 void cullNonImages( vector<string>& fn_list );
 
 //------------------------------------------------------------------------------
@@ -198,8 +198,8 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
 }
 
 // Move this function to somplace better
-inline void RemoveOverlapAndMerge( vector<Candidate*>& Base,
-  vector<Candidate*>& Truth, double percentage_keep = 0.10 )
+inline void RemoveOverlapAndMerge( CandidatePtrVector& Base,
+  CandidatePtrVector& Truth, double percentage_keep = 0.10 )
 {
   // Top down greedy search - very slow but who cares its for training only
   for( int j = Base.size() - 1; j >= 0; j-- )

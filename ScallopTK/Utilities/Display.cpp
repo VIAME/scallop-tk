@@ -21,7 +21,7 @@ void displayImage( IplImage* img, string wname ) {
   cvReleaseImage(&nimg);
 }
 
-void displayInterestPointImage( IplImage* img, vector<Candidate*>& cds ) {
+void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<cds.size(); i++ ) {
     if( cds[i] == NULL ) continue;
@@ -45,7 +45,7 @@ void displayInterestPointImage( IplImage* img, vector<Candidate*>& cds ) {
   cvReleaseImage( &local );
 }
 
-void displayResultsImage( IplImage* img, vector<Candidate*>& cds ) {
+void displayResultsImage( IplImage* img, CandidatePtrVector& cds ) {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<cds.size(); i++ ) {  
     CvScalar color;
@@ -65,7 +65,7 @@ void displayResultsImage( IplImage* img, vector<Candidate*>& cds ) {
   cvReleaseImage( &local );
 }
 
-void displayResultsImage( IplImage* img, vector<Detection*>& cds, string Filename )
+void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filename )
 {
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<cds.size(); i++ ) {  

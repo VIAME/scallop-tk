@@ -33,6 +33,6 @@
 //------------------------------------------------------------------------------
 
 //void performGaborFiltering( Candidate *cd );
-void calculategaborFeatures( IplImage *img_gs_32f, vector<Candidate*>& cds );
+void calculategaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds );
 
 #endif

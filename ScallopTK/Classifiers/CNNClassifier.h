@@ -13,19 +13,23 @@
 
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"
+#include "ScallopTK/Classifiers/Classifier.h"
 
 //------------------------------------------------------------------------------
 //                              Class Definitions
 //------------------------------------------------------------------------------
 
-class CNNClassifierSystem
+class CNNClassifier : public Classifier
 {
 public:
 
-  explicit CNNClassifierSystem() {}
-  ~CNNClassifierSystem() {}
+  explicit CNNClassifier() {}
+  ~CNNClassifier() {}
 
-  //void classifyCandidates( cv::Mat image, CandidateVector& candidates );
+  // Classify candidates points according to internal classifier
+  void classifyCandidates( IplImage* image,
+    CandidatePtrVector& candidates,
+    CandidatePtrVector& positive );
 
 private:
 

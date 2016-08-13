@@ -1,5 +1,5 @@
-#ifndef SCALLOP_TK_ADA_CLASSIFIERS_H_
-#define SCALLOP_TK_ADA_CLASSIFIERS_H_
+#ifndef SCALLOP_TK_ADA_CLASSIFIER_H_
+#define SCALLOP_TK_ADA_CLASSIFIER_H_
 
 //------------------------------------------------------------------------------
 //                               Include Files
@@ -16,21 +16,19 @@
 
 //Opencv
 #include <cv.h>
-#include <cxcore.h>
 
 //Scallop Includes
+#include "ScallopTK/Classifiers/Classifier.h"
 #include "ScallopTK/Utilities/Definitions.h"
-#include "ScallopTK/Utilities/HelperFunctions.h"
 #include "ScallopTK/TPL/AdaBoost/BoostedCommittee.h"
-#include "ScallopTK/Utilities/Threads.h"
 
 //------------------------------------------------------------------------------
 //                            Constants / Typedefs
 //------------------------------------------------------------------------------
 
-typedef CBoostedCommittee SingleAdaClassifier;
+typedef CBoostedCommittee SingleAdaTree;
 
-struct Classifier
+struct SingleAdaClassifier
 {
   // ID of classifier object
   std::string ID;
@@ -39,13 +37,13 @@ struct Classifier
   int Type;
   
   // The adaboost classifier itself
-  SingleAdaClassifier Clsfr;
+  SingleAdaTree Clsfr;
   
   // Special cases:
   //  - Is the classifier aimed at dollars?
   bool isSandDollar;
   //  - Is the classifier aimed at ALL scallops?
-  bool IsScallop;
+  bool isScallop;
   //  - More specifically, is the classifier aimed at just white scallops?
   bool IsWhite;
   //  - Is the classifier aimed at just brown scallops?
@@ -54,13 +52,34 @@ struct Classifier
   bool IsBuried;
 };
 
-struct ClassifierSystem
+class AdaClassifier : public Classifier
 {
+
+public:
+
+  AdaClassifier() {}
+  ~AdaClassifier() {}
+
+  // Load the classifier system from a file
+  bool loadClassifiers( const SystemParameters& sysParams,
+    ClassifierParameters& clsParams );
+
+  // Classify candidates points according to internal classifier
+  //
+  // Image should contain the input image
+  // Candidates the input candidates to score
+  // Positive will contain any candidates with positive classifications
+  void classifyCandidates( IplImage* image,
+    CandidatePtrVector& candidates,
+    CandidatePtrVector& positive );
+
+private:
+
   // Tier 1 classifeirs
-  std::vector< Classifier > MainClassifiers;
+  std::vector< SingleAdaClassifier > MainClassifiers;
   
   // Tier 2 classifiers
-  std::vector< Classifier > SuppressionClassifiers;
+  std::vector< SingleAdaClassifier > SuppressionClassifiers;
   
   // Is this system aimed at scallops or something entirely different?
   bool IsScallopDirected;
@@ -71,31 +90,5 @@ struct ClassifierSystem
   // Detection threshold
   double Threshold;
 };
-
-//------------------------------------------------------------------------------
-//                             Function Prototypes
-//------------------------------------------------------------------------------
-
-// Generate all raw classifier values for an interest point as required
-int classifyCandidate( Candidate *cd, ClassifierSystem *Classifiers );
-
-// Suppress inside (duplicate) points which probably correspond to the same object
-void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output, int method );
-void removeInsidePoints( vector<Candidate*>& input, vector<Candidate*>& output );
-
-// Load a new classifier system based on the loaded classifier config file
-ClassifierSystem* loadClassifiers( const SystemParameters& sparams, ClassifierParameters& cparams );
-
-// Perform suppression and interpolation
-vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSystem* Classifiers, std::string Filename );
-
-// Deallocate Detections
-void deallocateDetections( vector<Detection*>& vec );
-
-// Append GT training results to some file
-bool appendInfoToFile( vector<Detection>& Detections, const string& list_fn );
-  
-// Append final Detections to some file
-bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, const string& this_fn, float resize_factor );
 
 #endif

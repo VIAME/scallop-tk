@@ -111,7 +111,7 @@ void calcAvgMax( IplImage *img, float& avg, float& max, float& min ) {
 }
 
 // Extract Contours from kps
-void extractScallopContours( GradientChain& Gradients, vector<Candidate*> cds ) {
+void extractScallopContours( GradientChain& Gradients, CandidatePtrVector cds ) {
 
   // Create base of pyramid (3-level incrementally scaled) if need to
   float lvl_intvl = ( Gradients.maxRad - Gradients.minRad ) / 3;
