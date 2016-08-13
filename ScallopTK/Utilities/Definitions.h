@@ -301,16 +301,18 @@ typedef std::vector< GTEntry > GTEntryList;
 //                        Simple Contour Definition
 //------------------------------------------------------------------------------
 
-struct ScanPoint {
-  ScanPoint( const int& _r, const int& _c ) : r(_r), c(_c) {}
+struct Point2D
+{
+  Point2D( const int& _r, const int& _c ) : r(_r), c(_c) {}
   int r, c;
 };
 
-struct Contour {
-  float mag;                  // Contour Magnitude
-  int label;                  // Contour Label in Binary Image
-  bool coversOct[8];          // Contour octant coverage around an IP center
-  std::vector<ScanPoint> pts; // Vector of points comprising Contour
+struct Contour
+{
+  int label;                  // Contour Identifier
+  float mag;                  // Contour Magnitude (Confidence)
+  bool coversOct[8];          // Contour Octant Coverage around IP center
+  std::vector<Point2D> pts; // Vector of points comprising Contour
 };
 
 //------------------------------------------------------------------------------

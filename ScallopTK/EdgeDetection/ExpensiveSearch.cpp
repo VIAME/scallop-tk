@@ -291,8 +291,8 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
         if( (bin->imageData + bin->widthStep*r)[c] == EDGEL ) {
 
-          stack<ScanPoint> sq;
-          ScanPoint pt(r,c);
+          stack<Point2D> sq;
+          Point2D pt(r,c);
           Contour *ctr = new Contour;
           sq.push( pt );
 
@@ -308,21 +308,21 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
             // Check 8-connectedness
             if( *(pos+step_up) == EDGEL )
-              sq.push( ScanPoint( ir+1, ic ) );
+              sq.push( Point2D( ir+1, ic ) );
             if( *(pos+step_right) == EDGEL )
-              sq.push( ScanPoint( ir, ic+1 ) );
+              sq.push( Point2D( ir, ic+1 ) );
             if( *(pos+step_down) == EDGEL )
-              sq.push( ScanPoint( ir-1, ic ) );
+              sq.push( Point2D( ir-1, ic ) );
             if( *(pos+step_left) == EDGEL )
-              sq.push( ScanPoint( ir, ic-1 ) );
+              sq.push( Point2D( ir, ic-1 ) );
             if( *(pos+step_dia_2) == EDGEL )
-              sq.push( ScanPoint( ir-1, ic+1 ) );
+              sq.push( Point2D( ir-1, ic+1 ) );
             if( *(pos+step_dia_1) == EDGEL )
-              sq.push( ScanPoint( ir-1, ic-1 ) );
+              sq.push( Point2D( ir-1, ic-1 ) );
             if( *(pos+step_dia_4) == EDGEL )
-              sq.push( ScanPoint( ir+1, ic+1 ) );
+              sq.push( Point2D( ir+1, ic+1 ) );
             if( *(pos+step_dia_3) == EDGEL )
-              sq.push( ScanPoint( ir+1, ic-1 ) );
+              sq.push( Point2D( ir+1, ic-1 ) );
           }  
 
           ctr->label = label;
