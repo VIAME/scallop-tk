@@ -14,8 +14,8 @@
 #include <stack>
 
 //OpenCV
-#include "cv.h"
-#include "cxcore.h"
+#include <cv.h>
+#include <cxcore.h>
 
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"

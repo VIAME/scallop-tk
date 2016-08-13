@@ -12,9 +12,9 @@
 #include <fstream>
 
 // OpenCV Includes
-#include "cv.h"
-#include "cxcore.h"
-#include "highgui.h"
+#include <cv.h>
+#include <cxcore.h>
+#include <highgui.h>
 
 // Scallop Includes
 #include "Definitions.h"

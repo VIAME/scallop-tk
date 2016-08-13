@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-//OpenCV 2.2
-#include "cv.h"
-#include "cxcore.h"
+//Opencv
+#include <cv.h>
+#include <cxcore.h>
 
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"

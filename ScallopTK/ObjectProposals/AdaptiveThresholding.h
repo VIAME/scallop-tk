@@ -14,9 +14,9 @@
 #include <vector>
 #include <cmath>
 
-//OpenCV 2.1
-#include "cv.h"
-#include "cxcore.h"
+//Opencv
+#include <cv.h>
+#include <cxcore.h>
 
 //Scallop Includes
 #include "ScallopTK/ObjectProposals/HistogramFiltering.h"

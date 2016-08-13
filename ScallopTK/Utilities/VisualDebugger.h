@@ -8,9 +8,9 @@
 
 #include <GL/glut.h>
 
-#include "cv.h"
-#include "cxcore.h"
-#include "highgui.h"
+#include <cv.h>
+#include <cxcore.h>
+#include <highgui.h>
 
 #include "SaveImageIcon.h"
 
