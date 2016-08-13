@@ -450,10 +450,10 @@ bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, cons
     
     // Sort possible classifications in descending value based on classification values
     vector<int> sorted_ind;
-    getSortedIDs( sorted_ind, cds[i]->classificationValues );
+    getSortedIDs( sorted_ind, cds[i]->classProbabilities );
     
     // Output all possible classifications if enabled    
-    for( unsigned int j=0; j<cds[i]->IDs.size(); j++ )
+    for( unsigned int j=0; j<cds[i]->classIDs.size(); j++ )
     {
       int cind = sorted_ind[j];
       float r = cds[i]->r / resize_factor;
@@ -461,7 +461,7 @@ bool appendInfoToFile( vector<Detection*>& cds, const string& ListFilename, cons
       float maj = cds[i]->major / resize_factor;
       float minor = cds[i]->minor / resize_factor;
       fout << this_fn << "," << r << "," << c << "," << maj << "," << minor << "," << cds[i]->angle << ",";
-      fout << cds[i]->IDs[cind] << "," << cds[i]->classificationValues[cind] << "," << int(j+1) << endl;
+      fout << cds[i]->classIDs[cind] << "," << cds[i]->classProbabilities[cind] << "," << int(j+1) << endl;
     }
   }
   // so the full output string is (imagename y x major_axis minor_axis angle class class-confidence rank) 
@@ -613,8 +613,8 @@ vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSyst
     double best_main_class_val = -10.0;
     for( int j = 0; j < MainSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
-        obj->IDs.push_back( Classifiers->MainClassifiers[j].ID );
-        obj->classificationValues.push_back( input[i]->classMagnitudes[j] );
+        obj->classIDs.push_back( Classifiers->MainClassifiers[j].ID );
+        obj->classProbabilities.push_back( input[i]->classMagnitudes[j] );
         if( input[i]->classMagnitudes[j] >= best_main_class_val )
           best_main_class_val = input[i]->classMagnitudes[j];
       }
@@ -622,11 +622,11 @@ vector<Detection*> interpolateResults( vector<Candidate*>& input, ClassifierSyst
     
     for( int j = MainSize; j < MainSize + SuppSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
-        obj->IDs.push_back( Classifiers->SuppressionClassifiers[j].ID );
+        obj->classIDs.push_back( Classifiers->SuppressionClassifiers[j].ID );
         if( Classifiers->SuppressionClassifiers[j].Type != DESIRED_VS_OBJ )
-          obj->classificationValues.push_back( input[i]->classMagnitudes[j] );
+          obj->classProbabilities.push_back( input[i]->classMagnitudes[j] );
         else
-          obj->classificationValues.push_back( best_main_class_val * (1.0 + input[i]->classMagnitudes[j] ) );
+          obj->classProbabilities.push_back( best_main_class_val * (1.0 + input[i]->classMagnitudes[j] ) );
       }
     }    
     output.push_back( obj );

@@ -400,8 +400,8 @@ struct Detection
   Contour *cntr;
 
   // Possible Object IDs and classification Detection values
-  std::vector< std::string > IDs;
-  std::vector< double > classificationValues;
+  std::vector< std::string > classIDs;
+  std::vector< double > classProbabilities;
   
   // Does the best match fall into any of these categories?
   bool isBrownScallop;
