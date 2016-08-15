@@ -12,7 +12,7 @@ The Scalable, Adaptive Localization, and Laplacian Object Proposal
 (Scallop) Toolkit is a brief port of some of my master's thesis code
 developed at RPI, described further in the paper:
 
-[Automatic Scallop Detection in Benthic Environments][1]
+[Automatic Scallop Detection in Benthic Environments](Documents/Paper.pdf)
 
 It has a few more modern optimizations as well, such as the ability to
 run convolutional neural networks on top of the described object
@@ -21,8 +21,6 @@ ellipsoidal objects, though it mainly targets benthic organisms such as
 clams, scallops, urchins, and others. Also included in the repository is
 a frame level classifier aimed at detecting whether or not there are
 fish in the image.
-
-[1]: https://scholar.google.com/citations?user=ZaCEQN0AAAAJ
 
 
 Build Instructions
