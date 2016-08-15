@@ -12,7 +12,7 @@ The Scalable, Adaptive Localization, and Laplacian Object Proposal
 (Scallop) Toolkit is a brief port of some of my master's thesis code
 developed at RPI, described further in the paper:
 
-[Automatic Scallop Detection in Benthic Environments](Documents/Paper.pdf)
+[Automatic Scallop Detection in Benthic Environments](Documentation/Paper.pdf)
 
 It has a few more modern optimizations as well, such as the ability to
 run convolutional neural networks on top of the described object
