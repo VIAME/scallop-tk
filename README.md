@@ -10,8 +10,8 @@ described further in the paper:
 
 [Automatic Scallop Detection in Benthic Environments](Documentation/Paper.pdf)
 
-Additionally, it has a few more modern optimizations as well, such
-as the ability to run convolutional neural networks on top of the
+Beyond what's in the paper, the toolkit has a few more modern optimizations
+as well, such as the ability to run convolutional neural networks on top of the
 described object proposal framework. It is useful as a general detector
 for detecting any ellipsoidal objects, though it also contains specialized
 subroutines targetting benthic organisms such as clams, scallops, urchins,
