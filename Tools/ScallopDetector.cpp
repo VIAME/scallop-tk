@@ -93,10 +93,6 @@ int main( int argc, char** argv )
     {
       settings.ClassifierToUse = argv[4];
     }
-    else
-    {
-      settings.ClassifierToUse = "DEFAULT";
-    }
   }
   // If we haven't specified any arguments...
   else if( argc == 1 ) 

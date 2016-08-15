@@ -283,7 +283,7 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
 
   if( !DoesFileExist( filename ) )
   {
-    cerr << "CRITICAL ERROR: Cannot load " << key << " classifier param file" << endl;
+    cerr << "CRITICAL ERROR: Classifier config " << key << " not found" << endl;
     return false;
   }
 

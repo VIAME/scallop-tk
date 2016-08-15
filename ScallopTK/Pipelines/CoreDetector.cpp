@@ -85,10 +85,11 @@ struct AlgorithmArgs {
   bool UseMetadata;
 
   // Output options
-  bool ShowVideoDisplay;
+  bool EnableOutputDisplay;
   bool EnableListOutput;
-  bool OutputMultiEntries;
-  bool EnableImageOutput;
+  bool OutputDuplicateClass;
+  bool OutputProposalImages;
+  bool OutputDetectionImages;
 
   // Search radii (used in meters if metadata is available, else pixels)
   float MinSearchRadiusMeters;
@@ -379,7 +380,7 @@ void *processImage( void *InputArgs ) {
     removeBorderCandidates( cdsAllUnordered, imgRGB32f );
   }
 
-  if( Options->ShowVideoDisplay )
+  if( Options->EnableOutputDisplay )
   {
     displayInterestPointImage( imgRGB32f, cdsAllUnordered );
   }
@@ -480,7 +481,7 @@ void *processImage( void *InputArgs ) {
     Objects = interpolateResults( likelyObjects, Options->Model, Options->InputFilename );
 
     // Display Detections
-    if( Options->ShowVideoDisplay ) {
+    if( Options->EnableOutputDisplay ) {
       getDisplayLock();
       displayResultsImage( imgRGB32f, Objects, Options->InputFilenameNoDir );
       unlockDisplay();
@@ -548,7 +549,7 @@ void *processImage( void *InputArgs ) {
   Stats->Update( detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
 
   // Output results to file(s)
-  if( Options->EnableImageOutput )
+  if( Options->OutputDetectionImages )
   {
     saveScallops( imgRGB32f, Objects, Options->OutputFilename + ".detections.jpg" );
   }
@@ -838,14 +839,22 @@ int runCoreDetector( const SystemParameters& settings )
     // Set thread output options
     inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
     inputArgs[i].UseGTData = settings.UseFileForTraining;
+    inputArgs[i].TrainingPercentKeep = settings.TrainingPercentKeep;
+    inputArgs[i].ProcessBorderPoints = settings.LookAtBorderPoints;
     inputArgs[i].GTData = GTs;
-    inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
     inputArgs[i].EnableListOutput = settings.OutputList;
-    inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
-    inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
+    inputArgs[i].OutputDuplicateClass = settings.OutputDuplicateClass;
+    inputArgs[i].OutputProposalImages = settings.OutputProposalImages;
+    inputArgs[i].OutputDetectionImages = settings.OutputDetectionImages;
+    inputArgs[i].EnableOutputDisplay = settings.EnableOutputDisplay;
     inputArgs[i].ScallopMode = true;
     inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
     inputArgs[i].ListFilename = listFilename;
+    inputArgs[i].MinSearchRadiusMeters = settings.MinSearchRadiusMeters;
+    inputArgs[i].MaxSearchRadiusMeters = settings.MaxSearchRadiusMeters;
+    inputArgs[i].MinSearchRadiusPixels = settings.MinSearchRadiusPixels;
+    inputArgs[i].MaxSearchRadiusPixels = settings.MaxSearchRadiusPixels;
+    inputArgs[i].UseMetadata = settings.UseMetadata;
   }
 
   // Initiate display window for output
@@ -1040,15 +1049,23 @@ CoreDetector::Priv::Priv( const SystemParameters& sets )
     // Set thread output options
     inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
     inputArgs[i].UseGTData = settings.UseFileForTraining;
+    inputArgs[i].TrainingPercentKeep = settings.TrainingPercentKeep;
+    inputArgs[i].ProcessBorderPoints = settings.LookAtBorderPoints;
     inputArgs[i].GTData = NULL;
-    inputArgs[i].EnableImageOutput = settings.OutputDetectionImages;
     inputArgs[i].EnableListOutput = settings.OutputList;
-    inputArgs[i].OutputMultiEntries = settings.OutputDuplicateClass;
-    inputArgs[i].ShowVideoDisplay = settings.EnableOutputDisplay;
+    inputArgs[i].OutputDuplicateClass = settings.OutputDuplicateClass;
+    inputArgs[i].OutputProposalImages = settings.OutputProposalImages;
+    inputArgs[i].OutputDetectionImages = settings.OutputDetectionImages;
+    inputArgs[i].EnableOutputDisplay = settings.EnableOutputDisplay;
     inputArgs[i].ScallopMode = true;
     inputArgs[i].MetadataProvided = !settings.IsMetadataInImage && !settings.IsInputDirectory;
     inputArgs[i].ListFilename = listFilename;
     inputArgs[i].FocalLength = settings.FocalLength;
+    inputArgs[i].MinSearchRadiusMeters = settings.MinSearchRadiusMeters;
+    inputArgs[i].MaxSearchRadiusMeters = settings.MaxSearchRadiusMeters;
+    inputArgs[i].MinSearchRadiusPixels = settings.MinSearchRadiusPixels;
+    inputArgs[i].MaxSearchRadiusPixels = settings.MaxSearchRadiusPixels;
+    inputArgs[i].UseMetadata = settings.UseMetadata;
   }
 
   // Initiate display window for output

@@ -500,8 +500,8 @@ void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, flo
     for( int j=0; j<c_groups_s1; j++ )
       bin1[i][j] = 0;
   }
-  int r_step_s1 = height / r_groups_s1;
-  int c_step_s1 = width / c_groups_s1;
+  int r_step_s1 = std::max( height / r_groups_s1, 1 );
+  int c_step_s1 = std::max( width / c_groups_s1, 1 );
 
   // Create Logging Bins - LB2
   int r_groups_s2 = imgProp.getImgHeightMeters() * bins_per_meter_s2;
@@ -518,8 +518,8 @@ void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, flo
     for( int j=0; j<c_groups_s2; j++ )
       bin2[i][j] = 0;
   }
-  int r_step_s2 = height / r_groups_s2;
-  int c_step_s2 = width / c_groups_s2;
+  int r_step_s2 = std::max( height / r_groups_s2, 1 );
+  int c_step_s2 = std::max( width / c_groups_s2, 1 );
 
   // Create Logging Bins - LB3
   int r_groups_s3 = imgProp.getImgHeightMeters() * bins_per_meter_s3;
@@ -536,8 +536,8 @@ void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, flo
     for( int j=0; j<c_groups_s3; j++ )
       bin3[i][j] = 0;
   }
-  int r_step_s3 = height / r_groups_s3;
-  int c_step_s3 = width / c_groups_s3;
+  int r_step_s3 = std::max( height / r_groups_s3, 1 );
+  int c_step_s3 = std::max( width / c_groups_s3, 1 );
     
   int maxIP = r_groups_s1*c_groups_s1*s1_ppg;
   maxIP = maxIP + r_groups_s2*c_groups_s2*s2_ppg;
