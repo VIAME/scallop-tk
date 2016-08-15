@@ -136,7 +136,7 @@ int main( int argc, char** argv )
 
   // Validate number of specified threads
   if( settings.NumThreads < 1 || settings.NumThreads > MAX_THREADS ) {
-    cerr << "\nWARNING: Invalid number of threads. Defaulting to 1." << endl;
+    cerr << "WARNING: Invalid number of threads. Defaulting to 1." << endl;
     settings.NumThreads = 1;
   }
 
@@ -154,6 +154,7 @@ int main( int argc, char** argv )
   if( settings.IsTrainingMode ) 
   {
     cout << endl << "TRAINING MODE INITIALIZING" << endl;
+
     if( settings.NumThreads != 1 ) {
       cerr << endl;
       cerr << "WARNING: Threading serves no purpose in training mode. ";
