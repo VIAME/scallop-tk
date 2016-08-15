@@ -322,7 +322,7 @@ void *processImage( void *InputArgs ) {
 #endif
   
   // Template Approx Candidate Detection
-  findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
+  //findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );

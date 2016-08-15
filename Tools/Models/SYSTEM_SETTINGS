@@ -16,7 +16,7 @@ min_search_radius_meters = 0.04
 max_search_radius_meters = 0.12
 
 ; Minimum search radius (used if metadata is not available)
-min_search_radius_pixels = 4
+min_search_radius_pixels = 10
 
 ; Maximum search radius (used if metadata is not available)
 max_search_radius_pixels = 200
@@ -32,7 +32,7 @@ training_percent_keep = 0.10
 look_at_border_points = true
 
 ; Enable output GUI display?
-enable_output_display = false
+enable_output_display = true
   
 ; Output Detection list?
 output_list = true
@@ -41,10 +41,10 @@ output_list = true
 output_duplicate_class = true
   
 ; Output images with proposals in output directory?
-output_proposal_images = false
+output_proposal_images = true
   
 ; Output images with detections in output directory?
-output_detection_images = false
+output_detection_images = true
 
 ; Number of worker threads to allocate for processing images
 num_threads = 1
