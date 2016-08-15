@@ -27,8 +27,8 @@ using namespace std;
 //                                  Variables
 //------------------------------------------------------------------------------
 
-const int DISPLAY_WIDTH = 435;
-const int DISPLAY_HEIGHT = 345;
+const float DISPLAY_MAX_WIDTH = 600.f;
+const float DISPLAY_MAX_HEIGHT = 600.f;
 
 //------------------------------------------------------------------------------
 //                              Function Definitions
@@ -36,7 +36,7 @@ const int DISPLAY_HEIGHT = 345;
 
 void initOutputDisplay();
 void killOuputDisplay();
-void displayImage( IplImage* img, string wname = DISPLAY_WINDOW_NAME );
+void displayImage( IplImage* img );
 void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds );
 void displayResultsImage( IplImage* img, CandidatePtrVector& Scallops );
 void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filename );

@@ -301,7 +301,7 @@ void *processImage( void *InputArgs ) {
   CandidatePtrVector cdsCannyEdge;
   
   // Perform Difference of Gaussian blob detection on our color classifications
-  if( Stats->processed < 5 || !Options->Model->detectsScallops() )
+  if( 1 || Stats->processed < 5 || !Options->Model->detectsScallops() )
   {
     detectSalientBlobs( color, cdsColorBlob ); //<-- Better for small # of images
   }    

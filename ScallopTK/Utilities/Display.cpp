@@ -13,12 +13,28 @@ void killOuputDisplay() {
   cvDestroyWindow( DISPLAY_WINDOW_NAME.c_str() );
 }
 
-void displayImage( IplImage* img, string wname ) {
-  IplImage *nimg = cvCreateImage( cvSize( DISPLAY_WIDTH, DISPLAY_HEIGHT ), img->depth, img->nChannels );
-  cvResize( img, nimg );
-  cvShowImage( DISPLAY_WINDOW_NAME.c_str(), nimg );
+IplImage* resizeImage( IplImage* img ) {
+  float sf = 1.0f;
+
+  if( img->height > DISPLAY_MAX_HEIGHT ) {
+    sf = std::min( sf, DISPLAY_MAX_HEIGHT / img->height );
+  }
+  if( img->width > DISPLAY_MAX_HEIGHT ) {
+    sf = std::max( sf, DISPLAY_MAX_WIDTH / img->width );
+  }
+
+  IplImage *output = cvCreateImage(
+    cvSize( img->width * sf, img->height * sf ), img->depth, img->nChannels );
+
+  cvResize( img, output );
+  return output;
+}
+
+void displayImage( IplImage* img ) {
+  IplImage *resized = resizeImage( img );
+  cvShowImage( DISPLAY_WINDOW_NAME.c_str(), resized );
   cvWaitKey( 15 );
-  cvReleaseImage(&nimg);
+  cvReleaseImage(&resized);
 }
 
 void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds ) {
@@ -85,6 +101,6 @@ void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filenam
       cvSize( cds[i]->major, cds[i]->minor ), 
       (cds[i]->angle*180/PI)-90, 0, 360, color, 2 );
   }
-  displayImage( local, Filename );
+  displayImage( local );
   cvReleaseImage( &local );
 }
