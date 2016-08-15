@@ -110,10 +110,12 @@ int main( int argc, char** argv )
 
     if( !ParseSystemConfig( settings ) )
     {
+      cerr << "ERROR: Unable to parse system config!" << endl;
       return false;
     }
     if( !ParseModeConfig( "PROCESS_DIR", settings ) )
     {
+      cerr << "ERROR: Unable to parse process_dir config!" << endl;
       return false;
     }
     

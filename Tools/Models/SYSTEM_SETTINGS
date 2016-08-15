@@ -32,7 +32,7 @@ training_percent_keep = 0.10
 look_at_border_points = true
 
 ; Enable output GUI display?
-enale_output_display = false
+enable_output_display = false
   
 ; Output Detection list?
 output_list = true

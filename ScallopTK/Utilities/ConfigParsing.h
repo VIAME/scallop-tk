@@ -150,6 +150,8 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
       return false;
     }
   }
+
+  return true;
 }
 
 // Parse the contents of a process config file, adding them to params
@@ -217,6 +219,7 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
   // Find config directory
   if( !FindSysConfig( filename, configDir, location ) )
   {
+    
     return false;
   }
 
