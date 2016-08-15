@@ -36,7 +36,7 @@ const int DISPLAY_HEIGHT = 345;
 
 void initOutputDisplay();
 void killOuputDisplay();
-void displayImage( IplImage* img, string wname = "SCALLOPS" );
+void displayImage( IplImage* img, string wname = DISPLAY_WINDOW_NAME );
 void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds );
 void displayResultsImage( IplImage* img, CandidatePtrVector& Scallops );
 void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filename );

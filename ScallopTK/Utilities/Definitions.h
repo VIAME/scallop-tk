@@ -53,6 +53,9 @@ const int RAW_TIFF = 0x03;   //.tiff
 const int BMP      = 0x04;   //.bmp
 const int PNG      = 0x05;   //.png
 
+// Scallop Display Window Name
+const std::string DISPLAY_WINDOW_NAME = "ScallopDisplayWindow";
+
 // Desired maximum pixel count covering the min object search radius,
 // this is an optimization which speeds up all operations by performing
 // a downscale of the input image, if possible.

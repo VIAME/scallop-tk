@@ -6,17 +6,17 @@
 #include "Display.h"
 
 void initOutputDisplay() {
-  cvNamedWindow( "ScallopDisplayWindow", CV_WINDOW_AUTOSIZE );
+  cvNamedWindow( DISPLAY_WINDOW_NAME.c_str(), CV_WINDOW_AUTOSIZE );
 }
 
 void killOuputDisplay() {
-  cvDestroyWindow( "ScallopDisplayWindow" );
+  cvDestroyWindow( DISPLAY_WINDOW_NAME.c_str() );
 }
 
 void displayImage( IplImage* img, string wname ) {
   IplImage *nimg = cvCreateImage( cvSize( DISPLAY_WIDTH, DISPLAY_HEIGHT ), img->depth, img->nChannels );
   cvResize( img, nimg );
-  cvShowImage( "ScallopDisplayWindow", nimg );
+  cvShowImage( DISPLAY_WINDOW_NAME.c_str(), nimg );
   cvWaitKey( 15 );
   cvReleaseImage(&nimg);
 }
