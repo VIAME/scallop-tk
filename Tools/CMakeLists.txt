@@ -42,7 +42,7 @@ function( AddDataDir DirName TargetExec )
     DESTINATION bin FILES_MATCHING PATTERN "*" )
 
   add_custom_command(TARGET ${TargetExec} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${CMAKE_CURRENT_SOURCE_DIR}/${DirName} ${CMAKE_BINARY_DIR}/bin/${DirName})
 endfunction()
 

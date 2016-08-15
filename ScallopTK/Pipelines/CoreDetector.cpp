@@ -568,7 +568,6 @@ void *processImage( void *InputArgs ) {
   deallocateDetections( Objects );
   deallocateGradientChain( gradients );
   hfDeallocResults( color );
-  cvReleaseImage( &inputImg );
   cvReleaseImage( &imgRGB32f );
   cvReleaseImage( &imgRGB8u );
   cvReleaseImage( &imgGrey32f );
