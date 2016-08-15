@@ -61,6 +61,14 @@ public:
   std::vector< Detection > processFrame( std::string filename,
     float pitch = 0.0f, float roll = 0.0f, float altitude = 0.0f  );
 
+  // Process a new stereo frame given an image and platform metadata
+  // if it is known (otherwise leave it all values as the defaults)
+  //
+  // Throws runtime_error exception on critical failure
+  std::vector< Detection > processFrame( const cv::Mat& leftImage,
+    const cv::Mat& rightImage, float pitch = 0.0f, float roll = 0.0f,
+    float altitude = 0.0f );
+
 private:
 
   // Class for storing all cross-frame required data

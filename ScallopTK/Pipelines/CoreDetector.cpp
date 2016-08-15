@@ -55,7 +55,7 @@ namespace ScallopTK
 // Variables for benchmarking tests
 #ifdef ENABLE_BENCHMARKING
   const string BenchmarkingFilename = "BenchmarkingResults.dat";
-  vector<double> ExecutionTimes;
+  vector<double> executionTimes;
   ofstream benchmarkingOutput;
 #endif
 
@@ -109,7 +109,7 @@ struct AlgorithmArgs {
   ThreadStatistics *Stats;
 
   // Container for loaded classifier system to use on this image
-  Classifier *ClassifierGroup;
+  Classifier *Model;
 
   // Did we last see a scallop or sand dollar cluster?
   bool ScallopMode;
@@ -133,7 +133,7 @@ struct AlgorithmArgs {
 // Our Core Detection Algorithm - performs classification for a single image
 //   inputs - shown above
 //   outputs - returns NULL
-void *ProcessImage( void *InputArgs ) {
+void *processImage( void *InputArgs ) {
     
 //--------------------Get Pointers to Main Inputs---------------------
 
@@ -143,7 +143,7 @@ void *ProcessImage( void *InputArgs ) {
   ThreadStatistics *Stats = Options->Stats;
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.clear();
+  executionTimes.clear();
   startTimer();
 #endif  
 
@@ -203,7 +203,7 @@ void *ProcessImage( void *InputArgs ) {
   }
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
 //-------------------------Format Base Images--------------------------
@@ -246,7 +246,7 @@ void *ProcessImage( void *InputArgs ) {
   }
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Convert input image to other formats required for later operations
@@ -269,7 +269,7 @@ void *ProcessImage( void *InputArgs ) {
   cvScale( imgRGB32f, imgRGB8u, 255. );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Perform color classifications on base image
@@ -279,7 +279,7 @@ void *ProcessImage( void *InputArgs ) {
     minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Calculate all required image gradients for later operations
@@ -287,7 +287,7 @@ void *ProcessImage( void *InputArgs ) {
     imgGrey8u, imgRGB8u, color, minRadPixels, maxRadPixels );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
         
 //-----------------------Detect ROIs-----------------------------
@@ -305,28 +305,28 @@ void *ProcessImage( void *InputArgs ) {
     detectSalientBlobs( color, cdsColorBlob ); //<-- Better for small # of images
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
   // Perform cdsAdaptiveFilt Filtering
   performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
     
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
   // cdsTemplateAprx Matching Approx
   findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
     
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Stable cdsCannyEdge Edge Candidates
   findCannyCandidates( gradients, cdsCannyEdge );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
 //---------------------Consolidate ROIs--------------------------
@@ -340,7 +340,7 @@ void *ProcessImage( void *InputArgs ) {
     cdsCannyEdge, unorderedCandidates, orderedCandidates, Stats );
     
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+  executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
 //------------------GT Merging Procedure------------------------
@@ -381,62 +381,65 @@ void *ProcessImage( void *InputArgs ) {
 
 //--------------------Extract Features---------------------------
 
-  // Initializes Candidate stats used for classification
-  initalizeCandidateStats( unorderedCandidates, inputImg->height, inputImg->width );
+  if( Options->Model->requiresFeatures() )
+  {
+    // Initializes Candidate stats used for classification
+    initalizeCandidateStats( unorderedCandidates, inputImg->height, inputImg->width );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+    executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Identifies edges around each IP
-  edgeSearch( gradients, color, imgLab32f, unorderedCandidates, imgRGB32f );
+    // Identifies edges around each IP
+    edgeSearch( gradients, color, imgLab32f, unorderedCandidates, imgRGB32f );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+    executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Creates an unoriented gs HoG descriptor around each IP
-  HoGFeatureGenerator gsHoG( imgGrey32f, minRadPixels, maxRadPixels, 0 );
-  gsHoG.Generate( unorderedCandidates );
+    // Creates an unoriented gs HoG descriptor around each IP
+    HoGFeatureGenerator gsHoG( imgGrey32f, minRadPixels, maxRadPixels, 0 );
+    gsHoG.Generate( unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+    executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Creates an unoriented sal HoG descriptor around each IP
-  HoGFeatureGenerator salHoG( color->SaliencyMap, minRadPixels, maxRadPixels, 1 );
-  salHoG.Generate( unorderedCandidates );
+    // Creates an unoriented sal HoG descriptor around each IP
+    HoGFeatureGenerator salHoG( color->SaliencyMap, minRadPixels, maxRadPixels, 1 );
+    salHoG.Generate( unorderedCandidates );
 
 #ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
+    executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Calculates size based features around each IP
-  for( int i=0; i<unorderedCandidates.size(); i++ ) {
-    calculatesizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
+    // Calculates size based features around each IP
+    for( int i=0; i<unorderedCandidates.size(); i++ ) {
+      calculatesizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
+    }
+
+#ifdef ENABLE_BENCHMARKING
+    executionTimes.push_back( getTimeSinceLastCall() );
+#endif
+
+    // Calculates color based features around each IP
+    createcolorQuadrants( imgGrey32f, unorderedCandidates );
+    for( int i=0; i<unorderedCandidates.size(); i++ ) {
+      calculatecolorFeatures( imgRGB32f, color, unorderedCandidates[i] );
+    }
+
+#ifdef ENABLE_BENCHMARKING
+    executionTimes.push_back( getTimeSinceLastCall() );
+#endif
+
+    // Calculates gabor based features around each IP
+    calculategaborFeatures( imgGrey32f, unorderedCandidates );
+
+#ifdef ENABLE_BENCHMARKING
+    executionTimes.push_back( getTimeSinceLastCall() );
+#endif
   }
 
-#ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
-#endif
-
-  // Calculates color based features around each IP
-  createcolorQuadrants( imgGrey32f, unorderedCandidates );
-  for( int i=0; i<unorderedCandidates.size(); i++ ) {
-    calculatecolorFeatures( imgRGB32f, color, unorderedCandidates[i] );
-  }
-
-#ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
-#endif
-
-  // Calculates gabor based features around each IP
-  calculategaborFeatures( imgGrey32f, unorderedCandidates );
-
-#ifdef ENABLE_BENCHMARKING
-  ExecutionTimes.push_back( getTimeSinceLastCall() );
-#endif
-  
 //----------------------Classify ROIs----------------------------
 
   CandidatePtrVector interestingCds;
@@ -460,7 +463,7 @@ void *ProcessImage( void *InputArgs ) {
   else
   {
     // Classify candidates, returning ones with positive classifications
-    Options->ClassifierGroup->classifyCandidates( imgRGB8u, unorderedCandidates, interestingCds );
+    Options->Model->classifyCandidates( imgRGB8u, unorderedCandidates, interestingCds );
   
     // Calculate expensive edges around each interesting candidate point
     expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
@@ -469,7 +472,7 @@ void *ProcessImage( void *InputArgs ) {
     removeInsidePoints( interestingCds, likelyObjects );
   
     // Interpolate correct object categories
-    Objects = interpolateResults( likelyObjects, Options->ClassifierGroup, Options->InputFilename );
+    Objects = interpolateResults( likelyObjects, Options->Model, Options->InputFilename );
 
     // Display Detections
     if( Options->ShowVideoDisplay ) {
@@ -482,7 +485,7 @@ void *ProcessImage( void *InputArgs ) {
 //-----------------------Update Stats----------------------------
 
   // Update Detection variables and mask
-  if( !Options->IsTrainingMode /*&& Options->ClassifierGroup->IsScallopDirected()*/ )
+  if( !Options->IsTrainingMode /*&& Options->Model->IsScallopDirected()*/ )
   {
     for( unsigned int i=0; i<Objects.size(); i++ ) {
       Detection *cur = Objects[i];
@@ -863,7 +866,7 @@ int runCoreDetector( const SystemParameters& settings )
     // Set classifier for entry
     if( !settings.IsTrainingMode )
     {
-      inputArgs[0].ClassifierGroup = classifiers[ inputClassifiers[i] ];
+      inputArgs[0].Model = classifiers[ inputClassifiers[i] ];
     }
 
     // Always set the focal length
@@ -893,12 +896,12 @@ int runCoreDetector( const SystemParameters& settings )
     inputArgs[0].InputImage = image;
 
     // Execute processing
-    ProcessImage( inputArgs );
+    processImage( inputArgs );
 
 #ifdef ENABLE_BENCHMARKING
     // Output benchmarking results to file
-    for( unsigned int i=0; i<ExecutionTimes.size(); i++ )
-      benchmarkingOutput << ExecutionTimes[i] << " ";
+    for( unsigned int i=0; i<executionTimes.size(); i++ )
+      benchmarkingOutput << executionTimes[i] << " ";
     benchmarkingOutput << endl;
 #endif
 
@@ -955,7 +958,7 @@ class CoreDetector::Priv
 {
 public:
 
-  explicit Priv( const SystemParameters& settings );
+  explicit Priv( const SystemParameters& sets );
   ~Priv();
 
   Classifier* classifier;
@@ -1110,9 +1113,8 @@ std::vector< Detection >
 CoreDetector::processFrame( const cv::Mat& image,
  float pitch, float roll, float altitude )
 {
-  // Always set the focal length
   data->counter++;
-  std::string frameID = "streaming_frame" + INT_2_STR( data->counter );
+  std::string frameID = "streaming_frame_" + INT_2_STR( data->counter );
 
   data->inputArgs[0].InputImage = image;
   data->inputArgs[0].InputFilename = frameID;
@@ -1132,14 +1134,30 @@ CoreDetector::processFrame( const cv::Mat& image,
   }
 
   // Execute processing
-  ProcessImage( data->inputArgs );
+  processImage( data->inputArgs );
 
 #ifdef ENABLE_BENCHMARKING
   // Output benchmarking results to file
-  for( unsigned int i=0; i<ExecutionTimes.size(); i++ )
-    benchmarkingOutput << ExecutionTimes[i] << " ";
+  for( unsigned int i=0; i<executionTimes.size(); i++ )
+    benchmarkingOutput << executionTimes[i] << " ";
   benchmarkingOutput << endl;
 #endif
+}
+
+std::vector< Detection >
+CoreDetector::processFrame( const cv::Mat& leftImage,
+  const cv::Mat& rightImage, float pitch, float roll, float altitude )
+{
+  cv::Size leftSize = leftImage.size();
+  cv::Size rightSize = rightImage.size();
+
+  Mat merged( leftSize.height, leftSize.width + rightSize.width, leftImage.depth() );
+  Mat left( merged, cv::Rect( 0, 0, leftSize.width, leftSize.height ) );
+  leftImage.copyTo( left );
+  Mat right( merged, cv::Rect( leftSize.width, 0, rightSize.width, rightSize.height ) );
+  rightImage.copyTo( right );
+
+  return processFrame( merged, pitch, roll, altitude );
 }
 
 std::vector< Detection >
@@ -1148,7 +1166,8 @@ CoreDetector::processFrame( std::string filename,
 {
   cv::Mat image;
   image = imread( filename, CV_LOAD_IMAGE_COLOR );
-  processFrame( image, pitch, roll, altitude );
+
+  return processFrame( image, pitch, roll, altitude );
 }
 
 }

@@ -39,17 +39,67 @@ public:
   // Image should contain the input image
   // Candidates the input candidates to score
   // Positive will contain any candidates with positive classifications
-  virtual void classifyCandidates( IplImage* image,
+  virtual void classifyCandidates( cv::Mat image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive );
 
+  // Does this classifier require feature extraction?
+  bool requiresFeatures() { return false; }
+
+  // Does this classifier have anything to do with scallop detection?
+  bool detectsScallops() { return isScallopDirected; }
+
 private:
 
-  caffe::Net< float >* initialClfr;
+  struct IDLabel
+  {
+    // ID of the target object
+    std::string id;
 
-  bool suppressionEnabled;
-  caffe::Net< float >* suppressionClfr;
-  
+    // Special cases:
+    //  - Is the classifier bin aimed at detecting background?
+    bool isBackground;
+    //  - Is the classifier bin aimed at dollars?
+    bool isSandDollar;
+    //  - Is the classifier bin aimed at ALL scallops?
+    bool isScallop;
+    //  - More specifically, is the classifier bin aimed at just white scallops?
+    bool isWhite;
+    //  - Is the classifier bin aimed at just brown scallops?
+    bool isBrown;
+    //  - Is the classifier bin aimed at just buried scallops
+    bool isBuried;
+  };
+
+  typedef std::vector< IDLabel > IDVector;
+  typedef caffe::Net< float > CNN;
+  typedef caffe::Caffe::Brew DeviceMode;
+
+  // Main (initial) classifier applied to all candidates
+  CNN* initialClfr;
+  IDVector initialClfrLabels;
+
+  // Optional suppression classifiers
+  CNN* suppressionClfr;
+  IDVector suppressionClfrLabels;
+
+  // Is this system aimed at scallops or something entirely different?
+  bool isScallopDirected;
+
+  // Detection threshold
+  double threshold;
+
+  // Are we in training mode
+  bool isTrainingMode;
+
+  // GPU device settings
+  DeviceMode deviceMode;
+  int deviceID;
+  double deviceMem;
+
+  // Helper functions
+  void deallocCNNs();
+  cv::Mat getCandidateChip( cv::Mat image, Candidate* cd );
 };
 
 #endif

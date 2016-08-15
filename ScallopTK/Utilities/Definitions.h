@@ -95,6 +95,7 @@ const int DEFAULT_OBJ_SKIP      = 2;
 const float DEFAULT_MERGE_RATIO = 0.08f;
 
 // Special type definitions for input classification files
+const std::string BACKGROUND     = "BACKGROUND";
 const std::string BROWN_SCALLOP  = "BROWN";
 const std::string WHITE_SCALLOP  = "WHITE";
 const std::string BURIED_SCALLOP = "BURIED";
@@ -148,6 +149,10 @@ const unsigned int SIZE_FEATURES  = 9;
 const unsigned int EDGE_FEATURES  = 137;
 const unsigned int HOG_FEATURES   = 1764;
 const unsigned int NUM_HOG        = 2;
+
+// Amount to expand bounding box around candidate by when
+// computing image chips to feed into a CNN classifier.
+const float CNN_EXPANSION_RATIO = 1.25f;
 
 // Sand dollar suppression system factor
 const double SDSS_DIFFERENCE_FACTOR = 2.0;
@@ -267,7 +272,7 @@ struct ClassifierParameters
   std::vector< std::string > L2SuppTypes;
 
   // Is sand dollar suppression turned on?
-  bool EnabledSDSS;
+  bool EnableSDSS;
 
   // Classifier threshold
   double Threshold;

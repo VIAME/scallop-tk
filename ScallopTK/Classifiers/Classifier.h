@@ -36,10 +36,15 @@ public:
   // Image should contain the input image
   // Candidates the input candidates to score
   // Positive will contain any candidates with positive classifications
-  virtual void classifyCandidates( IplImage* image,
+  virtual void classifyCandidates( cv::Mat image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive ) = 0;
 
+  // Does this classifier require feature extraction?
+  virtual bool requiresFeatures() = 0;
+
+  // Does this classifier have anything to do with scallop detection?
+  virtual bool detectsScallops() = 0;
 };
 
 //------------------------------------------------------------------------------

@@ -9,9 +9,8 @@ bool AdaClassifier::loadClassifiers(
   const ClassifierParameters& clsParams )
 {
   string dir = sysParams.RootClassifierDIR + clsParams.ClassifierSubdir;
-  IsScallopDirected = false;
-  SDSS = clsParams.EnabledSDSS;
-  Threshold = clsParams.Threshold;
+  isScallopDirected = false;
+  threshold = clsParams.Threshold;
 
   // Load Main Classifiers
   for( int i = 0; i < clsParams.L1Files.size(); i++ )
@@ -45,11 +44,11 @@ bool AdaClassifier::loadClassifiers(
     // Set is scallop classifier flag
     if( MainClass.isWhite || MainClass.isBrown || MainClass.isBuried || MainClass.isScallop )
     {
-      IsScallopDirected = true;
+      isScallopDirected = true;
     }
 
     // Add classifier to system
-    MainClassifiers.push_back( MainClass );    
+    mainClassifiers.push_back( MainClass );    
   }
 
   // Load suppression classifiers
@@ -85,11 +84,11 @@ bool AdaClassifier::loadClassifiers(
     SuppClass.isBuried = ( clsParams.L2SpecTypes[i] == BURIED_SCALLOP );
 
     // Add classifier to system
-    SuppressionClassifiers.push_back( SuppClass );  
+    suppressionClassifiers.push_back( SuppClass );  
   }
   
   // Check results
-  if( SuppressionClassifiers.size() + MainClassifiers.size() >= MAX_CLASSIFIERS )
+  if( suppressionClassifiers.size() + mainClassifiers.size() >= MAX_CLASSIFIERS )
   {
     std::cout << "CRITICAL ERROR: Increase max allowed number of classifiers!" << endl;
     return false;
@@ -100,7 +99,7 @@ bool AdaClassifier::loadClassifiers(
 
 
 // td; Use a binary file next time
-int AdaClassifier::classifyCandidate( IplImage* image, Candidate* cd )
+int AdaClassifier::classifyCandidate( cv::Mat image, Candidate* cd )
 {
   // Exit if inactive flag set
   if( !cd->isActive )
@@ -145,9 +144,9 @@ int AdaClassifier::classifyCandidate( IplImage* image, Candidate* cd )
   int idx = 0;
   pos = 0;
   double max = -1.0;
-  for( int i = 0; i < MainClassifiers.size(); i++ )
+  for( int i = 0; i < mainClassifiers.size(); i++ )
   {
-    cd->classMagnitudes[pos] = MainClassifiers[i].adaTree.Predict( input );
+    cd->classMagnitudes[pos] = mainClassifiers[i].adaTree.Predict( input );
     if( cd->classMagnitudes[pos] > max )
     {
       max = cd->classMagnitudes[pos];
@@ -157,11 +156,11 @@ int AdaClassifier::classifyCandidate( IplImage* image, Candidate* cd )
   }
 
   // If we passed any of the above, compute secondary classifiers
-  if( max >= Threshold ) {
+  if( max >= threshold ) {
 
-    for( int i = 0; i < SuppressionClassifiers.size(); i++ )
+    for( int i = 0; i < suppressionClassifiers.size(); i++ )
     {
-      cd->classMagnitudes[pos] = SuppressionClassifiers[i].adaTree.Predict( input );
+      cd->classMagnitudes[pos] = suppressionClassifiers[i].adaTree.Predict( input );
       if( cd->classMagnitudes[pos] > max )
       {
         max = cd->classMagnitudes[pos];
@@ -177,7 +176,7 @@ int AdaClassifier::classifyCandidate( IplImage* image, Candidate* cd )
 }
 
 void AdaClassifier::classifyCandidates(
-  IplImage* image,
+  cv::Mat image,
   CandidatePtrVector& candidates,
   CandidatePtrVector& positive )
 {

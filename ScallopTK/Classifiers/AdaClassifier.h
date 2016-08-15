@@ -26,38 +26,10 @@
 //                            Constants / Typedefs
 //------------------------------------------------------------------------------
 
-typedef CBoostedCommittee SingleAdaTree;
-
-struct SingleAdaClassifier
-{
-  // ID of classifier object
-  std::string id;
-  
-  // The type of the classifier ( 0 - main, 1-3 suppression style )
-  int type;
-  
-  // The adaboost decesion tree itself
-  SingleAdaTree adaTree;
-  
-  // Special cases:
-  //  - Is the classifier aimed at dollars?
-  bool isSandDollar;
-  //  - Is the classifier aimed at ALL scallops?
-  bool isScallop;
-  //  - More specifically, is the classifier aimed at just white scallops?
-  bool isWhite;
-  //  - Is the classifier aimed at just brown scallops?
-  bool isBrown;
-  //  - Is the classifier aimed at just buried scallops
-  bool isBuried;
-};
-
 class AdaClassifier : public Classifier
 {
 
 public:
-
-  typedef std::vector< SingleAdaClassifier > AdaVector;
 
   AdaClassifier() {}
   ~AdaClassifier() {}
@@ -72,29 +44,60 @@ public:
   // Image should contain the input image
   // Candidates the input candidates to score
   // Positive will contain any candidates with positive classifications
-  void classifyCandidates( IplImage* image,
+  void classifyCandidates( cv::Mat image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive );
 
+  // Does this classifier require feature extraction?
+  bool requiresFeatures() { return true; }
+
+  // Does this classifier have anything to do with scallop detection?
+  bool detectsScallops() { return isScallopDirected; }
+
 private:
 
+  typedef CBoostedCommittee SingleAdaTree;
+  
+  struct SingleAdaClassifier
+  {
+    // ID of the target object
+    std::string id;
+    
+    // The type of the classifier ( 0 - main, 1-3 suppression style )
+    int type;
+    
+    // The adaboost decesion tree itself
+    SingleAdaTree adaTree;
+    
+    // Special cases:
+    //  - Is the classifier aimed at dollars?
+    bool isSandDollar;
+    //  - Is the classifier aimed at ALL scallops?
+    bool isScallop;
+    //  - More specifically, is the classifier aimed at just white scallops?
+    bool isWhite;
+    //  - Is the classifier aimed at just brown scallops?
+    bool isBrown;
+    //  - Is the classifier aimed at just buried scallops
+    bool isBuried;
+  };
+
+  typedef std::vector< SingleAdaClassifier > AdaVector;
+
   // Helper function
-  int classifyCandidate( IplImage* image, Candidate* candidate );
+  int classifyCandidate( cv::Mat image, Candidate* candidate );
 
   // Tier 1 classifeirs
-  AdaVector MainClassifiers;
+  AdaVector mainClassifiers;
   
   // Tier 2 classifiers
-  AdaVector SuppressionClassifiers;
+  AdaVector suppressionClassifiers;
   
   // Is this system aimed at scallops or something entirely different?
-  bool IsScallopDirected;
+  bool isScallopDirected;
 
-  // Is the SDSS subsystem active
-  bool SDSS;
-  
   // Detection threshold
-  double Threshold;
+  double threshold;
 };
 
 #endif

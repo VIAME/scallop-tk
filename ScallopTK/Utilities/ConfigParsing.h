@@ -307,7 +307,7 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
     params.L2SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CATEGORY", NULL), true );
     params.L2SuppTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CLFSTYLE", NULL), true );
     params.L2Files = ConvertCSVLine( rdr.GetValue("classifiers", "C2FILES", NULL), true );
-    params.EnabledSDSS = !strcmp( rdr.GetValue("classifiers", "ENABLE_SAND_DOLLAR_SUPPRESSION_SYS", NULL), "true" );
+    params.EnableSDSS = !strcmp( rdr.GetValue("classifiers", "ENABLE_SAND_DOLLAR_SUPPRESSION_SYS", NULL), "true" );
     params.Threshold = atof( rdr.GetValue("classifiers", "THRESHOLD", "0.0") );
 
     // Check vector sizes
