@@ -26,6 +26,11 @@
 #include "ScallopTK/Utilities/Filesystem.h"
 
 #include "ScallopTK/ScaleDetection/ImageProperties.h"
+#include "ScallopTK/ScaleDetection/StereoComputation.h"
+
+#include "ScallopTK/EdgeDetection/WatershedEdges.h"
+#include "ScallopTK/EdgeDetection/StableSearch.h"
+#include "ScallopTK/EdgeDetection/ExpensiveSearch.h"
 
 #include "ScallopTK/ObjectProposals/HistogramFiltering.h"
 #include "ScallopTK/ObjectProposals/PriorStatistics.h"
@@ -33,10 +38,6 @@
 #include "ScallopTK/ObjectProposals/TemplateApproximator.h"
 #include "ScallopTK/ObjectProposals/CannyPoints.h"
 #include "ScallopTK/ObjectProposals/Consolidator.h"
-
-#include "ScallopTK/EdgeDetection/WatershedEdges.h"
-#include "ScallopTK/EdgeDetection/StableSearch.h"
-#include "ScallopTK/EdgeDetection/ExpensiveSearch.h"
 
 #include "ScallopTK/FeatureExtraction/ColorID.h"
 #include "ScallopTK/FeatureExtraction/HoG.h"
@@ -298,31 +299,35 @@ void *processImage( void *InputArgs ) {
   CandidatePtrVector cdsTemplateAprx;
   CandidatePtrVector cdsCannyEdge;
   
-  // Perform Difference of Gaussian blob Detection on our color classifications
-  if( Stats->processed > 5 )
-    detectColoredBlobs( color, cdsColorBlob ); //<-- Better for large # of images
-  else 
+  // Perform Difference of Gaussian blob detection on our color classifications
+  if( Stats->processed < 5 || !Options->Model->detectsScallops() )
+  {
     detectSalientBlobs( color, cdsColorBlob ); //<-- Better for small # of images
+  }    
+  else
+  {
+    detectColoredBlobs( color, cdsColorBlob ); //<-- Better for large # of images
+  }
 
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
-  // Perform cdsAdaptiveFilt Filtering
+  // Perform Adaptive Filtering
   performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
-  // cdsTemplateAprx Matching Approx
+  // Template Approx Candidate Detection
   findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  // Stable cdsCannyEdge Edge Candidates
+  // Stable Canny Edge Candidates
   findCannyCandidates( gradients, cdsCannyEdge );
 
 #ifdef ENABLE_BENCHMARKING
@@ -332,12 +337,12 @@ void *processImage( void *InputArgs ) {
 //---------------------Consolidate ROIs--------------------------
 
   // Containers for sorted IPs
-  CandidatePtrVector unorderedCandidates;
-  CandidateQueue orderedCandidates;
+  CandidatePtrVector cdsAllUnordered;
+  CandidateQueue cdsAllUOrdered;
 
   // Consolidate interest points
   prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx,
-    cdsCannyEdge, unorderedCandidates, orderedCandidates, Stats );
+    cdsCannyEdge, cdsAllUnordered, cdsAllUOrdered, Stats );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
@@ -366,17 +371,17 @@ void *processImage( void *InputArgs ) {
     }
     
     // Remove any detected Candidates which conflict with markups
-    RemoveOverlapAndMerge( unorderedCandidates, GTDetections, Options->TrainingPercentKeep );
+    RemoveOverlapAndMerge( cdsAllUnordered, GTDetections, Options->TrainingPercentKeep );
   }
 
   if( !Options->ProcessBorderPoints )
   {
-    removeBorderCandidates( unorderedCandidates, imgRGB32f );
+    removeBorderCandidates( cdsAllUnordered, imgRGB32f );
   }
 
   if( Options->ShowVideoDisplay )
   {
-    displayInterestPointImage( imgRGB32f, unorderedCandidates );
+    displayInterestPointImage( imgRGB32f, cdsAllUnordered );
   }
 
 //--------------------Extract Features---------------------------
@@ -384,14 +389,14 @@ void *processImage( void *InputArgs ) {
   if( Options->Model->requiresFeatures() )
   {
     // Initializes Candidate stats used for classification
-    initalizeCandidateStats( unorderedCandidates, inputImg->height, inputImg->width );
+    initalizeCandidateStats( cdsAllUnordered, inputImg->height, inputImg->width );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
     // Identifies edges around each IP
-    edgeSearch( gradients, color, imgLab32f, unorderedCandidates, imgRGB32f );
+    edgeSearch( gradients, color, imgLab32f, cdsAllUnordered, imgRGB32f );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );
@@ -399,7 +404,7 @@ void *processImage( void *InputArgs ) {
 
     // Creates an unoriented gs HoG descriptor around each IP
     HoGFeatureGenerator gsHoG( imgGrey32f, minRadPixels, maxRadPixels, 0 );
-    gsHoG.Generate( unorderedCandidates );
+    gsHoG.Generate( cdsAllUnordered );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );
@@ -407,15 +412,15 @@ void *processImage( void *InputArgs ) {
 
     // Creates an unoriented sal HoG descriptor around each IP
     HoGFeatureGenerator salHoG( color->SaliencyMap, minRadPixels, maxRadPixels, 1 );
-    salHoG.Generate( unorderedCandidates );
+    salHoG.Generate( cdsAllUnordered );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
     // Calculates size based features around each IP
-    for( int i=0; i<unorderedCandidates.size(); i++ ) {
-      calculatesizeFeatures( unorderedCandidates[i], inputProp, resizeFactor);
+    for( int i=0; i<cdsAllUnordered.size(); i++ ) {
+      calculatesizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor);
     }
 
 #ifdef ENABLE_BENCHMARKING
@@ -423,9 +428,9 @@ void *processImage( void *InputArgs ) {
 #endif
 
     // Calculates color based features around each IP
-    createcolorQuadrants( imgGrey32f, unorderedCandidates );
-    for( int i=0; i<unorderedCandidates.size(); i++ ) {
-      calculatecolorFeatures( imgRGB32f, color, unorderedCandidates[i] );
+    createcolorQuadrants( imgGrey32f, cdsAllUnordered );
+    for( int i=0; i<cdsAllUnordered.size(); i++ ) {
+      calculatecolorFeatures( imgRGB32f, color, cdsAllUnordered[i] );
     }
 
 #ifdef ENABLE_BENCHMARKING
@@ -433,7 +438,7 @@ void *processImage( void *InputArgs ) {
 #endif
 
     // Calculates gabor based features around each IP
-    calculategaborFeatures( imgGrey32f, unorderedCandidates );
+    calculategaborFeatures( imgGrey32f, cdsAllUnordered );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );
@@ -449,7 +454,7 @@ void *processImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if( !getDesignationsFromUser( orderedCandidates, imgRGB32f, mask, detections,
+    if( !getDesignationsFromUser( cdsAllUOrdered, imgRGB32f, mask, detections,
            minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
       trainingExitFlag = true;
@@ -458,12 +463,12 @@ void *processImage( void *InputArgs ) {
   else if( Options->IsTrainingMode )
   {
     // Append all extracted features to file
-    dumpCandidateFeatures( Options->ListFilename, unorderedCandidates );
+    dumpCandidateFeatures( Options->ListFilename, cdsAllUnordered );
   }
   else
   {
     // Classify candidates, returning ones with positive classifications
-    Options->Model->classifyCandidates( imgRGB8u, unorderedCandidates, interestingCds );
+    Options->Model->classifyCandidates( imgRGB8u, cdsAllUnordered, interestingCds );
   
     // Calculate expensive edges around each interesting candidate point
     expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
@@ -514,8 +519,8 @@ void *processImage( void *InputArgs ) {
   // If in training mode use designations to distinguish
   if( Options->IsTrainingMode )
   {
-    for( unsigned int i=0; i<unorderedCandidates.size(); i++ ) {
-      Candidate *cur = unorderedCandidates[i];
+    for( unsigned int i=0; i<cdsAllUnordered.size(); i++ ) {
+      Candidate *cur = cdsAllUnordered[i];
       int id = cur->classification;
       if( id == 18028 || id == 18034 || id == 2 )
       {
@@ -558,7 +563,7 @@ void *processImage( void *InputArgs ) {
 //-------------------------Clean Up------------------------------
   
   // Deallocate memory used by thread
-  deallocateCandidates( unorderedCandidates );
+  deallocateCandidates( cdsAllUnordered );
   deallocateDetections( Objects );
   deallocateGradientChain( gradients );
   hfDeallocResults( color );
@@ -628,31 +633,31 @@ int runCoreDetector( const SystemParameters& settings )
     // Iterate through list
     while( !input.eof() )
     {
-      string input_fn, classifier_key;
+      string inputFile, classifierKey;
       float alt, pitch, roll;
 
       // Metadata is in the input files
       if( settings.IsMetadataInImage )
       {
-        input >> input_fn >> classifier_key;
-        RemoveSpaces( input_fn );
-        RemoveSpaces( classifier_key );
-        if( input_fn.size() > 0 && classifier_key.size() > 0 )
+        input >> inputFile >> classifierKey;
+        RemoveSpaces( inputFile );
+        RemoveSpaces( classifierKey );
+        if( inputFile.size() > 0 && classifierKey.size() > 0 )
         {
-          inputFilenames.push_back( input_fn );
-          inputClassifiers.push_back( classifier_key );
+          inputFilenames.push_back( inputFile );
+          inputClassifiers.push_back( classifierKey );
         }
       }
       // Metadata is in the list
       else
       {
-        input >> input_fn >> alt >> pitch >> roll >> classifier_key;
-        RemoveSpaces( input_fn );
-        RemoveSpaces( classifier_key );
-        if( input_fn.size() > 0 && classifier_key.size() > 0 )
+        input >> inputFile >> alt >> pitch >> roll >> classifierKey;
+        RemoveSpaces( inputFile );
+        RemoveSpaces( classifierKey );
+        if( inputFile.size() > 0 && classifierKey.size() > 0 )
         {
-          inputFilenames.push_back( input_fn );
-          inputClassifiers.push_back( classifier_key );
+          inputFilenames.push_back( inputFile );
+          inputClassifiers.push_back( classifierKey );
           inputAltitudes.push_back( alt );
           inputRoll.push_back( roll );
           inputPitch.push_back( pitch );
@@ -687,29 +692,29 @@ int runCoreDetector( const SystemParameters& settings )
     // Iterate through list
     while( !input.eof() )
     {
-      string input_fn, classifier_key;
+      string inputFile, classifierKey;
       float alt, pitch, roll;
 
       // Metadata is in the input files
       if( settings.IsMetadataInImage )
       {
-        input >> input_fn;
-        RemoveSpaces( input_fn );
-        if( input_fn.size() > 0  )
+        input >> inputFile;
+        RemoveSpaces( inputFile );
+        if( inputFile.size() > 0  )
         {
-          inputFilenames.push_back( input_fn );
-          inputClassifiers.push_back( classifier_key );
+          inputFilenames.push_back( inputFile );
+          inputClassifiers.push_back( classifierKey );
         }
       }
       // Metadata is in the list
       else
       {
-        input >> input_fn >> alt >> pitch >> roll;
-        RemoveSpaces( input_fn );
-        if( input_fn.size() > 0 )
+        input >> inputFile >> alt >> pitch >> roll;
+        RemoveSpaces( inputFile );
+        if( inputFile.size() > 0 )
         {
-          inputFilenames.push_back( input_fn );
-          inputClassifiers.push_back( classifier_key );
+          inputFilenames.push_back( inputFile );
+          inputClassifiers.push_back( classifierKey );
           inputAltitudes.push_back( alt );
           inputRoll.push_back( roll );
           inputPitch.push_back( pitch );
