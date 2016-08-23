@@ -47,11 +47,11 @@ void printCandidateInfo( int desig, Candidate *cd );
 void exitTrainingMode();
 
 // Get designations from user in GUI mode
-bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates,
+bool getDesignationsFromUser( CandidatePtrVector& UnorderedCandidates,
   IplImage *displayImg, IplImage *mask, int *Detections,
   float minRad, float maxRad, string img_name );
 
-bool getDesignationsFromUser(CandidateQueue& OrderedCandidates,
+bool getDesignationsFromUser( CandidateQueue& OrderedCandidates,
   IplImage *displayImg, IplImage *mask, int *Detections,
   float minRad, float maxRad, string img_name );
 

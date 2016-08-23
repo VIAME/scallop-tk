@@ -45,6 +45,8 @@ bool CNNClassifier::loadClassifiers(
   isScallopDirected = false;
   threshold = clsParams.Threshold;
   isTrainingMode = sysParams.IsTrainingMode;
+  outputFolder = sysParams.OutputDirectory;
+  trainingPercentKeep = sysParams.TrainingPercentKeep;
 
   // Auto-detect which GPU to use based on highest memory count
 #ifdef CPU_ONLY
@@ -196,7 +198,7 @@ void CNNClassifier::classifyCandidates(
     const unsigned channels = inputBlob->channels();
     const unsigned chipHeight = inputBlob->height();
     const unsigned chipWidth = inputBlob->width();
-  
+
     // Training mode subroutine
     if( isTrainingMode )
     {
@@ -259,10 +261,40 @@ void CNNClassifier::classifyCandidates(
   if( !isTrainingMode && suppressionClfr )
   {
 
-  }  
+  }
 }
 
 cv::Mat CNNClassifier::getCandidateChip( cv::Mat image, Candidate* cd )
 {
   
 }
+
+double candidateIntersection( Candidate *cd1, Candidate *cd2 )
+{
+  if( !cd1 || !cd2 )
+    return 0.0;
+
+  
+}
+
+void CNNClassifier::extractSamples(
+  cv::Mat image,
+  CandidatePtrVector& candidates,
+  CandidatePtrVector& groundTruth )
+{
+  for( unsigned i = 0; i < candidates.size(); i++ )
+  {
+    // Get top label
+    
+
+    // Perform downsampling
+
+
+    // Extract chip
+    cv::Mat chip = getCandidateChip( image, candidates[i] );
+
+    // Write chip to file
+    
+  }
+}
+

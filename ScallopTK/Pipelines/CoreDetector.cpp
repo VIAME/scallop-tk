@@ -351,10 +351,11 @@ void *processImage( void *InputArgs ) {
 
 //------------------GT Merging Procedure------------------------
 
+  CandidatePtrVector GTDetections;
+
   if( Options->IsTrainingMode && Options->UseGTData )
   {
     // Mark which interest points are in this image
-    CandidatePtrVector GTDetections;
     for( int i = 0; i < Options->GTData->size(); i++ )
     {
       GTEntry& Pt = (*Options->GTData)[i];
@@ -362,17 +363,8 @@ void *processImage( void *InputArgs ) {
       {
         Candidate *cd1 = ConvertGTToCandidate( Pt, resizeFactor );
         GTDetections.push_back( cd1 );
-
-        if( true /*todo: paramatize double_import*/ )
-        {
-          Candidate *cd2 = ConvertGTToCandidate( Pt, resizeFactor );
-          GTDetections.push_back( cd2 );           
-        }
       }
     }
-    
-    // Remove any detected Candidates which conflict with markups
-    RemoveOverlapAndMerge( cdsAllUnordered, GTDetections, Options->TrainingPercentKeep );
   }
 
   if( !Options->ProcessBorderPoints )
@@ -463,8 +455,7 @@ void *processImage( void *InputArgs ) {
   }
   else if( Options->IsTrainingMode )
   {
-    // Append all extracted features to file
-    dumpCandidateFeatures( Options->ListFilename, cdsAllUnordered );
+    Options->Model->extractSamples( imgRGB8u, cdsAllUnordered, GTDetections );
   }
   else
   {

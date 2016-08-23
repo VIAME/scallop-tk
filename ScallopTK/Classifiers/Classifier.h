@@ -45,6 +45,15 @@ public:
 
   // Does this classifier have anything to do with scallop detection?
   virtual bool detectsScallops() = 0;
+
+  // Extract training samples
+  //
+  // Image should contain the input image
+  // Candidates the input candidates to match
+  // GroundTruth the groundtruth candidates
+  virtual void extractSamples( cv::Mat image,
+    CandidatePtrVector& candidates,
+    CandidatePtrVector& groundTruth ) = 0;
 };
 
 //------------------------------------------------------------------------------

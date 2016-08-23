@@ -11,7 +11,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 // Loads metadata from file fn
-void ImageProperties::calculateImageProperties( const std::string& fn, const int& cols, const int& rows, const float& focalLength ) {
+void ImageProperties::calculateImageProperties( const std::string& fn,
+  const int& cols, const int& rows, const float& focalLength ) {
   filename = fn;
   imgRows = rows;
   imgCols = cols;
@@ -82,8 +83,9 @@ int ImageProperties::getImageType() {
 void ImageProperties::calculateProperties() {
 
   //Use modified scott_camera function to calculate real dimensions
-  calculateDimensions(heading, pitch, roll, altitude, (float)imgCols, (float)imgRows, 
-    focalLength, estArea, avgHeight, avgWidth);
+  calculateDimensions( heading, pitch, roll, altitude,
+    (float)imgCols, (float)imgRows, focalLength, estArea,
+    avgHeight, avgWidth );
 
   //Calculate any other statistics
   pixelHeight = avgHeight / (float)imgRows;

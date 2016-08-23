@@ -54,6 +54,15 @@ public:
   // Does this classifier have anything to do with scallop detection?
   bool detectsScallops() { return isScallopDirected; }
 
+  // Extract training samples
+  //
+  // Image should contain the input image
+  // Candidates the input candidates to match
+  // GroundTruth the groundtruth candidates
+  virtual void extractSamples( cv::Mat image,
+    CandidatePtrVector& candidates,
+    CandidatePtrVector& groundTruth );
+
 private:
 
   typedef CBoostedCommittee SingleAdaTree;
@@ -98,6 +107,12 @@ private:
 
   // Detection threshold
   double threshold;
+
+  // Training keep percent
+  double trainingPercentKeep;
+
+  // Output file
+  std::string outputList;
 };
 
 #endif

@@ -76,8 +76,9 @@ void exitTrainingMode() {
   data_file.close();
 }
 
-bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates, IplImage *display_img, IplImage *mask,
-                int *Detections, float minRad, float maxRad, string img_name ) {
+bool getDesignationsFromUser( CandidatePtrVector& UnorderedCandidates,
+  IplImage *display_img, IplImage *mask, int *Detections, float minRad,
+  float maxRad, string img_name ) {
   
   // Variables                
   string input;
@@ -225,8 +226,9 @@ bool getDesignationsFromUser(CandidatePtrVector& UnorderedCandidates, IplImage *
   return true;
 }
 
-bool getDesignationsFromUser(CandidateQueue& OrderedCandidates, IplImage *display_img, IplImage *mask,
-                int *Detections, float minRad, float maxRad, string img_name) {
+bool getDesignationsFromUser(CandidateQueue& OrderedCandidates,
+  IplImage *display_img, IplImage *mask, int *Detections,
+  float minRad, float maxRad, string img_name) {
 
   // Variables                
   string input;

@@ -156,19 +156,31 @@ inline int determine8quads( const int& x, const int&y ) {
   }
 }
 
-inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
+inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool AddRand = false )
 {
   // Convert a GT point to a Candidate with some random flux
   Candidate* output = new Candidate;
 
   // Calculate random adjustment factors
-  double RAND_R = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_C = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_ANGLE = 3.14159 * ((double)rand()/(double)RAND_MAX);
-  double RAND_MAJOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  double RAND_MINOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
-  if( ((double)rand()/(double)RAND_MAX) < 0.3 )
-    RAND_ANGLE = 0.0;
+  double RAND_R = 1.0;
+  double RAND_C = 1.0;
+  double RAND_ANGLE = 0.0;
+  double RAND_MAJOR = 1.0;
+  double RAND_MINOR = 1.0;
+
+  if( AddRand )
+  {
+    RAND_R = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+    RAND_C = ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+    RAND_ANGLE = 3.14159 * ((double)rand()/(double)RAND_MAX);
+    RAND_MAJOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+    RAND_MINOR = 1.0 + ( ((double)rand()/(double)RAND_MAX) - 0.5 ) / 5;
+
+    if( ((double)rand()/(double)RAND_MAX) < 0.3 )
+    {
+      RAND_ANGLE = 0.0;
+    }
+  }
 
   // Calculate GT location in native
   double R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
@@ -187,8 +199,8 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor )
   // Set Candidate vals
   output->r = R + DIST * RAND_R;
   output->c = C + DIST * RAND_C;
-  output->major = RAND_MAJOR * DIST / 2.0;
-  output->minor = RAND_MINOR * DIST / 2.0;
+  output->major = RAND_MAJOR * DIST; // ?? / 2
+  output->minor = RAND_MINOR * DIST;
   output->angle = RAND_ANGLE;
 
   // Set classification value

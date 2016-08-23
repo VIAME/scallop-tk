@@ -2,6 +2,7 @@
 #include "AdaClassifier.h"
 
 #include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/Classifiers/TrainingUtils.h"
 
 // Loads classifiers from given folder
 bool AdaClassifier::loadClassifiers(
@@ -11,6 +12,8 @@ bool AdaClassifier::loadClassifiers(
   string dir = sysParams.RootClassifierDIR + clsParams.ClassifierSubdir;
   isScallopDirected = false;
   threshold = clsParams.Threshold;
+  trainingPercentKeep = sysParams.TrainingPercentKeep;
+  outputList = sysParams.OutputList;
 
   // Load Main Classifiers
   for( int i = 0; i < clsParams.L1Files.size(); i++ )
@@ -187,4 +190,16 @@ void AdaClassifier::classifyCandidates(
     if( classifyCandidate( image, candidates[i] ) > 0 )
       positive.push_back( candidates[i] );
   }
+}
+
+void AdaClassifier::extractSamples(
+  cv::Mat /*image*/,
+  CandidatePtrVector& candidates,
+  CandidatePtrVector& groundTruth )
+{
+  // Remove any detected Candidates which conflict with markups
+  RemoveOverlapAndMerge( candidates, groundTruth, trainingPercentKeep );
+
+  // Append all extracted features to file
+  dumpCandidateFeatures( outputList, candidates );
 }
