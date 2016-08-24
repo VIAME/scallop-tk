@@ -83,6 +83,21 @@ endif()
 add_subdirectory( ScallopTK )
 add_subdirectory( Tools )
 
+# Add configure files for find_package
+set( ScallopTK_EXPORT_FILE "${ScallopTK_BINARY_DIR}/ScallopTKConfig.cmake" )
+configure_file(
+  "${CMAKE_SOURCE_DIR}/CMake/ScallopTK-config-install.cmake.in"
+  "${ScallopTK_EXPORT_FILE}"
+)
+
+# Set up the install export
+set( ScallopTK_EXPORT_INSTALL_FILE "${ScallopTK_BINARY_DIR}/CMakeFiles/ScallopTKConfig.cmake" )
+configure_file(
+  "${CMAKE_SOURCE_DIR}/CMake/ScallopTK-config-install.cmake.in"
+  "${ScallopTK_EXPORT_INSTALL_FILE}"
+  @ONLY
+)
+
 # On windows include dependency dlls in installer
 #if( WIN32 )
 #  install( FILES ${Caffe_LIBRARIES} ${OpenCV_LIBS}

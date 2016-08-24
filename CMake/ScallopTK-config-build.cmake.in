@@ -1,5 +1,5 @@
 # Export definitions for ScallopTK to be used from find_package
-include("${CMAKE_CURRENT_LIST_DIR}/ScallopTK-config-targets.cmake")
+#include("${CMAKE_CURRENT_LIST_DIR}/ScallopTK-config-targets.cmake")
 
 set(ScallopTK_BUILT_SHARED  "@BUILD_SHARED_LIBS@")
 
@@ -18,10 +18,6 @@ else ()
 endif ()
 
 set(ScallopTK_LIBRARIES           "@ScallopTK_libs@")
-set(ScallopTK_ENABLE_PYTHON       "@ScallopTK_ENABLE_PYTHON@")
-set(ScallopTK_LIBRARY_DIRS        "${ScallopTK_LIBRARY_DIR}"  ${Boost_LIBRARY_DIRS})
-set(ScallopTK_MODULE_DIR          "${ScallopTK_LIBRARY_DIR}/modules")
-set(ScallopTK_DOCUMENTATION_DIR   "@ScallopTK_BINARY_DIR@/doc")
+set(ScallopTK_LIBRARY_DIRS        "${ScallopTK_LIBRARY_DIR}")
+set(ScallopTK_DOCUMENTATION_DIR   "@ScallopTK_BINARY_DIR@/Documentation")
 set(ScallopTK_CMAKE_DIR           "@ScallopTK_SOURCE_DIR@/CMake")
-
-set(fletch_DIR @fletch_DIR@ CACHE PATH "Path to fletch package")
