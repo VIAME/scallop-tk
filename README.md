@@ -3,7 +3,7 @@ Scallop-TK
 ==========
 
 The Scalable, Adaptive Localization, and Laplacian Object Proposal
-(Scallop) Toolkit is a very small computer vision toolkit aimed at
+(Scallop) Toolkit is a small computer vision toolkit aimed at
 detecting roughly elliptical or blob-like objects in imagery. It
 is brief port of some of my master's thesis code developed at RPI,
 described further in the paper:
