@@ -11,13 +11,13 @@ set(ScallopTK_INCLUDE_DIRS
   "@ScallopTK_SOURCE_DIR@" "@ScallopTK_SOURCE_DIR@"
   "@ScallopTK_BINARY_DIR@" "@ScallopTK_BINARY_DIR@")
 
-if (WIN32)
+if( WIN32 )
   set(ScallopTK_LIBRARY_DIR    "@ScallopTK_BINARY_DIR@/bin")
-else ()
+else()
   set(ScallopTK_LIBRARY_DIR    "@ScallopTK_BINARY_DIR@/lib")
-endif ()
+endif()
 
-set(ScallopTK_LIBRARIES           "@ScallopTK_libs@")
+set(ScallopTK_LIBRARIES           "ScallopTK")
 set(ScallopTK_LIBRARY_DIRS        "${ScallopTK_LIBRARY_DIR}")
 set(ScallopTK_DOCUMENTATION_DIR   "@ScallopTK_BINARY_DIR@/Documentation")
 set(ScallopTK_CMAKE_DIR           "@ScallopTK_SOURCE_DIR@/CMake")
