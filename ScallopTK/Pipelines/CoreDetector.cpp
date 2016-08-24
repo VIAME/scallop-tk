@@ -596,7 +596,7 @@ int runCoreDetector( const SystemParameters& settings )
   GTEntryList* GTs = NULL;
 
   // Process directory mode
-  if( settings.IsInputDirectory )
+  if( settings.IsInputDirectory || settings.IsTrainingMode )
   {
     // Get a list of all files and sub directories in the input dir
     ListAllFiles( inputDir, inputFilenames, subdirsToCreate );
@@ -728,11 +728,6 @@ int runCoreDetector( const SystemParameters& settings )
     GTs = new GTEntryList;
     cout << GTfilename << endl;
     ParseGTFile( GTfilename, *GTs );
-
-    // Get a list of all files and sub directories in the input dir
-    ListAllFiles( inputDir, inputFilenames, subdirsToCreate );
-    cullNonImages( inputFilenames );
-    inputClassifiers.resize( inputFilenames.size(), settings.ClassifierToUse );
   }
 
   // Check to make sure image list is not empty
@@ -869,14 +864,11 @@ int runCoreDetector( const SystemParameters& settings )
   // For every file...
   for( unsigned int i=0; i<inputFilenames.size(); i++ ) {
 
-    // Set classifier for entry
-    if( !settings.IsTrainingMode )
-    {
-      inputArgs[0].Model = classifiers[ inputClassifiers[i] ];
-    }
-
     // Always set the focal length
     inputArgs[0].FocalLength = settings.FocalLength;
+
+    // Set classifier related settings
+    inputArgs[0].Model = classifiers[ inputClassifiers[i] ];
     inputArgs[0].TrainingPercentKeep = settings.TrainingPercentKeep;
     inputArgs[0].ProcessBorderPoints = settings.LookAtBorderPoints;
 

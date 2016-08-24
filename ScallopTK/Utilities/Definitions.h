@@ -392,6 +392,17 @@ struct Candidate
   // Stats for final classification
   unsigned int classification;
   double classMagnitudes[MAX_CLASSIFIERS];
+
+  // Default constructor
+  Candidate()
+  : summaryImage( NULL ),
+    colorQuadrants( NULL ),
+    bestContour( NULL ),
+    fullContour( NULL )
+  {
+    for( unsigned i = 0; i < NUM_HOG; i++ )
+      hogResults[i] = NULL;
+  }
 };
 
 // An actual Detection according to our algorithm, used just for post processing

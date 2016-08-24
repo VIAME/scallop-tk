@@ -266,7 +266,7 @@ void CNNClassifier::classifyCandidates(
 
 cv::Mat CNNClassifier::getCandidateChip( cv::Mat image, Candidate* cd )
 {
-  
+  return cv::Mat();
 }
 
 double candidateIntersection( Candidate *cd1, Candidate *cd2 )
