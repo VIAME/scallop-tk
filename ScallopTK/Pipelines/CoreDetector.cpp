@@ -442,7 +442,7 @@ void *processImage( void *InputArgs ) {
 
   CandidatePtrVector interestingCds;
   CandidatePtrVector likelyObjects;
-  DetectionPtrVector Objects;
+  DetectionPtrVector objects;
 
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
@@ -469,12 +469,12 @@ void *processImage( void *InputArgs ) {
     removeInsidePoints( interestingCds, likelyObjects );
   
     // Interpolate correct object categories
-    Objects = interpolateResults( likelyObjects, Options->Model, Options->InputFilename );
+    objects = interpolateResults( likelyObjects, Options->Model, Options->InputFilename );
 
     // Display Detections
     if( Options->EnableOutputDisplay ) {
       getDisplayLock();
-      displayResultsImage( imgRGB32f, Objects, Options->InputFilenameNoDir );
+      displayResultsImage( imgRGB32f, objects, Options->InputFilenameNoDir );
       unlockDisplay();
     }
   }
@@ -484,8 +484,8 @@ void *processImage( void *InputArgs ) {
   // Update Detection variables and mask
   if( !Options->IsTrainingMode /*&& Options->Model->IsScallopDirected()*/ )
   {
-    for( unsigned int i=0; i<Objects.size(); i++ ) {
-      Detection *cur = Objects[i];
+    for( unsigned int i=0; i<objects.size(); i++ ) {
+      Detection *cur = objects[i];
       if( cur->isBrownScallop ) {
         detections[SCALLOP_BROWN]++;
         updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
@@ -502,8 +502,8 @@ void *processImage( void *InputArgs ) {
   else
   {
     // Quick hack: If we're not trying to detect scallops, reuse scallop histogram for better ip detections
-    for( unsigned int i=0; i<Objects.size(); i++ ) {
-      Detection *cur = Objects[i];
+    for( unsigned int i=0; i<objects.size(); i++ ) {
+      Detection *cur = objects[i];
       updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
     }
   }
@@ -542,11 +542,11 @@ void *processImage( void *InputArgs ) {
   // Output results to file(s)
   if( Options->OutputDetectionImages )
   {
-    saveScallops( imgRGB32f, Objects, Options->OutputFilename + ".detections.jpg" );
+    saveScallops( imgRGB32f, objects, Options->OutputFilename + ".detections.jpg" );
   }
   if( Options->EnableListOutput && !Options->IsTrainingMode )
   {
-    if( !appendInfoToFile( Objects, Options->ListFilename, Options->InputFilenameNoDir, resizeFactor ) )
+    if( !appendInfoToFile( objects, Options->ListFilename, Options->InputFilenameNoDir, resizeFactor ) )
     {
       cerr << "CRITICAL ERROR: Could not write to output list!" << endl;
     }
@@ -556,7 +556,7 @@ void *processImage( void *InputArgs ) {
   
   // Deallocate memory used by thread
   deallocateCandidates( cdsAllUnordered );
-  deallocateDetections( Objects );
+  deallocateDetections( objects );
   deallocateGradientChain( gradients );
   hfDeallocResults( color );
   cvReleaseImage( &imgRGB32f );
