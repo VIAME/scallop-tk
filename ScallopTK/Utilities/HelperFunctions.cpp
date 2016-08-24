@@ -684,3 +684,16 @@ void removeBorderCandidates( CandidatePtrVector& cds, IplImage *img )
     }
   }
 }
+
+vector< string > tokenizeString( std::string s )
+{
+  vector< string > output;
+
+  string buf;
+  stringstream ss( s );
+
+  while( ss >> buf )
+    output.push_back( buf );
+
+  return output;
+}

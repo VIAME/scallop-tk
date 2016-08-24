@@ -12,7 +12,7 @@ training_mode = true
 use_file_for_training = true
 
 ; Is the input a list or a directory?
-is_list=true
+is_list = true
 
 ; Are we using image metadata at all during processing?
 use_metadata = false

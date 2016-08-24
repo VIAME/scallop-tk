@@ -661,7 +661,7 @@ int runCoreDetector( const SystemParameters& settings )
     inputDir = "";
   }
   // We're in list training mode
-  else if( settings.IsTrainingMode && !settings.IsInputDirectory )
+  else if( 0 /*settings.IsTrainingMode && !settings.IsInputDirectory*/ )
   {
     // Read input list
     string list_fn = inputDir + inputFile;
@@ -670,7 +670,7 @@ int runCoreDetector( const SystemParameters& settings )
     // Check to make sure list is open
     if( !input )
     {
-      cerr << endl << "CRITICAL ERROR: " << "Unable to open input list!" << endl;
+      cerr << endl << "CRITICAL ERROR: Unable to open input list!" << endl;
       return 0;
     }
 
@@ -722,12 +722,17 @@ int runCoreDetector( const SystemParameters& settings )
   if( settings.IsTrainingMode && settings.UseFileForTraining )
   {
     // srand for random adjustments
-    srand(time(NULL));
+    srand( time( NULL ) );
 
     // Load csv file
     GTs = new GTEntryList;
     cout << GTfilename << endl;
     ParseGTFile( GTfilename, *GTs );
+
+    // Get a list of all files and sub directories in the input dir
+    ListAllFiles( inputDir, inputFilenames, subdirsToCreate );
+    cullNonImages( inputFilenames );
+    inputClassifiers.resize( inputFilenames.size(), settings.ClassifierToUse );
   }
 
   // Check to make sure image list is not empty
@@ -778,35 +783,32 @@ int runCoreDetector( const SystemParameters& settings )
 
   // Preload all required classifiers just in case there's a mistake
   // in a config file (so it doesn't die midstream)
-  if( !settings.IsTrainingMode )
+  cout << "Loading Classifier Systems... ";
+  for( int i = 0; i < inputClassifiers.size(); i++ )
   {
-    cout << "Loading Classifier Systems... ";
-    for( int i = 0; i < inputClassifiers.size(); i++ )
+    // If classifier key does not exist in our list
+    if( classifiers.find( inputClassifiers[i] ) == classifiers.end() )
     {
-      // If classifier key does not exist in our list
-      if( classifiers.find( inputClassifiers[i] ) == classifiers.end() )
+      // Load classifier config
+      ClassifierParameters cparams;
+      if( !ParseClassifierConfig( inputClassifiers[i], settings, cparams ) )
       {
-        // Load classifier config
-        ClassifierParameters cparams;
-        if( !ParseClassifierConfig( inputClassifiers[i], settings, cparams ) )
-        {
-          return 0;
-        }
-
-        // Load classifier system based on config settings
-        Classifier* LoadedSystem = loadClassifiers( settings, cparams );
-
-        if( LoadedSystem == NULL )
-        {
-          cout << "ERROR: Unabled to load classifier " << inputClassifiers[i] << endl;
-          return 0;
-        }
-      
-        classifiers[ inputClassifiers[i] ] = LoadedSystem;      
+        return 0;
       }
+
+      // Load classifier system based on config settings
+      Classifier* LoadedSystem = loadClassifiers( settings, cparams );
+
+      if( LoadedSystem == NULL )
+      {
+        cout << "ERROR: Unabled to load classifier " << inputClassifiers[i] << endl;
+        return 0;
+      }
+    
+      classifiers[ inputClassifiers[i] ] = LoadedSystem;      
     }
-    cout << "FINISHED" << endl;
   }
+  cout << "FINISHED" << endl;
 
   // Load Statistics/Color filters
   cout << "Loading Colour Filters... ";
@@ -887,7 +889,7 @@ int runCoreDetector( const SystemParameters& settings )
     inputArgs[0].InputFilenameNoDir = filenameNoDir;
 
     // Set metadata if required
-    if( !settings.IsMetadataInImage && !settings.IsInputDirectory )
+    if( !settings.IsMetadataInImage && !settings.IsInputDirectory && !settings.IsTrainingMode )
     {
       inputArgs[0].Altitude = inputAltitudes[i];
       inputArgs[0].Pitch = inputPitch[i];

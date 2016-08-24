@@ -10,6 +10,7 @@
 // C/C++ Includes
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <fstream>
 
@@ -82,6 +83,7 @@ void initalizeCandidateStats( CandidatePtrVector cds,
 float quickMedian( IplImage* img, int max_to_sample );
 void removeBorderCandidates( CandidatePtrVector& cds, IplImage *img );
 void cullNonImages( vector<string>& fn_list );
+vector<string> tokenizeString( std::string s );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions
@@ -183,24 +185,51 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool 
   }
 
   // Calculate GT location in native
-  double R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
-  double C = ( Pt.X1 + Pt.X2 ) / 2.0;
-  double x_sqr = Pt.X2 - Pt.X1;
-  x_sqr = x_sqr * x_sqr;
-  double y_sqr = Pt.Y2 - Pt.Y1;
-  y_sqr = y_sqr * y_sqr;
-  double DIST = sqrt( x_sqr + y_sqr );
+  double R, C, AXIS;
+
+  if( Pt.Type == GTEntry::LINE )
+  {
+    R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
+    C = ( Pt.X1 + Pt.X2 ) / 2.0;
+
+    double x_sqr = Pt.X2 - Pt.X1;
+    x_sqr = x_sqr * x_sqr;
+    double y_sqr = Pt.Y2 - Pt.Y1;
+    y_sqr = y_sqr * y_sqr;
+
+    AXIS = sqrt( x_sqr + y_sqr );
+  }
+  else if( Pt.Type == GTEntry::BOX )
+  {
+    R = ( Pt.Y1 + Pt.Y2 ) / 2.0;
+    C = ( Pt.X1 + Pt.X2 ) / 2.0;
+
+    double x_sqr = Pt.X2 - Pt.X1;
+    double y_sqr = Pt.Y2 - Pt.Y1;
+
+    x_sqr = ( x_sqr < 0.0 ? -x_sqr : x_sqr );
+    y_sqr = ( y_sqr < 0.0 ? -y_sqr : y_sqr );
+
+    AXIS = ( x_sqr + y_sqr ) / 2.0;
+  }
+  else
+  {
+    R = ( Pt.Y1 );
+    C = ( Pt.X1 );
+
+    AXIS = 20;
+  }
 
   // Adjust location for rescale factor
   R *= DownsizeFactor;
   C *= DownsizeFactor;
-  DIST *= DownsizeFactor;
+  AXIS *= DownsizeFactor;
 
   // Set Candidate vals
-  output->r = R + DIST * RAND_R;
-  output->c = C + DIST * RAND_C;
-  output->major = RAND_MAJOR * DIST; // ?? / 2
-  output->minor = RAND_MINOR * DIST;
+  output->r = R + AXIS * RAND_R;
+  output->c = C + AXIS * RAND_C;
+  output->major = RAND_MAJOR * AXIS; // ?? / 2
+  output->minor = RAND_MINOR * AXIS;
   output->angle = RAND_ANGLE;
 
   // Set classification value

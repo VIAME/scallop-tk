@@ -17,6 +17,7 @@
 #include "ScallopTK/TPL/Config/SimpleIni.h"
 #include "ScallopTK/Utilities/Definitions.h"
 #include "ScallopTK/Utilities/Filesystem.h"
+#include "ScallopTK/Utilities/HelperFunctions.h"
 
 // Namespaces
 using namespace std;
@@ -359,44 +360,72 @@ inline bool ParseGTFile( string filename, GTEntryList& output )
 {
   // Clear vector
   output.clear();
-  
-  // Open file
+
+  // Read input list
   ifstream input( filename.c_str() );
-  
-  if( !input ) {
-    cout << "ERROR: Unable to load GT file!" << endl;
+
+  // Check to make sure list is open
+  if( !input )
+  {
+    cerr << endl << "CRITICAL ERROR: Unable to open input list!" << endl;
     return false;
   }
-  
-  // Loop through file line by line
-  string line;
-  while( getline(input, line) )
+
+  // Iterate through list
+  std::string line;
+
+  while( std::getline( input, line ) )
   {
-    // Ignore header
-    if( line.substr(0,12) == "imagename,x1" )
-      continue;
-    
-    // Parse line
-    vector< string > words = ConvertCSVLine( line );
-    
-    // Confirm line length
-    if( words.size() != 12 ) {
-      cout << "WARNING: Invalid GT line or end of file, ignoring" << endl;
+    std::vector< std::string > tokens = tokenizeString( line );
+
+    if( tokens.size() <= 2 )
+    {
       continue;
     }
-    
-    // Retrieve info from parsed line
-    string filename, dir;
-    SplitPathAndFile( words[0], dir, filename );
+
     GTEntry GT;
-    GT.Name = filename;
-    GT.X1 = atof( words[ 1 ].c_str() );
-    GT.Y1 = atof( words[ 2 ].c_str() );
-    GT.X2 = atof( words[ 3 ].c_str() );
-    GT.Y2 = atof( words[ 4 ].c_str() );
-    GT.ID = atoi( words[ 7 ].c_str() );
-    output.push_back( GT );
+    GT.Name = tokens[0];
+    GT.ID = atoi( tokens[1].c_str() );
+
+    if( tokens.size() > 4 )
+    {
+      if( tokens[3] == "boundingBox" )
+      {
+        GT.Type = GTEntry::BOX;
+
+        GT.X1 = atof( tokens[ 4 ].c_str() );
+        GT.Y1 = atof( tokens[ 5 ].c_str() );
+        GT.X2 = atof( tokens[ 6 ].c_str() );
+        GT.Y2 = atof( tokens[ 7 ].c_str() );
+      }
+      else if( tokens[3] == "line" )
+      {
+        GT.Type = GTEntry::LINE;
+
+        GT.X1 = atof( tokens[ 4 ].c_str() );
+        GT.Y1 = atof( tokens[ 5 ].c_str() );
+        GT.X2 = atof( tokens[ 6 ].c_str() );
+        GT.Y2 = atof( tokens[ 7 ].c_str() );
+      }
+      else if( tokens[3] == "point" )
+      {
+        GT.Type = GTEntry::POINT;
+
+        GT.X1 = atof( tokens[ 4 ].c_str() );
+        GT.Y1 = atof( tokens[ 5 ].c_str() );
+        GT.X2 = 0;
+        GT.Y2 = 0;
+      }
+      else
+      {
+        continue;
+      }
+
+      output.push_back( GT );
+    }
   }
+
+  input.close();
 
   return true;
 }

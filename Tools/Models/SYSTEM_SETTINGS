@@ -22,7 +22,7 @@ min_search_radius_pixels = 10
 max_search_radius_pixels = 200
 
 ; The default classifier ID to use
-classifier_to_use = DEFAULT_ADA
+classifier_to_use = DEFAULT_CNN
 
 ; If training from files, the percentage of false points outside of
 ; annotations to use as false examples.
