@@ -164,8 +164,8 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool 
   Candidate* output = new Candidate;
 
   // Calculate random adjustment factors
-  double RAND_R = 1.0;
-  double RAND_C = 1.0;
+  double RAND_R = 0.0;
+  double RAND_C = 0.0;
   double RAND_ANGLE = 0.0;
   double RAND_MAJOR = 1.0;
   double RAND_MINOR = 1.0;
@@ -228,8 +228,8 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool 
   // Set Candidate vals
   output->r = R + AXIS * RAND_R;
   output->c = C + AXIS * RAND_C;
-  output->major = RAND_MAJOR * AXIS; // ?? / 2
-  output->minor = RAND_MINOR * AXIS;
+  output->major = RAND_MAJOR * AXIS / 2.0; // ?? / 2
+  output->minor = RAND_MINOR * AXIS / 2.0;
   output->angle = RAND_ANGLE;
 
   // Set classification value

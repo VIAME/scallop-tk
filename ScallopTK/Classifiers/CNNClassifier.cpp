@@ -1,6 +1,8 @@
 
 #include "CNNClassifier.h"
 
+#include "ScallopTK/Utilities/HelperFunctions.h"
+
 using caffe::Blob;
 using caffe::Net;
 using caffe::Caffe;
@@ -282,6 +284,18 @@ void CNNClassifier::extractSamples(
   CandidatePtrVector& candidates,
   CandidatePtrVector& groundTruth )
 {
+  IplImage w = image;
+
+  cout << groundTruth.size() << " " << candidates.size() << endl;
+
+  static int counter = 0;
+  counter++;
+  std::stringstream ss;
+  ss << counter;
+
+  if( groundTruth.size() > 0 )
+    saveCandidates( &w, groundTruth, "output" + ss.str() + ".png" );
+
   for( unsigned i = 0; i < candidates.size(); i++ )
   {
     // Get top label
