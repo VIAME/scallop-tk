@@ -10,6 +10,9 @@ using namespace std;
 //                            Function Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 // Loads metadata from file fn
 void ImageProperties::calculateImageProperties( const std::string& fn,
   const int& cols, const int& rows, const float& focalLength ) {
@@ -207,4 +210,6 @@ bool ImageProperties::loadMetadata( const float& focal ) {
     roll = 0.0f;
 
   return true;
+}
+
 }

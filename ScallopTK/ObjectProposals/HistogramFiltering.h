@@ -23,6 +23,9 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 #include "ScallopTK/ObjectProposals/DoG.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                 Constants
 //------------------------------------------------------------------------------
@@ -236,5 +239,7 @@ void detectSalientBlobs( hfResults* color, CandidatePtrVector& cds );
 
 // Quickly approximates the percentiles p1 and p2 in the single chan 32f image img
 void quickPercentiles( IplImage* img, float p1, float p2, float &op1, float& op2 );
+
+}
 
 #endif

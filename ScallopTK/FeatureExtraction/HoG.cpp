@@ -1,6 +1,9 @@
 
 #include "HoG.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
@@ -768,3 +771,5 @@ void trainSVM(CvMat* pos_mat, CvMat* neg_mat, char *savexml,
 }
 
 #endif
+
+}

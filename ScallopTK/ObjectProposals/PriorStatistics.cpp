@@ -10,6 +10,9 @@
 //                            Function Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 ThreadStatistics::ThreadStatistics() {
 
   // Calculate resize min - todo: binary merge next time n.t.i.m.
@@ -73,5 +76,7 @@ void ThreadStatistics::Update( int Detections[], float im_area ) {
   for( unsigned int i=0; i < TOTAL_DESIG; i++ ) {
     thread_Detections[ i ] += Detections[ i ];
   }
+}
+
 }
 

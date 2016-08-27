@@ -19,6 +19,9 @@
 // Scallop Includes
 #include "Definitions.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                             Globals and Consts
 //------------------------------------------------------------------------------
@@ -122,5 +125,7 @@ inline void getListLock() {}
 inline void unlockList() {}
 
 #endif
+
+}
 
 #endif

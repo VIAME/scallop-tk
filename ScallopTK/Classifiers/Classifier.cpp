@@ -21,6 +21,9 @@
 //                          Assorted Helper Functions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 using namespace std;
 
 // Load a new classifier
@@ -514,4 +517,6 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input, Classifier* Cl
   }*/
 
   return output;
+}
+
 }

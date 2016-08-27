@@ -1,6 +1,9 @@
 
 #include "ExpensiveSearch.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                            Function Definitions
 //------------------------------------------------------------------------------
@@ -488,4 +491,6 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     cvReleaseImage( &bin );
 
   }  
+}
+
 }

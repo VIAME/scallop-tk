@@ -1,6 +1,8 @@
 
 #include "TrainingUtils.h"
 
+namespace ScallopTK
+{
 
 void printCandidateInfo( int desig, Candidate *cd ) {
 
@@ -497,4 +499,6 @@ void dumpCandidateFeatures( string file_name, CandidatePtrVector& cd )
   }
   
   ip_out.close();
+}
+
 }

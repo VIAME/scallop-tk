@@ -13,6 +13,11 @@
 //                            Function Declarations
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void computeDepthMap( cv::Mat& leftImg, cv::Mat& rightImg, cv::Mat& depthMap );
+
+}
 
 #endif

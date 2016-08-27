@@ -26,6 +26,9 @@
 //                            Constants / Typedefs
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 class AdaClassifier : public Classifier
 {
 
@@ -114,5 +117,7 @@ private:
   // Output file
   std::string outputList;
 };
+
+}
 
 #endif

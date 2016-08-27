@@ -8,6 +8,9 @@
 #include <vector>
 #include <fstream>
 
+namespace ScallopTK
+{
+
 // For Windows
 #ifdef WIN32 
 
@@ -73,5 +76,7 @@ inline double getTimeSinceLastCall() {
 }
 
 #endif
+
+}
 
 #endif

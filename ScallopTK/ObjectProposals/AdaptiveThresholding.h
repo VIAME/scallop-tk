@@ -24,6 +24,9 @@
 #include "ScallopTK/Utilities/Definitions.h"
 #include "ScallopTK/Utilities/HelperFunctions.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                 Constants
 //------------------------------------------------------------------------------
@@ -64,6 +67,9 @@ const int AT_SAMPLES = 1200;
 //                                Prototypes
 //------------------------------------------------------------------------------
 
-void performAdaptiveFiltering( hfResults* color, CandidatePtrVector& cds, float minRad, bool doubleIntrp = false );
+void performAdaptiveFiltering( hfResults* color, CandidatePtrVector& cds,
+  float minRad, bool doubleIntrp = false );
+
+}
 
 #endif

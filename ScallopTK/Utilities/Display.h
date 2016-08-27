@@ -23,6 +23,9 @@
 // Namespaces
 using namespace std;
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                  Variables
 //------------------------------------------------------------------------------
@@ -40,5 +43,7 @@ void displayImage( IplImage* img );
 void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds );
 void displayResultsImage( IplImage* img, CandidatePtrVector& Scallops );
 void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filename );
+
+}
 
 #endif

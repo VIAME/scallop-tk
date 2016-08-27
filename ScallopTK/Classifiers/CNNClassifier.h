@@ -22,6 +22,9 @@
 //                              Class Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 class CNNClassifier : public Classifier
 {
 public:
@@ -112,5 +115,7 @@ private:
   void deallocCNNs();
   cv::Mat getCandidateChip( cv::Mat image, Candidate* cd, int width, int height );
 };
+
+}
 
 #endif

@@ -5,6 +5,9 @@
 
 #include "Display.h"
 
+namespace ScallopTK
+{
+
 void initOutputDisplay() {
   cvNamedWindow( DISPLAY_WINDOW_NAME.c_str(), CV_WINDOW_AUTOSIZE );
 }
@@ -103,4 +106,6 @@ void displayResultsImage( IplImage* img, DetectionPtrVector& cds, string Filenam
   }
   displayImage( local );
   cvReleaseImage( &local );
+}
+
 }

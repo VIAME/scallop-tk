@@ -1,6 +1,9 @@
 
 #include "GaussianEdges.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                            Function Definitions
 //------------------------------------------------------------------------------
@@ -401,5 +404,7 @@ void deallocateGradientChain( GradientChain& chain ) {
   //cvReleaseImage( &chain.WatershedInput );
 
   cvReleaseImage( &chain.cannyEdges );
+}
+
 }
 

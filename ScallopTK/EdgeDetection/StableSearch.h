@@ -32,10 +32,15 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void edgeSearch( GradientChain& Gradients,
                  hfResults* color,
                  IplImage *ImgLab32f,
                  CandidatePtrVector cds,
                  IplImage *rgb );
+
+}
 
 #endif

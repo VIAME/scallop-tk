@@ -26,6 +26,9 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 #include "ScallopTK/ObjectProposals/PriorStatistics.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                Definitions
 //------------------------------------------------------------------------------
@@ -59,5 +62,7 @@ typedef priority_queue<Candidate*, CandidatePtrVector, CompareRank> CandidateQue
 void prioritizeCandidates( CandidatePtrVector& Blob, CandidatePtrVector& Adaptive,
   CandidatePtrVector& Template, CandidatePtrVector& Canny, CandidatePtrVector& Unordered,
   CandidateQueue& Ordered, ThreadStatistics *GS );
+  
+}
 
 #endif

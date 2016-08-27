@@ -33,6 +33,9 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 class ThreadStatistics {
 
 public:
@@ -66,5 +69,7 @@ private:
   // Smallest image size required for all ops (pixels)
   float global_min_rad;
 };
+
+}
 
 #endif

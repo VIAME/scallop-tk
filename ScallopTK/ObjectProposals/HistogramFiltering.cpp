@@ -5,6 +5,9 @@
 //                           Filter Class Definition
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 //Class constructor, loads the desired filter from file
 bool hfFilter::loadFromFile( const string& filter_fn, bool allocSecondary ) {
 
@@ -576,4 +579,6 @@ void detectSalientBlobs( hfResults* color, CandidatePtrVector& cds ) {
 
   // Dealloc
   cvReleaseImage( &input );
+}
+
 }

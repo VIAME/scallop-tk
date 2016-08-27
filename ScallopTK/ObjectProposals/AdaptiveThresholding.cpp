@@ -5,6 +5,9 @@
 //                                 Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 // DEPRECATED
 // Calculate percentile values of filter results
 /*void calcFilterStats( IplImage *img, hfFilterStats& stats ) {
@@ -323,4 +326,6 @@ void performAdaptiveFiltering( hfResults* color, CandidatePtrVector& cds, float 
       }
     }
   }  
+}
+
 }

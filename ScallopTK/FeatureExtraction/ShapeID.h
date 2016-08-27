@@ -24,16 +24,15 @@
 #include "ScallopTK/ScaleDetection/ImageProperties.h"
 
 //------------------------------------------------------------------------------
-//                                 Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void calculateShapeFeatures( Candidate *cd, IplImage *unused );
 void calculatesizeFeatures( Candidate *cd, ImageProperties& ip, float initResize );
+
+}
 
 #endif

@@ -6,6 +6,9 @@
 
 #include "CannyPoints.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                Structures
 //------------------------------------------------------------------------------
@@ -245,5 +248,7 @@ void findCannyCandidates( GradientChain& grad, CandidatePtrVector& cds ) {
     cd1->magnitude = iden[i].normMSE*iden[i].csize;
     cds.push_back( cd1 );
   }
+}
+
 }
 

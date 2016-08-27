@@ -47,11 +47,11 @@
 #include "ScallopTK/Classifiers/TrainingUtils.h"
 #include "ScallopTK/Classifiers/Classifier.h"
 
-// Number of worker threads
-int THREADS;
-
 namespace ScallopTK
 {
+
+// Number of worker threads
+int THREADS;
 
 // Variables for benchmarking tests
 #ifdef ENABLE_BENCHMARKING

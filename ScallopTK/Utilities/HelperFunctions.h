@@ -25,6 +25,8 @@
 // Namespaces
 using namespace std;
 
+namespace ScallopTK
+{
 
 //------------------------------------------------------------------------------
 //                                 Prototypes
@@ -279,6 +281,8 @@ inline void removeOverlapAndMerge( CandidatePtrVector& Base,
   {
     Base.push_back( Truth[j] );
   }
+}
+
 }
 
 #endif

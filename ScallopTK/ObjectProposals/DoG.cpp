@@ -6,6 +6,9 @@
 
 #include "DoG.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                         Internal Function Prototypes
 //------------------------------------------------------------------------------
@@ -750,5 +753,7 @@ void releaseTrap( IplImage**** pyr, int octvs, int n )
   }
   free( *pyr );
   *pyr = NULL;
+}
+
 }
 

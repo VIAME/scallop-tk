@@ -4,6 +4,9 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 #include "ScallopTK/Utilities/Filesystem.h"
 
+namespace ScallopTK
+{
+
 using caffe::Blob;
 using caffe::Net;
 using caffe::Caffe;
@@ -401,7 +404,7 @@ void CNNClassifier::extractSamples(
     }
 
     // Perform downsampling
-    if( labels.size() )
+    if( labels.empty() )
     {
       if( ( (double)rand() / (double)RAND_MAX ) < trainingPercentKeep )
       {
@@ -427,5 +430,7 @@ void CNNClassifier::extractSamples(
       imwrite( outputFile, chip );
     }
   }
+}
+
 }
 

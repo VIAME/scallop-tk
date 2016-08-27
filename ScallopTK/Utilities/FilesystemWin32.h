@@ -19,6 +19,9 @@
 // Namespaces
 using namespace std;
 
+namespace ScallopTK
+{
+
 // Function Prototypes
 bool listAllFile(string path, vector<string>& files, vector<string>& dirlist);
 bool copyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir);
@@ -118,6 +121,8 @@ inline bool doesFileExist( string path )
   }
   test.close();
   return true;
+}
+
 }
 
 #endif

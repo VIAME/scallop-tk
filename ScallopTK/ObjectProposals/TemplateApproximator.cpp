@@ -9,6 +9,9 @@
 //                              Misc Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 // Constants
 const int INTERVALS_SCALE1 = 4;
 const int INTERVALS_SCALE2 = 7;
@@ -717,4 +720,6 @@ void findQHCandidates( IplImage *img_gs, CandidatePtrVector& kps, float minRad, 
     kp->angle = 0;
     kps.push_back( kp );
   }
+}
+
 }

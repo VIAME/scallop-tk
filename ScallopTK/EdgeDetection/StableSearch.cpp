@@ -1,6 +1,9 @@
 
 #include "StableSearch.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                               Benchmarking
 //------------------------------------------------------------------------------
@@ -810,5 +813,7 @@ void edgeSearch( GradientChain& Gradients, hfResults* color, IplImage *ImgLab32f
   ss_bm_output.close();
 #endif
   
+}
+
 }
 

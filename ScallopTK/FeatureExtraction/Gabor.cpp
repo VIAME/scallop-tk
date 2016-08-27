@@ -1,6 +1,9 @@
 
 #include "Gabor.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
@@ -207,5 +210,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
   }
 
   return output;
+}
+
 }
 

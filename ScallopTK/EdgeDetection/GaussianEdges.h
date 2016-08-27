@@ -25,6 +25,9 @@
 //                                Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 struct GradientChain {
 
   // Size Properties shared for all images
@@ -80,6 +83,8 @@ GradientChain createGradientChain( IplImage *img_lab, IplImage *img_gs_32f,
   float minRad, float maxRad );
 
 void deallocateGradientChain( GradientChain& chain );
+
+}
 
 
 #endif

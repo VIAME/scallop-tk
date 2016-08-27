@@ -1,6 +1,9 @@
 
 #include "StemID.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                  Constants
 //------------------------------------------------------------------------------
@@ -116,3 +119,4 @@ void calculateTriangleFeatures( Corner& c1, Corner& c2, int index, float *arr ) 
 
 */
 
+}

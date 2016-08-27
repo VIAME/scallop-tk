@@ -37,16 +37,15 @@
 #endif
 
 //------------------------------------------------------------------------------
-//                             Internal Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void findTemplateCandidates( GradientChain& grad, CandidatePtrVector& cds,
   ImageProperties& imgProp, IplImage* mask = NULL );
+
+}
 
 #endif

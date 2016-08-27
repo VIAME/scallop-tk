@@ -24,6 +24,9 @@
 // Namespaces
 using namespace std;
 
+namespace ScallopTK
+{
+
 // Constants
 const int MAX_DIR_SIZE = 400;
 const int DIR_VAL      = 0x4;
@@ -155,6 +158,7 @@ inline bool doesFileExist( string path )
   return true;
 }
 
+}
 
 #endif
 

@@ -6,6 +6,9 @@
 
 #include "HelperFunctions.h"
 
+namespace ScallopTK
+{
+
 // Display an image and wait for user input
 void showImage( IplImage* img ) {
   cvNamedWindow( "image", CV_WINDOW_AUTOSIZE );
@@ -696,4 +699,6 @@ vector< string > tokenizeString( std::string s )
     output.push_back( buf );
 
   return output;
+}
+
 }

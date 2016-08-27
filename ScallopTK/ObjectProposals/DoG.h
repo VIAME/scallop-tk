@@ -38,6 +38,9 @@
 using namespace std;
 using namespace cv;
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                 Constants
 //------------------------------------------------------------------------------
@@ -85,5 +88,7 @@ struct DoG_Candidate {
   float x, y;
   float subintvl;
 };
+
+}
 
 #endif

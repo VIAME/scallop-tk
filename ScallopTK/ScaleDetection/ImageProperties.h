@@ -19,6 +19,9 @@
 //                             Class Declaration
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 // Estimates various image properties (GSD, i.e. Scale) from metadata.
 class ImageProperties {
 
@@ -80,5 +83,7 @@ private:
   float pixelWidth;
   float avgPixelSize;
 };
+
+}
 
 #endif

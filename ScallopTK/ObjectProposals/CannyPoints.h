@@ -27,15 +27,14 @@
 #include "ScallopTK/EdgeDetection/GaussianEdges.h"
 
 //------------------------------------------------------------------------------
-//                             Internal Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void findCannyCandidates( GradientChain& grad, CandidatePtrVector& cds );
+
+}
 
 #endif

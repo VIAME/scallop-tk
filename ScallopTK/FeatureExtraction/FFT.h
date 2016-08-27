@@ -23,16 +23,15 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 
 //------------------------------------------------------------------------------
-//                                 Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void calculateRFFT( Candidate *cd, IplImage *base );
 void calculateCFFT( Candidate *cd, IplImage *base );
+
+}
 
 #endif

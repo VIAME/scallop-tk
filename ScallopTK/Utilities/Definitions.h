@@ -2,7 +2,7 @@
 // Title: Definitions.h
 //
 // Description: This file contains declarations, constants, and shared structs
-// used across many other operations within this mini toolkit
+// used across many other operations within this toolkit
 //------------------------------------------------------------------------------
 
 #ifndef SCALLOP_TK_DEFINITIONS_H_
@@ -16,6 +16,9 @@
 
 // OpenCV Includes
 #include <cv.h>
+
+namespace ScallopTK
+{
 
 //------------------------------------------------------------------------------
 //                         Common Defines and Macros
@@ -401,7 +404,9 @@ struct Candidate
     fullContour( NULL )
   {
     for( unsigned i = 0; i < NUM_HOG; i++ )
+    {
       hogResults[i] = NULL;
+    }
   }
 };
 
@@ -430,6 +435,8 @@ struct Detection
   bool isWhiteScallop;
   bool isBuriedScallop;
   bool isSandDollar;
+
+  Detection() : cntr( NULL ) {}
 };
 
 typedef std::vector<Candidate*> CandidatePtrVector;
@@ -437,5 +444,7 @@ typedef std::vector<Detection*> DetectionPtrVector;
 
 typedef std::vector<Candidate> CandidateVector;
 typedef std::vector<Detection> DetectionVector;
+
+}
 
 #endif

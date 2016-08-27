@@ -25,7 +25,12 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 void extractWatershedEdge( IplImage *img, Candidate* kp );
 void extractScallopContours( GradientChain& Gradients, CandidatePtrVector cds );
+
+}
 
 #endif

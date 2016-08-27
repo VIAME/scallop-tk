@@ -4,6 +4,9 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 #include "ScallopTK/Classifiers/TrainingUtils.h"
 
+namespace ScallopTK
+{
+
 // Loads classifiers from given folder
 bool AdaClassifier::loadClassifiers(
   const SystemParameters& sysParams,
@@ -202,4 +205,6 @@ void AdaClassifier::extractSamples(
 
   // Append all extracted features to file
   dumpCandidateFeatures( outputList, candidates );
+}
+
 }

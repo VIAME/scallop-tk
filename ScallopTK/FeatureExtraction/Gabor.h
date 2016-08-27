@@ -23,16 +23,15 @@
 #include "ScallopTK/Utilities/HelperFunctions.h"
 
 //------------------------------------------------------------------------------
-//                                 Constants
-//------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 //void performGaborFiltering( Candidate *cd );
 void calculategaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds );
+
+}
 
 #endif

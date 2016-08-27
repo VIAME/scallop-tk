@@ -22,6 +22,9 @@
 #include "ScallopTK/Utilities/Definitions.h"
 #include "ScallopTK/Utilities/HelperFunctions.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                 Constants
 //------------------------------------------------------------------------------
@@ -74,5 +77,7 @@ private:
 //void calculateCHoG( Candidate *cd, IplImage *base );
 //void calculateRHoG16( Candidate *cd, IplImage *base );
 //void HoGTest( IplImage *gs, CandidatePtrVector cds );
+
+}
 
 #endif

@@ -22,6 +22,9 @@
 // Namespaces
 using namespace std;
 
+namespace ScallopTK
+{
+
 // Remove any spaces from either end of the string
 inline std::string RemoveSpaces( const std::string& str )
 {
@@ -442,6 +445,8 @@ inline void InitializeDefault( SystemParameters& settings )
   settings.OutputDuplicateClass = true;
   settings.OutputDetectionImages = false;
   settings.NumThreads = 1;
+}
+
 }
 
 #endif

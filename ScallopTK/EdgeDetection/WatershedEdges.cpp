@@ -5,6 +5,9 @@
 //                            Function Definitions
 //------------------------------------------------------------------------------
 
+namespace ScallopTK
+{
+
 const float R1_RATIO = 0.25;
 const float R2_RATIO = 2.00;
 const float SIGMA1 = 1.25f;
@@ -195,3 +198,4 @@ void extractScallopContours( GradientChain& Gradients, CandidatePtrVector cds ) 
     cvReleaseImage( &level[2] );
 }
 
+}

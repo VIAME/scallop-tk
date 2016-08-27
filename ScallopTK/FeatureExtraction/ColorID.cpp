@@ -1,11 +1,8 @@
 
 #include "ColorID.h"
 
-//------------------------------------------------------------------------------
-//                             Function Prototypes
-//------------------------------------------------------------------------------
-
-
+namespace ScallopTK
+{
 
 //------------------------------------------------------------------------------
 //                                 Definitions
@@ -369,5 +366,7 @@ void calculatecolorFeatures( IplImage* color_img, hfResults *color_class, Candid
   cd->outerColorAvg[0] = avg_outer_color[0] / 16;
   cd->outerColorAvg[1] = avg_outer_color[1] / 16;
   cd->outerColorAvg[2] = avg_outer_color[2] / 16;
+}
+
 }
 

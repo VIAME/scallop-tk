@@ -27,8 +27,12 @@
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-int findStableMatches( CvSeq *seq,
-                       float minRad, float maxRad,
-                       CandidatePtrVector& kps, IplImage* bin );
+namespace ScallopTK
+{
+
+int findStableMatches( CvSeq *seq, float minRad, float maxRad,
+  CandidatePtrVector& kps, IplImage* bin );
+
+}
 
 #endif

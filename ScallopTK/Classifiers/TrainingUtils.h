@@ -24,6 +24,9 @@
 #include "ScallopTK/TPL/AdaBoost/BoostedCommittee.h"
 #include "ScallopTK/ObjectProposals/Consolidator.h"
 
+namespace ScallopTK
+{
+
 //------------------------------------------------------------------------------
 //                                  Globals
 //------------------------------------------------------------------------------
@@ -57,5 +60,7 @@ bool getDesignationsFromUser( CandidateQueue& OrderedCandidates,
 
 // Print out features to given file in GT mode
 void dumpCandidateFeatures( string file_name, CandidatePtrVector& cd );
+
+}
 
 #endif
