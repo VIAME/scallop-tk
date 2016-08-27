@@ -110,7 +110,7 @@ private:
 
   // Helper functions
   void deallocCNNs();
-  cv::Mat getCandidateChip( cv::Mat image, Candidate* cd );
+  cv::Mat getCandidateChip( cv::Mat image, Candidate* cd, int width, int height );
 };
 
 #endif

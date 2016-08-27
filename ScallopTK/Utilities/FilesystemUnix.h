@@ -30,7 +30,7 @@ const int DIR_VAL      = 0x4;
 const int FILE_VAL     = 0x8;
 
 // Recursively list all files and subdirs in dir_name
-inline bool ListAllFiles( string dir_name, vector<string>& fileList, vector<string>& subdirs  ) {
+inline bool listAllFile( string dir_name, vector<string>& fileList, vector<string>& subdirs  ) {
   // Declare necessary variables
   char filepath[MAX_DIR_SIZE];
   char subdir[MAX_DIR_SIZE];
@@ -76,7 +76,7 @@ inline bool ListAllFiles( string dir_name, vector<string>& fileList, vector<stri
     strcat(subdir,"/");
     strcat(subdir,entry->d_name);
     subdirs.push_back(subdir);
-    ListAllFiles(subdir,fileList,subdirs);
+    listAllFile(subdir,fileList,subdirs);
   }
   // Close stream and dealloc mem
   closedir(dir);
@@ -95,7 +95,7 @@ inline int doesDirectoryExist( const char* filename ) {
   return 0;
 }
 
-inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir) {
+inline bool copyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir) {
   if( !doesDirectoryExist( output_dir.c_str() ) ) {
     mkdir( output_dir.c_str(), 0xFFF );
   }
@@ -110,7 +110,14 @@ inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const
   return true;
 }
 
-inline void FormatOutputNames( vector<string>& in, vector<string>& out, 
+inline bool createDir( string dirName ) {
+  if( !doesDirectoryExist( dirName.c_str() ) ) {
+    mkdir( dirName.c_str(), 0xFFF );
+  }
+  return true;
+}
+
+inline void formatOutputNames( vector<string>& in, vector<string>& out, 
                              const string& in_dir, const string& out_dir ) {
 
   for( unsigned int i=0; i<in.size(); i++ ) {
@@ -121,7 +128,7 @@ inline void FormatOutputNames( vector<string>& in, vector<string>& out,
   }
 }
 
-inline string GetExectuablePath()
+inline string getExecutablePath()
 {
   char procname[2024];
   int len = readlink("/proc/self/exe", procname, 2023);
@@ -136,7 +143,7 @@ inline string GetExectuablePath()
   return procname;
 }
 
-inline bool DoesFileExist( string path )
+inline bool doesFileExist( string path )
 {
   ifstream test( path.c_str() );
   if( !test )

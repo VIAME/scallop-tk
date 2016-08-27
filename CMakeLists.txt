@@ -57,12 +57,6 @@ if( ENABLE_CAFFE )
 endif()
 
 # Add options for other misc things
-option( ENABLE_FASTER_RCNN "Build with faster RCNN support enabled" OFF )
-
-if( ENABLE_FASTER_RCNN )
-  message( FATAL_ERROR "Faster R-CNN not supported in this build" )
-endif()
-
 option( ENABLE_BENCHMARKING "Output timing statistics to a text file" OFF )
 
 if( ENABLE_BENCHMARKING )

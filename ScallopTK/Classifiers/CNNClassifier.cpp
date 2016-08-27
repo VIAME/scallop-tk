@@ -2,6 +2,7 @@
 #include "CNNClassifier.h"
 
 #include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/Utilities/Filesystem.h"
 
 using caffe::Blob;
 using caffe::Net;
@@ -220,7 +221,7 @@ void CNNClassifier::classifyCandidates(
            entry++, batchPosition++ )
       {
         // Extract image chip for candidate, if possible
-        cv::Mat chip = getCandidateChip( image, candidates[entry] );
+        cv::Mat chip = getCandidateChip( image, candidates[entry], chipWidth, chipHeight );
   
         if( chip.rows == 0 || chip.cols == 0 )
         {
@@ -260,23 +261,69 @@ void CNNClassifier::classifyCandidates(
   }
 
   // Perform secondary classification
-  if( !isTrainingMode && suppressionClfr )
+  if( suppressionClfr )
   {
 
   }
 }
 
-cv::Mat CNNClassifier::getCandidateChip( cv::Mat image, Candidate* cd )
+cv::Rect getCandidateBox( Candidate* cd )
 {
-  return cv::Mat();
+  if( !cd )
+    return cv::Rect();
+
+  int axis = std::max( cd->major, cd->minor );
+
+  return cv::Rect( cd->c - axis, cd->r - axis, axis, axis );
 }
 
-double candidateIntersection( Candidate *cd1, Candidate *cd2 )
+cv::Rect sclCandidateBox( cv::Rect r, float expansion )
 {
-  if( !cd1 || !cd2 )
-    return 0.0;
+  float pixelsToAddW = ( expansion - 1.0 ) * r.width;
+  float pixelsToAddH = ( expansion - 1.0 ) * r.height;
 
-  
+  return cv::Rect( r.x - pixelsToAddW/2, r.y - pixelsToAddH/2,
+    r.width + pixelsToAddW, r.height + pixelsToAddH ); 
+}
+
+cv::Mat CNNClassifier::getCandidateChip( cv::Mat image, Candidate* cd, int width, int height )
+{
+  // Get bbox in input image coords
+  cv::Rect box = sclCandidateBox( getCandidateBox( cd ), CNN_EXPANSION_RATIO );
+
+  // Extract ROI contained in box to same scale input
+  cv::Mat extractedROI( box.width, box.height, image.type() );
+  extractedROI.setTo( 0 );
+
+  cv::Rect inputROI = ( box & cv::Rect( 0, 0, image.cols, image.rows ) );
+
+  cv::Rect outputROI = cv::Rect(
+    ( box.x < 0 ? -box.x : 0 ),
+    ( box.y < 0 ? -box.y : 0 ),
+    inputROI.width, inputROI.height );
+
+  if( outputROI.area() > 0 && inputROI.area() > 0 )
+  {
+    image( inputROI ).copyTo( extractedROI( outputROI ) );
+  }
+
+  // Resize extracted ROI to desired chip size
+  cv::Size size( width, height );
+  cv::Mat resizedROI;
+  cv::resize( extractedROI, resizedROI, size );
+
+  return resizedROI;
+}
+
+float boxIntersection( cv::Rect r1, cv::Rect r2 )
+{
+  float areaInt = ( r1 & r2 ).area();
+
+  float areaR1 = r1.area();
+  float areaR2 = r2.area();
+
+  return std::min( ( areaR1 > 0.0f ? areaInt / areaR1 : 0.0f ),
+                   ( areaR2 > 0.0f ? areaInt / areaR2 : 0.0f ) );
 }
 
 void CNNClassifier::extractSamples(
@@ -284,10 +331,18 @@ void CNNClassifier::extractSamples(
   CandidatePtrVector& candidates,
   CandidatePtrVector& groundTruth )
 {
+  // Get pointer to input blob simply for chip properties
+  Blob< float >* inputBlob = initialClfr->input_blobs()[0];
+
+  // Get batch size and input parameters from model
+  const unsigned totalCandidates = candidates.size();
+  const unsigned channels = inputBlob->channels();
+  const unsigned chipHeight = inputBlob->height();
+  const unsigned chipWidth = inputBlob->width();
+
+#ifdef CNN_CLASSIFIER_OUTPUT_GT_IMAGE
+  // Local debug image output
   IplImage w = image;
-
-  cout << groundTruth.size() << " " << candidates.size() << endl;
-
   static int counter = 0;
   counter++;
   std::stringstream ss;
@@ -295,20 +350,82 @@ void CNNClassifier::extractSamples(
 
   if( groundTruth.size() > 0 )
     saveCandidates( &w, groundTruth, "output" + ss.str() + ".png" );
+#endif
 
-  for( unsigned i = 0; i < candidates.size(); i++ )
+  static unsigned sampleCounter = 0;
+
+  for( unsigned i = 0; i < totalCandidates; i++ )
   {
-    // Get top label
-    
+    cv::Rect cbox = getCandidateBox( candidates[i] );
+
+    // Get top label for this rectangle
+    bool isBackground = false;
+    std::vector< std::string > labels;
+
+    for( unsigned j = 0; j < groundTruth.size(); j++ )
+    {
+      cv::Rect gbox = getCandidateBox( groundTruth[j] );
+      float intersect = boxIntersection( cbox, gbox );
+
+      std::string postfix;
+
+      if( intersect > 0.90 )
+      {
+        postfix = "0.90";
+      }
+      else if( intersect > 0.80 )
+      {
+        postfix = "0.80";
+      }
+      else if( intersect > 0.70 )
+      {
+        postfix = "0.70";
+      }
+      else if( intersect > 0.50 )
+      {
+        postfix = "0.50";
+      }
+      else if( intersect > 0.30 )
+      {
+        postfix = "0.30";
+      }
+      else if( intersect > 0.10 )
+      {
+        postfix = "0.10";
+      }
+
+      if( !postfix.empty() )
+      {
+        labels.push_back( INT_2_STR( groundTruth[j]->classification ) + "_" + postfix );
+      }
+    }
 
     // Perform downsampling
+    if( labels.size() )
+    {
+      if( ( (double)rand() / (double)RAND_MAX ) < trainingPercentKeep )
+      {
+        continue;
+      }
 
+      labels.push_back( "background" );
+    }
 
     // Extract chip
-    cv::Mat chip = getCandidateChip( image, candidates[i] );
+    cv::Mat chip = getCandidateChip( image, candidates[i], chipWidth, chipHeight );
 
-    // Write chip to file
-    
+    // Write chip to correct file
+    for( unsigned j = 0; j < labels.size(); j++ )
+    {
+      std::string outputLoc = outputFolder + "/" + labels[j];
+  
+      // Create output dir for sample if it doesn't exist
+      createDir( outputLoc );
+
+      // Output formatted image
+      std::string outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+      imwrite( outputFile, chip );
+    }
   }
 }
 

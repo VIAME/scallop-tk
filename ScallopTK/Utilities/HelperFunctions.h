@@ -158,7 +158,7 @@ inline int determine8quads( const int& x, const int&y ) {
   }
 }
 
-inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool AddRand = false )
+inline Candidate* convertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool AddRand = false )
 {
   // Convert a GT point to a Candidate with some random flux
   Candidate* output = new Candidate;
@@ -239,7 +239,7 @@ inline Candidate* ConvertGTToCandidate( GTEntry& Pt, float DownsizeFactor, bool 
 }
 
 // Move this function to somplace better
-inline void RemoveOverlapAndMerge( CandidatePtrVector& Base,
+inline void removeOverlapAndMerge( CandidatePtrVector& Base,
   CandidatePtrVector& Truth, double percentage_keep = 0.10 )
 {
   // Top down greedy search - very slow but who cares its for training only

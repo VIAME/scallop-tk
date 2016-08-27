@@ -198,7 +198,7 @@ void AdaClassifier::extractSamples(
   CandidatePtrVector& groundTruth )
 {
   // Remove any detected Candidates which conflict with markups
-  RemoveOverlapAndMerge( candidates, groundTruth, trainingPercentKeep );
+  removeOverlapAndMerge( candidates, groundTruth, trainingPercentKeep );
 
   // Append all extracted features to file
   dumpCandidateFeatures( outputList, candidates );

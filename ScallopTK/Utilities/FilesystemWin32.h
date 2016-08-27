@@ -20,13 +20,13 @@
 using namespace std;
 
 // Function Prototypes
-bool ListAllFiles(string path, vector<string>& files, vector<string>& dirlist);
-bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir);
-void FormatOutputNames( vector<string>& in, vector<string>& out, const string& in_dir, const string& out_dir );
+bool listAllFile(string path, vector<string>& files, vector<string>& dirlist);
+bool copyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir);
+void formatOutputNames( vector<string>& in, vector<string>& out, const string& in_dir, const string& out_dir );
 string GetExecutablePath();
 
 // Function Declarations
-inline bool ListAllFiles(string path, vector<string>& files, vector<string>& dirlist) {
+inline bool listAllFile(string path, vector<string>& files, vector<string>& dirlist) {
   string mask = "*.*";
   HANDLE hFind = INVALID_HANDLE_VALUE;
   WIN32_FIND_DATA ffd;
@@ -72,7 +72,7 @@ inline bool ListAllFiles(string path, vector<string>& files, vector<string>& dir
     return true;
 }
 
-inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir) {
+inline bool copyDirTree( vector<string>& dirlist, const string& input_dir, const string& output_dir) {
   for( unsigned int i=0; i<dirlist.size(); i++ ) {
     string toMake = dirlist[i];
     toMake.erase( 0, input_dir.size() ); 
@@ -83,7 +83,13 @@ inline bool CopyDirTree( vector<string>& dirlist, const string& input_dir, const
   return true;
 }
 
-inline void FormatOutputNames( vector<string>& in, vector<string>& out, 
+inline bool createDir( string dirName ) {
+  LPSECURITY_ATTRIBUTES attr = NULL;
+  CreateDirectory( dirName.c_str(), attr );
+  return true;
+}
+
+inline void formatOutputNames( vector<string>& in, vector<string>& out, 
                              const string& in_dir, const string& out_dir ) {
 
   for( unsigned int i=0; i<in.size(); i++ ) {
@@ -94,7 +100,7 @@ inline void FormatOutputNames( vector<string>& in, vector<string>& out,
   }
 }
 
-inline string GetExectuablePath()
+inline string getExecutablePath()
 {
   TCHAR szEXEPath[ 2048 ];
   DWORD nChars = GetModuleFileName( NULL, szEXEPath, 2048 );
@@ -102,7 +108,7 @@ inline string GetExectuablePath()
   return output;
 }
 
-inline bool DoesFileExist( string path )
+inline bool doesFileExist( string path )
 {
   ifstream test( path.c_str() );
   if( !test )

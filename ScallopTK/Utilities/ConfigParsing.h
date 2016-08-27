@@ -106,7 +106,7 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
 
   if( hint.empty() )
   {
-    const std::string exePath = GetExectuablePath();
+    const std::string exePath = getExecutablePath();
 
     string root, tmp;
     SplitPathAndFile( exePath, root, tmp );
@@ -117,9 +117,9 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
     const std::string DIR1DEFAULT = root + CONFIG_SEARCH_DIR1 + DEFAULT_CONFIG_FILE;
     const std::string DIR2DEFAULT = root + CONFIG_SEARCH_DIR2 + DEFAULT_CONFIG_FILE;
 
-    if( !DoesFileExist( DIR1DEFAULT ) )
+    if( !doesFileExist( DIR1DEFAULT ) )
     {
-      if( DoesFileExist( DIR2DEFAULT ) )
+      if( doesFileExist( DIR2DEFAULT ) )
       {
         folder = DIR2;
       }
@@ -138,7 +138,7 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
   }
   else
   {
-    if( DoesFileExist( hint ) )
+    if( doesFileExist( hint ) )
     {
       path = hint;
       
@@ -282,7 +282,7 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
   // Find config directory
   const std::string filename = settings.RootClassifierDIR + key;
 
-  if( !DoesFileExist( filename ) )
+  if( !doesFileExist( filename ) )
   {
     cerr << "CRITICAL ERROR: Classifier config " << key << " not found" << endl;
     return false;

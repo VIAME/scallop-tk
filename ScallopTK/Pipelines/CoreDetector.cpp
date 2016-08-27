@@ -361,7 +361,7 @@ void *processImage( void *InputArgs ) {
       GTEntry& Pt = (*Options->GTData)[i];
       if( Pt.Name == Options->InputFilenameNoDir )
       {
-        Candidate *cd1 = ConvertGTToCandidate( Pt, resizeFactor );
+        Candidate *cd1 = convertGTToCandidate( Pt, resizeFactor );
         GTDetections.push_back( cd1 );
       }
     }
@@ -599,7 +599,7 @@ int runCoreDetector( const SystemParameters& settings )
   if( settings.IsInputDirectory || settings.IsTrainingMode )
   {
     // Get a list of all files and sub directories in the input dir
-    ListAllFiles( inputDir, inputFilenames, subdirsToCreate );
+    listAllFile( inputDir, inputFilenames, subdirsToCreate );
     
     // Remove files that don't have an image extension (jpg/tif)
     cullNonImages( inputFilenames );
@@ -740,11 +740,11 @@ int runCoreDetector( const SystemParameters& settings )
   // Copy the folder structure in the input dir to the output dir
   if( settings.OutputDetectionImages && !settings.IsTrainingMode )
   {
-    CopyDirTree( subdirsToCreate, inputDir, outputDir );
+    copyDirTree( subdirsToCreate, inputDir, outputDir );
   }
 
   // Format the output name vector for each input image
-  FormatOutputNames( inputFilenames, outputFilenames, inputDir, outputDir );
+  formatOutputNames( inputFilenames, outputFilenames, inputDir, outputDir );
 
   // Set global thread count
   THREADS = settings.NumThreads;
