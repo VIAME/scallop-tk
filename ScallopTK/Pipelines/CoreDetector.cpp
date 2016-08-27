@@ -84,6 +84,9 @@ struct AlgorithmArgs {
   // Will have the algorithm use metadata if it is available
   bool UseMetadata;
 
+  // Will only process the left half of the input image if set
+  bool ProcessLeftHalfOnly;
+
   // Output options
   bool EnableOutputDisplay;
   bool EnableListOutput;
@@ -631,8 +634,8 @@ int runCoreDetector( const SystemParameters& settings )
       if( settings.IsMetadataInImage )
       {
         input >> inputFile >> classifierKey;
-        RemoveSpaces( inputFile );
-        RemoveSpaces( classifierKey );
+        removeSpaces( inputFile );
+        removeSpaces( classifierKey );
         if( inputFile.size() > 0 && classifierKey.size() > 0 )
         {
           inputFilenames.push_back( inputFile );
@@ -643,8 +646,8 @@ int runCoreDetector( const SystemParameters& settings )
       else
       {
         input >> inputFile >> alt >> pitch >> roll >> classifierKey;
-        RemoveSpaces( inputFile );
-        RemoveSpaces( classifierKey );
+        removeSpaces( inputFile );
+        removeSpaces( classifierKey );
         if( inputFile.size() > 0 && classifierKey.size() > 0 )
         {
           inputFilenames.push_back( inputFile );
@@ -678,7 +681,7 @@ int runCoreDetector( const SystemParameters& settings )
     char buffer[2048];
     input.getline(buffer,2048);
     GTfilename = buffer;
-    RemoveSpaces( GTfilename );
+    removeSpaces( GTfilename );
 
     // Iterate through list
     while( !input.eof() )
@@ -690,7 +693,7 @@ int runCoreDetector( const SystemParameters& settings )
       if( settings.IsMetadataInImage )
       {
         input >> inputFile;
-        RemoveSpaces( inputFile );
+        removeSpaces( inputFile );
         if( inputFile.size() > 0  )
         {
           inputFilenames.push_back( inputFile );
@@ -701,7 +704,7 @@ int runCoreDetector( const SystemParameters& settings )
       else
       {
         input >> inputFile >> alt >> pitch >> roll;
-        RemoveSpaces( inputFile );
+        removeSpaces( inputFile );
         if( inputFile.size() > 0 )
         {
           inputFilenames.push_back( inputFile );
@@ -727,7 +730,7 @@ int runCoreDetector( const SystemParameters& settings )
     // Load csv file
     GTs = new GTEntryList;
     cout << GTfilename << endl;
-    ParseGTFile( GTfilename, *GTs );
+    parseGTFile( GTfilename, *GTs );
   }
 
   // Check to make sure image list is not empty
@@ -786,7 +789,7 @@ int runCoreDetector( const SystemParameters& settings )
     {
       // Load classifier config
       ClassifierParameters cparams;
-      if( !ParseClassifierConfig( inputClassifiers[i], settings, cparams ) )
+      if( !parseClassifierConfig( inputClassifiers[i], settings, cparams ) )
       {
         return 0;
       }
@@ -842,6 +845,7 @@ int runCoreDetector( const SystemParameters& settings )
     inputArgs[i].MinSearchRadiusPixels = settings.MinSearchRadiusPixels;
     inputArgs[i].MaxSearchRadiusPixels = settings.MaxSearchRadiusPixels;
     inputArgs[i].UseMetadata = settings.UseMetadata;
+    inputArgs[i].ProcessLeftHalfOnly = settings.ProcessLeftHalfOnly;
   }
 
   // Initiate display window for output
@@ -874,7 +878,7 @@ int runCoreDetector( const SystemParameters& settings )
 
     // Set file/dir arguments
     string Dir, filenameNoDir;
-    SplitPathAndFile( inputFilenames[i], Dir, filenameNoDir );
+    splitPathAndFile( inputFilenames[i], Dir, filenameNoDir );
     cout << filenameNoDir << "..." << endl;
     inputArgs[0].InputFilename = inputFilenames[i];
     inputArgs[0].OutputFilename = outputFilenames[i];
@@ -1000,7 +1004,7 @@ CoreDetector::Priv::Priv( const SystemParameters& sets )
 
   ClassifierParameters cparams;
 
-  if( !ParseClassifierConfig( settings.ClassifierToUse, settings, cparams ) ) {
+  if( !parseClassifierConfig( settings.ClassifierToUse, settings, cparams ) ) {
     throw std::runtime_error( "Unabled to read config for "+ settings.ClassifierToUse );
   }
 
@@ -1050,6 +1054,7 @@ CoreDetector::Priv::Priv( const SystemParameters& sets )
     inputArgs[i].MinSearchRadiusPixels = settings.MinSearchRadiusPixels;
     inputArgs[i].MaxSearchRadiusPixels = settings.MaxSearchRadiusPixels;
     inputArgs[i].UseMetadata = settings.UseMetadata;
+    inputArgs[i].ProcessLeftHalfOnly = settings.ProcessLeftHalfOnly;
   }
 
   // Initiate display window for output
@@ -1094,7 +1099,7 @@ CoreDetector::CoreDetector( const std::string& configFile )
 {
   SystemParameters settings;
 
-  if( !ParseSystemConfig( settings, configFile ) )
+  if( !parseSystemConfig( settings, configFile ) )
   {
     throw std::runtime_error( "Unable to read system parameters file" );
   }

@@ -26,7 +26,7 @@ namespace ScallopTK
 {
 
 // Remove any spaces from either end of the string
-inline std::string RemoveSpaces( const std::string& str )
+inline std::string removeSpaces( const std::string& str )
 {
   int str_size = str.size();
 
@@ -57,7 +57,7 @@ inline std::string RemoveSpaces( const std::string& str )
 }
 
 
-inline void SplitPathAndFile( const string& input, string& path, string& file )
+inline void splitPathAndFile( const string& input, string& path, string& file )
 {
   if( input.size() == 0 )
   {
@@ -81,7 +81,7 @@ inline void SplitPathAndFile( const string& input, string& path, string& file )
 }
 
 // Convert a csv style string into a vector of substrings
-inline std::vector< std::string > ConvertCSVLine( string line, bool ignoreEmpty = false )
+inline std::vector< std::string > convertCSVLine( string line, bool ignoreEmpty = false )
 {
   std::vector< std::string > parsed;
   stringstream strm(line);
@@ -89,9 +89,9 @@ inline std::vector< std::string > ConvertCSVLine( string line, bool ignoreEmpty 
 
   while( getline( strm,word, ',' ) )
   {
-    word = RemoveSpaces( word );
+    word = removeSpaces( word );
 
-    if( ignoreEmpty&& word.size() == 0 )
+    if( ignoreEmpty && word.size() == 0 )
       continue;
 
     parsed.push_back( word );
@@ -102,7 +102,7 @@ inline std::vector< std::string > ConvertCSVLine( string line, bool ignoreEmpty 
 
 // Find root system config file, returning whether or not it's found, and if so,
 // a full path to its location, and its folder
-inline bool FindSysConfig( string& path, string& folder, string hint = "" )
+inline bool findSysConfig( string& path, string& folder, string hint = "" )
 {
   path = std::string();
   folder = std::string();
@@ -112,7 +112,7 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
     const std::string exePath = getExecutablePath();
 
     string root, tmp;
-    SplitPathAndFile( exePath, root, tmp );
+    splitPathAndFile( exePath, root, tmp );
 
     const std::string DIR1 = root + CONFIG_SEARCH_DIR1;
     const std::string DIR2 = root + CONFIG_SEARCH_DIR2;
@@ -146,7 +146,7 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
       path = hint;
       
       std::string tmp;
-      SplitPathAndFile( path, folder, tmp );
+      splitPathAndFile( path, folder, tmp );
     }
     else
     {
@@ -159,7 +159,7 @@ inline bool FindSysConfig( string& path, string& folder, string hint = "" )
 }
 
 // Parse the contents of a process config file, adding them to params
-inline bool ParseModeConfig( string key, SystemParameters& params )
+inline bool parseModeConfig( string key, SystemParameters& params )
 {
   // Calculate location of config file
   string filename = params.RootConfigDIR + key;
@@ -196,6 +196,7 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
       params.UseFileForTraining = false;
       params.IsInputDirectory = !strcmp( rdr.GetValue( "options", "is_list", NULL ), "false" );
       params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
+      params.ProcessLeftHalfOnly = !strcmp( rdr.GetValue( "options", "process_left_half_only", NULL ), "true" );
       params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
       params.EnableOutputDisplay = !strcmp( rdr.GetValue( "options", "enable_output_display", NULL ), "true" );
       params.OutputList = !strcmp( rdr.GetValue( "options", "output_list", NULL ), "true" );
@@ -214,14 +215,14 @@ inline bool ParseModeConfig( string key, SystemParameters& params )
 }
 
 // Parse the contents of a process config file
-inline bool ParseSystemConfig( SystemParameters& params, std::string location = "" )
+inline bool parseSystemConfig( SystemParameters& params, std::string location = "" )
 {
   // Calculate location of config file
   std::string filename;
   std::string configDir;
 
   // Find config directory
-  if( !FindSysConfig( filename, configDir, location ) )
+  if( !findSysConfig( filename, configDir, location ) )
   {
     
     return false;
@@ -242,6 +243,7 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
     // Read file contents
     params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
     params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
+    params.ProcessLeftHalfOnly = !strcmp( rdr.GetValue( "options", "process_left_half_only", NULL ), "true" );
     params.MinSearchRadiusMeters = atof( rdr.GetValue( "options", "min_search_radius_meters", NULL ) );
     params.MaxSearchRadiusMeters = atof( rdr.GetValue( "options", "max_search_radius_meters", NULL ) );
     params.MinSearchRadiusPixels = atof( rdr.GetValue( "options", "min_search_radius_pixels", NULL ) );
@@ -280,7 +282,7 @@ inline bool ParseSystemConfig( SystemParameters& params, std::string location = 
 }
 
 // Parse the contents of a classifier config file
-inline bool ParseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
+inline bool parseClassifierConfig( string key, const SystemParameters& settings, ClassifierParameters& params )
 {
   // Find config directory
   const std::string filename = settings.RootClassifierDIR + key;
@@ -307,13 +309,13 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
     // Read file contents
     params.UseCNNClassifier = !strcmp( rdr.GetValue( "classifiers", "USE_CNN_CLASSIFIER", NULL ), "true" );
     params.ClassifierSubdir = rdr.GetValue("classifiers", "CLASSIFIER_SUBDIR", NULL);
-    params.L1Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C1IDS", NULL), true );
-    params.L1Files = ConvertCSVLine( rdr.GetValue("classifiers", "C1FILES", NULL), true );
-    params.L1SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C1CATEGORY", NULL), true );
-    params.L2Keys = ConvertCSVLine( rdr.GetValue("classifiers", "C2IDS", NULL), true );
-    params.L2SpecTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CATEGORY", NULL), true );
-    params.L2SuppTypes = ConvertCSVLine( rdr.GetValue("classifiers", "C2CLFSTYLE", NULL), true );
-    params.L2Files = ConvertCSVLine( rdr.GetValue("classifiers", "C2FILES", NULL), true );
+    params.L1Keys = convertCSVLine( rdr.GetValue("classifiers", "C1IDS", NULL), true );
+    params.L1Files = convertCSVLine( rdr.GetValue("classifiers", "C1FILES", NULL), true );
+    params.L1SpecTypes = convertCSVLine( rdr.GetValue("classifiers", "C1CATEGORY", NULL), true );
+    params.L2Keys = convertCSVLine( rdr.GetValue("classifiers", "C2IDS", NULL), true );
+    params.L2SpecTypes = convertCSVLine( rdr.GetValue("classifiers", "C2CATEGORY", NULL), true );
+    params.L2SuppTypes = convertCSVLine( rdr.GetValue("classifiers", "C2CLFSTYLE", NULL), true );
+    params.L2Files = convertCSVLine( rdr.GetValue("classifiers", "C2FILES", NULL), true );
     params.EnableSDSS = !strcmp( rdr.GetValue("classifiers", "ENABLE_SAND_DOLLAR_SUPPRESSION_SYS", NULL), "true" );
     params.Threshold = atof( rdr.GetValue("classifiers", "THRESHOLD", "0.0") );
 
@@ -359,7 +361,7 @@ inline bool ParseClassifierConfig( string key, const SystemParameters& settings,
 }
 
 // Parse the contents of a GT input training file
-inline bool ParseGTFile( string filename, GTEntryList& output )
+inline bool parseGTFile( string filename, GTEntryList& output )
 {
   // Clear vector
   output.clear();
@@ -433,7 +435,7 @@ inline bool ParseGTFile( string filename, GTEntryList& output )
   return true;
 }
 
-inline void InitializeDefault( SystemParameters& settings )
+inline void initializeDefault( SystemParameters& settings )
 {
   settings.RootColorDIR = "";
   settings.RootClassifierDIR = "";

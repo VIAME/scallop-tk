@@ -9,6 +9,9 @@ use_metadata = false
 ; Is metadata stored in the image or the file list?
 is_metadata_in_image = false
 
+; Should we only process the left half of the input image?
+process_left_half_only = false
+
 ; Minimum search radius (used if metadata is available)
 min_search_radius_meters = 0.04
 

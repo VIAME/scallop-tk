@@ -202,6 +202,9 @@ struct SystemParameters
   // Is metadata stored in the image or the file list?
   bool IsMetadataInImage;
 
+  // Only process the left half of the input image
+  bool ProcessLeftHalfOnly;
+
   // The main classifier ID to use
   std::string ClassifierToUse;
 

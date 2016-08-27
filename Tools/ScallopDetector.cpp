@@ -64,11 +64,11 @@ int main( int argc, char** argv )
     input = argv[2];
     output = argv[3];
 
-    if( !ParseSystemConfig( settings ) )
+    if( !parseSystemConfig( settings ) )
     {
       return false;
     }
-    if( !ParseModeConfig( mode, settings ) )
+    if( !parseModeConfig( mode, settings ) )
     {
       return false;
     }
@@ -81,12 +81,12 @@ int main( int argc, char** argv )
       {
         settings.InputDirectory = settings.InputDirectory + "/";
       }
-      SplitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
+      splitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
     }
     else
     {
-      SplitPathAndFile( input, settings.InputDirectory, settings.InputFilename );
-      SplitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
+      splitPathAndFile( input, settings.InputDirectory, settings.InputFilename );
+      splitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
     }
 
     if( argc == 5 )
@@ -104,12 +104,12 @@ int main( int argc, char** argv )
     cout << "Enter classifier to use (enter DEFAULT for default): ";
     cin >> classifier;
 
-    if( !ParseSystemConfig( settings ) )
+    if( !parseSystemConfig( settings ) )
     {
       cerr << "ERROR: Unable to parse system config!" << endl;
       return false;
     }
-    if( !ParseModeConfig( "PROCESS_DIR", settings ) )
+    if( !parseModeConfig( "PROCESS_DIR", settings ) )
     {
       cerr << "ERROR: Unable to parse process_dir config!" << endl;
       return false;
@@ -117,7 +117,7 @@ int main( int argc, char** argv )
     
     settings.ClassifierToUse = classifier;
 
-    SplitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
+    splitPathAndFile( output, settings.OutputDirectory, settings.OutputFilename );
 
     settings.InputDirectory = input;
     settings.InputFilename = "";

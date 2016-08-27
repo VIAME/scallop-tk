@@ -8,14 +8,17 @@ namespace ScallopTK
 //                             Function Prototypes
 //------------------------------------------------------------------------------
 
-CvMat* calculateHOG_window(IplImage** integrals, CvRect window, int normalization, int bins);
-IplImage** calculateIntegralHOG(IplImage* in);
+CvMat* calculateHOG_window( IplImage** integrals, CvRect window,
+  int normalization, int bins );
+
+IplImage** calculateIntegralHOG( IplImage* in );
 
 //------------------------------------------------------------------------------
 //                                 Definitions
 //------------------------------------------------------------------------------
 
-HoGFeatureGenerator::HoGFeatureGenerator( IplImage *img_gs, float minR, float maxR, int index ) {
+HoGFeatureGenerator::HoGFeatureGenerator( IplImage *img_gs, float minR,
+  float maxR, int index ) {
 
   // Check image type
   assert( img_gs->depth == IPL_DEPTH_32F );
@@ -75,7 +78,8 @@ bool HoGFeatureGenerator::GenerateSingle( Candidate* cd ) {
   //cout << lower_c << " " << upper_c << " " << integrals[0]->width << endl;
 
   // Calculate HoG Windows
-  cd->hogResults[output_index] = calculateHOG_window(integrals, cvRect(lower_c, lower_r, window_width, window_height), 
+  cd->hogResults[output_index] = calculateHOG_window(integrals,
+    cvRect(lower_c, lower_r, window_width, window_height), 
     HOG_NORMALIZATION_METHOD, bins );
 
   return true;
