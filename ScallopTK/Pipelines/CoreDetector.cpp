@@ -160,6 +160,12 @@ void *processImage( void *InputArgs ) {
     throw std::runtime_error( "Invalid input image" );
   }
 
+  if( Options->ProcessLeftHalfOnly )
+  {
+    inputImgMat = inputImgMat(
+      cv::Rect( 0, 0, inputImgMat.cols/2, inputImgMat.rows ) );
+  }
+
 //----------------------Calculate Object Size-------------------------
 
   // Declare Image Properties reader (for metadata read, size calc, etc)
