@@ -115,7 +115,7 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
    
 }*/
 
-void calculatesizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
+void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
 
   if( !cd->isActive )
     return;

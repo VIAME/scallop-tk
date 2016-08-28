@@ -85,7 +85,7 @@ void createOrientedsummaryImages( IplImage *base, CandidatePtrVector& cds ) {
   }
 }
 
-void createcolorQuadrants( IplImage *base, CandidatePtrVector& cds ) {
+void createColorQuadrants( IplImage *base, CandidatePtrVector& cds ) {
 
   // Constants
   float R1_RATIO = 0.74f;
@@ -154,7 +154,7 @@ void createcolorQuadrants( IplImage *base, CandidatePtrVector& cds ) {
   }
 }
 
-void calculatecolorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd ) {
+void calculateColorFeatures( IplImage* color_img, hfResults *color_class, Candidate *cd ) {
   if( !cd->isActive )
     return;
   assert( color_img->width == color_class->NetScallops->width );

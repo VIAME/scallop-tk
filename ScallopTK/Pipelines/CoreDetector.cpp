@@ -344,6 +344,8 @@ void *processImage( void *InputArgs ) {
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
+  std::cout << cdsColorBlob.size() << " " << cdsAdaptiveFilt.size() << " " << cdsTemplateAprx.size() << " " << cdsCannyEdge.size() << std::endl;
+
 //---------------------Consolidate ROIs--------------------------
 
   // Containers for sorted IPs
@@ -422,7 +424,7 @@ void *processImage( void *InputArgs ) {
 
     // Calculates size based features around each IP
     for( int i=0; i<cdsAllUnordered.size(); i++ ) {
-      calculatesizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor);
+      calculateSizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor);
     }
 
 #ifdef ENABLE_BENCHMARKING
@@ -430,9 +432,9 @@ void *processImage( void *InputArgs ) {
 #endif
 
     // Calculates color based features around each IP
-    createcolorQuadrants( imgGrey32f, cdsAllUnordered );
+    createColorQuadrants( imgGrey32f, cdsAllUnordered );
     for( int i=0; i<cdsAllUnordered.size(); i++ ) {
-      calculatecolorFeatures( imgRGB32f, color, cdsAllUnordered[i] );
+      calculateColorFeatures( imgRGB32f, color, cdsAllUnordered[i] );
     }
 
 #ifdef ENABLE_BENCHMARKING
@@ -440,7 +442,7 @@ void *processImage( void *InputArgs ) {
 #endif
 
     // Calculates gabor based features around each IP
-    calculategaborFeatures( imgGrey32f, cdsAllUnordered );
+    calculateGaborFeatures( imgGrey32f, cdsAllUnordered );
 
 #ifdef ENABLE_BENCHMARKING
     executionTimes.push_back( getTimeSinceLastCall() );

@@ -69,7 +69,7 @@ CvMat *createGaborFilter( float sigma, float theta, float lambda, float psi, flo
   }
 }*/
 
-void calculategaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds ) {
+void calculateGaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds ) {
 
   // Create linear filters
   CvMat *filterBank[NUM_FILTERS];

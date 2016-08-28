@@ -30,7 +30,7 @@ namespace ScallopTK
 {
 
 //void performGaborFiltering( Candidate *cd );
-void calculategaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds );
+void calculateGaborFeatures( IplImage *img_gs_32f, CandidatePtrVector& cds );
 
 }
 

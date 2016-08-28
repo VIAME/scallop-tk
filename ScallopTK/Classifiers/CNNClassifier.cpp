@@ -421,7 +421,7 @@ void CNNClassifier::extractSamples(
 
     if( isBGSample )
     {
-      float sf = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+      float sf = 0.5 + 1.0 * ( (double)rand() / (double)RAND_MAX );
 
       chip = sf * chip;
     }
@@ -441,8 +441,8 @@ void CNNClassifier::extractSamples(
       // Augment image and re-output
       if( !isBGSample )
       {
-        float sf2 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
-        float sf3 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+        float sf2 = 0.5 + 1.0 * ( (double)rand() / (double)RAND_MAX );
+        float sf3 = 0.6 + 0.8 * ( (double)rand() / (double)RAND_MAX );
         float sf4 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
 
         cv::Mat chip2, chip3, chip4;
