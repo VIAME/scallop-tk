@@ -53,6 +53,7 @@ void showIP( IplImage* img, IplImage *img2, Candidate *ip );
 void showIPNW( IplImage* img, IplImage *img2, Candidate *ip );
 
 // Memory Functions
+void deallocateCandidate( Candidate* cd );
 void deallocateCandidates( CandidatePtrVector &kps );
 Candidate *copyCandidate( Candidate* kp );
 int getImageType( const string& filename );
@@ -86,6 +87,8 @@ float quickMedian( IplImage* img, int max_to_sample );
 void removeBorderCandidates( CandidatePtrVector& cds, IplImage *img );
 void cullNonImages( vector<string>& fn_list );
 vector<string> tokenizeString( std::string s );
+void filterCandidates( CandidatePtrVector& cds,
+  float min, float max, bool dealloc = true );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions

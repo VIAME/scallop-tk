@@ -24,4 +24,4 @@ is_metadata_in_image = false
 process_left_half_only = true
 
 ; Enable output GUI display?
-enable_output_display = true
+enable_output_display = false

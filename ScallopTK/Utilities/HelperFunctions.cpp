@@ -74,6 +74,22 @@ void showCandidates( IplImage *img, CandidatePtrVector& kps, float min, float ma
   cvReleaseImage( &local );
 }
 
+void filterCandidates( CandidatePtrVector& cds, float min, float max, bool dealloc ) {  
+
+  CandidatePtrVector output;
+  for( unsigned int i=0; i<cds.size(); i++ ) {  
+    if( cds[i]->major < min || cds[i]->major > max ) {
+      if( dealloc ) {
+        deallocateCandidate( cds[i] );
+      }
+    }
+    else {
+      output.push_back( cds[i] );
+    }
+  }
+  cds = output;
+}
+
 void showCandidatesNW( IplImage *img, CandidatePtrVector& kps, float min, float max ) {  
   IplImage* local = cvCloneImage( img );
   for( unsigned int i=0; i<kps.size(); i++ ) {
@@ -425,20 +441,25 @@ void drawColorRing( IplImage *input, float r, float c, float angle, float major1
 }
 
 //Deallocates Candidate vector
+void deallocateCandidate( Candidate* cd ) {
+
+  if( cd != NULL ) {
+    
+    if( cd->summaryImage != NULL )
+      cvReleaseImage( &cd->summaryImage );
+    if( cd->colorQuadrants != NULL )
+      cvReleaseImage( &cd->colorQuadrants );
+    for( unsigned int j=0; j<NUM_HOG; j++ )
+      if( cd->hogResults[j] != NULL )
+        cvReleaseMat( &cd->hogResults[j] );
+
+    delete cd;
+  }
+}
+
 void deallocateCandidates( CandidatePtrVector &kps ) {
   for( unsigned int i=0; i < kps.size(); i++ ) 
-    if( kps[i] != NULL ) {
-      
-      if( kps[i]->summaryImage != NULL )
-        cvReleaseImage( &kps[i]->summaryImage );
-      if( kps[i]->colorQuadrants != NULL )
-        cvReleaseImage( &kps[i]->colorQuadrants );
-      for( unsigned int j=0; j<NUM_HOG; j++ )
-        if( kps[i]->hogResults[j] != NULL )
-          cvReleaseMat( &kps[i]->hogResults[j] );
-
-      delete kps[i];
-    }
+    deallocateCandidate( kps[i] );
   kps.empty();
 }
 

@@ -361,6 +361,9 @@ void CNNClassifier::extractSamples(
   {
     cv::Rect cbox = getCandidateBox( candidates[i] );
 
+    if( ( cbox & cv::Rect( 0, 0, image.cols, image.rows ) ).area() < 5 )
+      continue;
+
     // Get top label for this rectangle
     bool isBackground = false;
     std::vector< std::string > labels;

@@ -629,7 +629,8 @@ void interpolateIP( IplImage **ss, Candidates& cds, CandidatePtrVector& kps, flo
 
 
 //Find Double-Donut Candidate
-void findTemplateCandidates( GradientChain& grad, CandidatePtrVector& kps, ImageProperties& imgProp, IplImage* mask ) {
+void findTemplateCandidates( GradientChain& grad, CandidatePtrVector& kps,
+  ImageProperties& imgProp, IplImage* mask ) {
 
   // Normalize image scale
   float resize_factor = MPFMR_TEMPLATE / grad.minRad;

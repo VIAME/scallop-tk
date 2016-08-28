@@ -319,12 +319,15 @@ void *processImage( void *InputArgs ) {
     detectColoredBlobs( color, cdsColorBlob ); //<-- Better for large # of images
   }
 
+  filterCandidates( cdsColorBlob, minRadPixels, maxRadPixels, true );
+
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
   
   // Perform Adaptive Filtering
-  //performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
+  performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
+  filterCandidates( cdsAdaptiveFilt, minRadPixels, maxRadPixels, true );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
@@ -332,13 +335,15 @@ void *processImage( void *InputArgs ) {
   
   // Template Approx Candidate Detection
   //findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
+  filterCandidates( cdsTemplateAprx, minRadPixels, maxRadPixels, true );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
   // Stable Canny Edge Candidates
-  //findCannyCandidates( gradients, cdsCannyEdge );
+  findCannyCandidates( gradients, cdsCannyEdge );
+  filterCandidates( cdsCannyEdge, minRadPixels, maxRadPixels, true );
 
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
