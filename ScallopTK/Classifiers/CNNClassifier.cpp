@@ -414,9 +414,6 @@ void CNNClassifier::extractSamples(
       labels.push_back( "background" );
     }
 
-    // Log message
-    std::cout << "Candidate label: " << labels[0] << std::endl;
-
     // Extract chip
     cv::Mat chip = getCandidateChip( image, candidates[i], chipWidth, chipHeight );
 

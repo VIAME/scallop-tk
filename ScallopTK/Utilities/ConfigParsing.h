@@ -185,6 +185,7 @@ inline bool parseModeConfig( string key, SystemParameters& params )
       params.IsInputDirectory = !strcmp( rdr.GetValue( "options", "is_list", NULL ), "false" );
       params.UseMetadata = !strcmp( rdr.GetValue( "options", "use_metadata", NULL ), "true" );
       params.IsMetadataInImage = !strcmp( rdr.GetValue( "options", "is_metadata_in_image", NULL ), "true" );
+      params.ProcessLeftHalfOnly = !strcmp( rdr.GetValue( "options", "process_left_half_only", NULL ), "true" );
       params.EnableOutputDisplay = false;
       params.OutputList = true;
       params.OutputDuplicateClass = false;
