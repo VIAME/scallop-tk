@@ -324,7 +324,7 @@ void *processImage( void *InputArgs ) {
 #endif
   
   // Perform Adaptive Filtering
-  performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
+  //performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
@@ -338,7 +338,7 @@ void *processImage( void *InputArgs ) {
 #endif
 
   // Stable Canny Edge Candidates
-  findCannyCandidates( gradients, cdsCannyEdge );
+  //findCannyCandidates( gradients, cdsCannyEdge );
 
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
@@ -518,7 +518,7 @@ void *processImage( void *InputArgs ) {
   }
 
   // If in training mode use designations to distinguish
-  if( Options->IsTrainingMode )
+  if( 0 && Options->IsTrainingMode )
   {
     for( unsigned int i=0; i<cdsAllUnordered.size(); i++ ) {
       Candidate *cur = cdsAllUnordered[i];

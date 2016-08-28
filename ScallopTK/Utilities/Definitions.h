@@ -158,7 +158,7 @@ const unsigned int NUM_HOG        = 2;
 
 // Amount to expand bounding box around candidate by when
 // computing image chips to feed into a CNN classifier.
-const float CNN_EXPANSION_RATIO = 1.25f;
+const float CNN_EXPANSION_RATIO = 1.45f;
 
 // Sand dollar suppression system factor
 const double SDSS_DIFFERENCE_FACTOR = 2.0;

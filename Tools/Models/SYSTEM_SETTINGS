@@ -19,7 +19,7 @@ min_search_radius_meters = 0.04
 max_search_radius_meters = 0.12
 
 ; Minimum search radius (used if metadata is not available)
-min_search_radius_pixels = 10
+min_search_radius_pixels = 20
 
 ; Maximum search radius (used if metadata is not available)
 max_search_radius_pixels = 200
@@ -29,7 +29,7 @@ classifier_to_use = DEFAULT_CNN
 
 ; If training from files, the percentage of false points outside of
 ; annotations to use as false examples.
-training_percent_keep = 0.10
+training_percent_keep = 0.001
 
 ; Should we consider classifying object proposals near image boundaries?
 look_at_border_points = true

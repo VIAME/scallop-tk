@@ -277,7 +277,7 @@ cv::Rect getCandidateBox( Candidate* cd )
 
   int axis = std::max( cd->major, cd->minor );
 
-  return cv::Rect( cd->c - axis, cd->r - axis, axis, axis );
+  return cv::Rect( cd->c - axis, cd->r - axis, 2 * axis, 2 * axis );
 }
 
 cv::Rect sclCandidateBox( cv::Rect r, float expansion )
@@ -413,6 +413,9 @@ void CNNClassifier::extractSamples(
 
       labels.push_back( "background" );
     }
+
+    // Log message
+    std::cout << "Candidate label: " << labels[0] << std::endl;
 
     // Extract chip
     cv::Mat chip = getCandidateChip( image, candidates[i], chipWidth, chipHeight );
