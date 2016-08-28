@@ -37,21 +37,32 @@ function( AddTool BinName SourceFile InstallProp )
 endfunction()
 
 # Install files contained in some data directory
-function( AddDataDir DirName TargetExec )
+function( AddDataDir DirName OutputDirname TargetExec )
   install( DIRECTORY ${DirName} ${ScallopTK_BINARY_PREFIX}
     DESTINATION bin FILES_MATCHING PATTERN "*" )
 
   add_custom_command(TARGET ${TargetExec} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/${DirName} ${CMAKE_BINARY_DIR}/bin/${DirName})
+    ${CMAKE_CURRENT_SOURCE_DIR}/${DirName}
+    ${CMAKE_BINARY_DIR}/bin/${OutputDirName} )
 endfunction()
 
 # =================================================================
 # Add All Tools and Data Directories
 # =================================================================
 
-AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
-AddDataDir( Models ScallopDetector )
+if( VC_TOOLNAMES )
 
-AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
+  AddTool( scallop_tk_detector ScallopDetector.cpp ScallopTK )
+  AddDataDir( Models scallop_tk_models ScallopDetector )
+  
+  AddTool( fish_or_no_fish FishOrNoFish.cpp ScallopTK )
 
+else()
+
+  AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
+  AddDataDir( Models Models ScallopDetector )
+  
+  AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
+
+endif

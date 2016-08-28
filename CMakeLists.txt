@@ -75,7 +75,14 @@ endif()
 
 # Add subdirs to project
 add_subdirectory( ScallopTK )
-add_subdirectory( Tools )
+
+option( BUILD_TOOLS "Build and install ScallopTK binary tools" ON )
+option( BUILD_TESTS "Build and install ScallopTK tests" ON )
+option( VC_TOOLNAMES "Install ScallopTK tools with viper_case names" OFF )
+
+if( BUILD_TOOLS )
+  add_subdirectory( Tools )
+endif()
 
 # Add configure files for find_package
 set( ScallopTK_EXPORT_FILE "${ScallopTK_BINARY_DIR}/ScallopTKConfig.cmake" )

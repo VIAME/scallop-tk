@@ -38,7 +38,7 @@ const float INF = 1E+37f;
 
 // Default search directories for config files for binaries
 const std::string CONFIG_SEARCH_DIR1 = "/Models/";
-const std::string CONFIG_SEARCH_DIR2 = "/../Models/";
+const std::string CONFIG_SEARCH_DIR2 = "/scallop_tk_models/";
 
 const std::string DEFAULT_COLORBANK_DIR = "ColorFilterBanks/";
 const std::string DEFAULT_CLASSIFIER_DIR = "Classifiers/";
