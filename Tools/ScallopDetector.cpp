@@ -134,6 +134,11 @@ void runCNNTrainingHelper( int argc, char** argv )
 
       for( unsigned k = 0; k < files.size(); k++ )
       {
+        if( i == 0 && j == 0 && k % bgdsRate != 0 )
+        {
+          continue;
+        }
+
         data.push_back( make_pair( files[k], i ) );
       }
     }
