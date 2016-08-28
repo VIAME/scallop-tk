@@ -65,4 +65,4 @@ else()
   
   AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
 
-endif
+endif()
