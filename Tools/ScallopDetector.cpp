@@ -30,17 +30,27 @@ using namespace ScallopTK;
 //                              Helper Functions
 //------------------------------------------------------------------------------
 
-void runCNNTrainingHelper()
+void runCNNTrainingHelper( int argc, char** argv )
 {
   string trainLoc, caffeBinLoc, chipLoc, response;
   unsigned categories, bgdsRate;
+  string perValStr;
   float perVal;
   vector< vector< string > > ids;
   vector< pair< string, int > > data;
 
+  cout << endl << "Warning: Specify all paths as absolute, not relative" << endl;
+
   // Get user inputs
-  cout << "Enter output directory to store all training files: ";
+  cout << endl << "Enter output directory to store all training files: ";
   getline( cin, trainLoc );
+
+  if( !createDir( trainLoc ) )
+  {
+    cerr << endl << "Critical Error: Unable to make " << trainLoc << endl;
+    return;
+  }
+
   cout << "Enter directory containing all caffe binaries: ";
   getline( cin, caffeBinLoc );
   cout << "Enter extracted image chip input directory: ";
@@ -50,7 +60,22 @@ void runCNNTrainingHelper()
   cout << "Enter background category chip downsample rate: ";
   cin >> bgdsRate;
   cout << "Enter percent of dataset to use as validation [0.0,1.0]: ";
-  cin >> perVal;
+  cin >> perValStr;
+
+  perVal = atof( perValStr.c_str() );
+
+  if( bgdsRate < 1 )
+    bgdsRate = 1;
+
+  char c;
+  while( cin.get(c) && c != '\n' )
+  {
+    if( !isspace(c) )
+    {
+      cerr << "ERROR unexpected character '" << c << "' found" << endl;
+      return;
+    }
+  }
 
   ids.push_back( vector< string >( 1, "background" ) );
 
@@ -68,34 +93,44 @@ void runCNNTrainingHelper()
   getline( cin, response );
 
   vector< string > additions = convertCSVLine( response, true );
-  ids[0].insert( ids[0].begin(), additions.begin(), additions.end() );
+  ids[0].insert( ids[0].end(), additions.begin(), additions.end() );
 
   // Read in image filename and label for each category
-  for( unsigned i = 0; i < categories; i++ )
+  for( unsigned i = 0; i < ids.size(); i++ )
   {
     vector< string > categoryDirs;
     vector< string > backgroundDirs;
 
+    cout << endl << "Category " << INT_2_STR( i ) << " labels: ";
+
     for( unsigned j = 0; j < ids[i].size(); j++ )
     {
+      cout << ids[i][j] << " ";
+
       if( ids[i][j] == "background" )
       {
         categoryDirs.push_back( chipLoc + "/background" );
       }
       else
       {
-        backgroundDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.10/" );
+        backgroundDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.10" );
 
-        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.70/" );
-        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.80/" );
-        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.90/" );
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.70" );
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.80" );
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.90" );
+
+        if( i == 0 )
+        {
+          categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.30" );
+          categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.50" );
+        }
       }
     }
 
     for( unsigned j = 0; j < categoryDirs.size(); j++ )
     {
       vector< string > files, dirs;
-      listAllFile( categoryDirs[i], files, dirs );
+      listAllFile( categoryDirs[j], files, dirs );
 
       for( unsigned k = 0; k < files.size(); k++ )
       {
@@ -106,10 +141,15 @@ void runCNNTrainingHelper()
     for( unsigned j = 0; j < backgroundDirs.size(); j++ )
     {
       vector< string > files, dirs;
-      listAllFile( backgroundDirs[i], files, dirs );
+      listAllFile( backgroundDirs[j], files, dirs );
 
       for( unsigned k = 0; k < files.size(); k++ )
       {
+        if( i == 0 && j == 0 && k % bgdsRate != 0 )
+        {
+          continue;
+        }
+
         data.push_back( make_pair( files[k], 0 ) );
       }
     }
@@ -119,10 +159,12 @@ void runCNNTrainingHelper()
   random_shuffle( data.begin(), data.end() );
 
   // Output lists
-  createDir( trainLoc );
+  cout << endl << endl << "Creating output dir: " << trainLoc << endl;
 
   string trainFilelist = trainLoc + "/training.txt";
   string validationFilelist = trainLoc + "/validation.txt";
+
+  cout << "Generating file " << trainFilelist << endl;
 
   ofstream train( trainFilelist.c_str() );
   ofstream val( validationFilelist.c_str() );
@@ -133,6 +175,8 @@ void runCNNTrainingHelper()
   {
     train << data[i].first << " " << data[i].second << endl;
   }
+
+  cout << "Generating file " << validationFilelist << endl;
 
   for( unsigned i = center; i < data.size(); i++ )
   {
@@ -159,9 +203,10 @@ void runCNNTrainingHelper()
 int main( int argc, char** argv )
 {
   // Special case for command line training helper utility
-  if( argc == 2 && argv[1] == "CNN_TRAINING_UTIL" )
+  if( argc >= 2 && string( argv[1] ) == "CNN_TRAINING_UTIL" )
   {
-    runCNNTrainingHelper();
+    runCNNTrainingHelper( argc, argv );
+    return true;
   }
 
   // Variables as defined in definitions.h

@@ -367,7 +367,7 @@ void CNNClassifier::extractSamples(
     // Get top label for this rectangle
     bool isBackground = false;
     std::string topLabel;
-    float topIntersect = 0.0f;
+    float topIntersect = 0.10f;
 
     for( unsigned j = 0; j < groundTruth.size(); j++ )
     {
@@ -376,27 +376,27 @@ void CNNClassifier::extractSamples(
 
       std::string postfix;
 
-      if( intersect > 0.90 )
+      if( intersect > 0.90f )
       {
         postfix = "0.90";
       }
-      else if( intersect > 0.80 )
+      else if( intersect > 0.80f )
       {
         postfix = "0.80";
       }
-      else if( intersect > 0.70 )
+      else if( intersect > 0.70f )
       {
         postfix = "0.70";
       }
-      else if( intersect > 0.50 )
+      else if( intersect > 0.50f )
       {
         postfix = "0.50";
       }
-      else if( intersect > 0.30 )
+      else if( intersect > 0.30f )
       {
         postfix = "0.30";
       }
-      else if( intersect > 0.10 )
+      else if( intersect >= 0.10f )
       {
         postfix = "0.10";
       }

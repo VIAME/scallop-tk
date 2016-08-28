@@ -115,7 +115,9 @@ inline bool copyDirTree( vector<string>& dirlist, const string& input_dir, const
 
 inline bool createDir( string dirName ) {
   if( !doesDirectoryExist( dirName.c_str() ) ) {
-    mkdir( dirName.c_str(), 0xFFF );
+    if( mkdir( dirName.c_str(), 0xFFF ) != 0 ) {
+      return false;
+    }
   }
   return true;
 }
