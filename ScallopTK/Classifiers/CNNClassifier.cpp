@@ -404,7 +404,9 @@ void CNNClassifier::extractSamples(
     }
 
     // Perform downsampling
-    if( labels.empty() )
+    bool isBGSample = labels.empty();
+
+    if( isBGSample )
     {
       if( ( (double)rand() / (double)RAND_MAX ) < trainingPercentKeep )
       {
@@ -417,6 +419,13 @@ void CNNClassifier::extractSamples(
     // Extract chip
     cv::Mat chip = getCandidateChip( image, candidates[i], chipWidth, chipHeight );
 
+    if( isBGSample )
+    {
+      float sf = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+
+      chip = sf * chip;
+    }
+
     // Write chip to correct file
     for( unsigned j = 0; j < labels.size(); j++ )
     {
@@ -428,6 +437,32 @@ void CNNClassifier::extractSamples(
       // Output formatted image
       std::string outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
       imwrite( outputFile, chip );
+
+      // Augment image and re-output
+      if( !isBGSample )
+      {
+        float sf2 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+        float sf3 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+        float sf4 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+
+        cv::Mat chip2, chip3, chip4;
+
+        cv::transpose( chip, chip2 );  
+        cv::flip( chip, chip3, 1 );
+        cv::flip( chip, chip4, 1 );
+        cv::transpose( chip4, chip4 );
+
+        chip2 *= sf2;
+        chip3 *= sf3;
+        chip4 *= sf4;
+
+        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+        imwrite( outputFile, chip2 );
+        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+        imwrite( outputFile, chip3 );
+        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+        imwrite( outputFile, chip4 );
+      }
     }
   }
 }

@@ -348,11 +348,11 @@ void *processImage( void *InputArgs ) {
 
   // Containers for sorted IPs
   CandidatePtrVector cdsAllUnordered;
-  CandidateQueue cdsAllUOrdered;
+  CandidateQueue cdsAllOrdered;
 
   // Consolidate interest points
   prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx,
-    cdsCannyEdge, cdsAllUnordered, cdsAllUOrdered, Stats );
+    cdsCannyEdge, cdsAllUnordered, cdsAllOrdered, Stats );
     
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
@@ -456,7 +456,7 @@ void *processImage( void *InputArgs ) {
   if( Options->IsTrainingMode && !Options->UseGTData )
   {
     // If in training mode, have user enter Candidate classifications
-    if( !getDesignationsFromUser( cdsAllUOrdered, imgRGB32f, mask, detections,
+    if( !getDesignationsFromUser( cdsAllOrdered, imgRGB32f, mask, detections,
            minRadPixels, maxRadPixels, Options->InputFilenameNoDir ) )
     {
       trainingExitFlag = true;
