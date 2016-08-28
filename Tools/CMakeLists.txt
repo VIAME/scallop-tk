@@ -16,7 +16,7 @@
 # AddTool( ExampleTool             <-- Binary name
 #          ExampleTool.cpp         <-- Source file
 #          ScallopTK )             <-- Linked libraries
-#
+##
 function( AddTool BinName SourceFile InstallProp )
   add_executable( ${ScallopTK_BINARY_PREFIX}${BinName}
     ${SourceFile} )
