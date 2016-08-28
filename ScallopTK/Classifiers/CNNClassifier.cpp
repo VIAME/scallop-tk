@@ -366,7 +366,8 @@ void CNNClassifier::extractSamples(
 
     // Get top label for this rectangle
     bool isBackground = false;
-    std::vector< std::string > labels;
+    std::string topLabel;
+    float topIntersect = 0.0f;
 
     for( unsigned j = 0; j < groundTruth.size(); j++ )
     {
@@ -400,14 +401,15 @@ void CNNClassifier::extractSamples(
         postfix = "0.10";
       }
 
-      if( !postfix.empty() )
+      if( intersect > topIntersect )
       {
-        labels.push_back( INT_2_STR( groundTruth[j]->classification ) + "_" + postfix );
+        topLabel = INT_2_STR( groundTruth[j]->classification ) + "_" + postfix;
+        topIntersect = intersect;
       }
     }
 
     // Perform downsampling
-    bool isBGSample = labels.empty();
+    bool isBGSample = topLabel.empty();
 
     if( isBGSample )
     {
@@ -416,7 +418,7 @@ void CNNClassifier::extractSamples(
         continue;
       }
 
-      labels.push_back( "background" );
+      topLabel = "background";
     }
 
     // Extract chip
@@ -430,42 +432,39 @@ void CNNClassifier::extractSamples(
     }
 
     // Write chip to correct file
-    for( unsigned j = 0; j < labels.size(); j++ )
+    std::string outputLoc = outputFolder + "/" + topLabel;
+
+    // Create output dir for sample if it doesn't exist
+    createDir( outputLoc );
+
+    // Output formatted image
+    std::string outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+    imwrite( outputFile, chip );
+
+    // Augment image and re-output
+    if( !isBGSample )
     {
-      std::string outputLoc = outputFolder + "/" + labels[j];
-  
-      // Create output dir for sample if it doesn't exist
-      createDir( outputLoc );
+      float sf2 = 0.5 + 1.0 * ( (double)rand() / (double)RAND_MAX );
+      float sf3 = 0.6 + 0.8 * ( (double)rand() / (double)RAND_MAX );
+      float sf4 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
 
-      // Output formatted image
-      std::string outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
-      imwrite( outputFile, chip );
+      cv::Mat chip2, chip3, chip4;
 
-      // Augment image and re-output
-      if( !isBGSample )
-      {
-        float sf2 = 0.5 + 1.0 * ( (double)rand() / (double)RAND_MAX );
-        float sf3 = 0.6 + 0.8 * ( (double)rand() / (double)RAND_MAX );
-        float sf4 = 0.7 + 0.6 * ( (double)rand() / (double)RAND_MAX );
+      cv::transpose( chip, chip2 );  
+      cv::flip( chip, chip3, 1 );
+      cv::flip( chip, chip4, 1 );
+      cv::transpose( chip4, chip4 );
 
-        cv::Mat chip2, chip3, chip4;
+      chip2 *= sf2;
+      chip3 *= sf3;
+      chip4 *= sf4;
 
-        cv::transpose( chip, chip2 );  
-        cv::flip( chip, chip3, 1 );
-        cv::flip( chip, chip4, 1 );
-        cv::transpose( chip4, chip4 );
-
-        chip2 *= sf2;
-        chip3 *= sf3;
-        chip4 *= sf4;
-
-        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
-        imwrite( outputFile, chip2 );
-        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
-        imwrite( outputFile, chip3 );
-        outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
-        imwrite( outputFile, chip4 );
-      }
+      outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+      imwrite( outputFile, chip2 );
+      outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+      imwrite( outputFile, chip3 );
+      outputFile = outputLoc + "/" + INT_2_STR( sampleCounter++ ) + ".png";
+      imwrite( outputFile, chip4 );
     }
   }
 }

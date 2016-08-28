@@ -11,6 +11,7 @@
 // Standard C/C++
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 // Scallop Includes
 #include "ScallopTK/Pipelines/CoreDetector.h"
@@ -26,11 +27,143 @@ using namespace std;
 using namespace ScallopTK;
 
 //------------------------------------------------------------------------------
+//                              Helper Functions
+//------------------------------------------------------------------------------
+
+void runCNNTrainingHelper()
+{
+  string trainLoc, caffeBinLoc, chipLoc, response;
+  unsigned categories, bgdsRate;
+  float perVal;
+  vector< vector< string > > ids;
+  vector< pair< string, int > > data;
+
+  // Get user inputs
+  cout << "Enter output directory to store all training files: ";
+  getline( cin, trainLoc );
+  cout << "Enter directory containing all caffe binaries: ";
+  getline( cin, caffeBinLoc );
+  cout << "Enter extracted image chip input directory: ";
+  getline( cin, chipLoc );
+  cout << "Enter total number of model categories (excluding background): ";
+  cin >> categories;
+  cout << "Enter background category chip downsample rate: ";
+  cin >> bgdsRate;
+  cout << "Enter percent of dataset to use as validation [0.0,1.0]: ";
+  cin >> perVal;
+
+  ids.push_back( vector< string >( 1, "background" ) );
+
+  for( unsigned i = 0; i < categories; i++ )
+  {
+    ids.push_back( vector< string >() );
+
+    cout << "Enter comma-seperate species IDs for model category " << INT_2_STR( i+1 ) << ": ";
+    getline( cin, response );
+
+    ids[i+1] = convertCSVLine( response, true );
+  }
+
+  cout << "Enter comma-seperate species IDs to include in background: ";
+  getline( cin, response );
+
+  vector< string > additions = convertCSVLine( response, true );
+  ids[0].insert( ids[0].begin(), additions.begin(), additions.end() );
+
+  // Read in image filename and label for each category
+  for( unsigned i = 0; i < categories; i++ )
+  {
+    vector< string > categoryDirs;
+    vector< string > backgroundDirs;
+
+    for( unsigned j = 0; j < ids[i].size(); j++ )
+    {
+      if( ids[i][j] == "background" )
+      {
+        categoryDirs.push_back( chipLoc + "/background" );
+      }
+      else
+      {
+        backgroundDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.10/" );
+
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.70/" );
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.80/" );
+        categoryDirs.push_back( chipLoc + "/" + ids[i][j] + "_0.90/" );
+      }
+    }
+
+    for( unsigned j = 0; j < categoryDirs.size(); j++ )
+    {
+      vector< string > files, dirs;
+      listAllFile( categoryDirs[i], files, dirs );
+
+      for( unsigned k = 0; k < files.size(); k++ )
+      {
+        data.push_back( make_pair( files[k], i ) );
+      }
+    }
+
+    for( unsigned j = 0; j < backgroundDirs.size(); j++ )
+    {
+      vector< string > files, dirs;
+      listAllFile( backgroundDirs[i], files, dirs );
+
+      for( unsigned k = 0; k < files.size(); k++ )
+      {
+        data.push_back( make_pair( files[k], 0 ) );
+      }
+    }
+  }
+
+  // Shuffle list, divide into val and training
+  random_shuffle( data.begin(), data.end() );
+
+  // Output lists
+  createDir( trainLoc );
+
+  string trainFilelist = trainLoc + "/training.txt";
+  string validationFilelist = trainLoc + "/validation.txt";
+
+  ofstream train( trainFilelist.c_str() );
+  ofstream val( validationFilelist.c_str() );
+
+  unsigned center = ( 1.0 - perVal ) * data.size();
+
+  for( unsigned i = 0; i < center; i++ )
+  {
+    train << data[i].first << " " << data[i].second << endl;
+  }
+
+  for( unsigned i = center; i < data.size(); i++ )
+  {
+    val << data[i].first << " " << data[i].second << endl;
+  }
+
+  train.close();
+  val.close();
+
+  // Call caffe database generator
+  // []
+
+  // Inject category count into CNN file
+  // []
+
+  // Call caffe training utility
+  // []
+}
+
+//------------------------------------------------------------------------------
 //                                Main Function
 //------------------------------------------------------------------------------
 
 int main( int argc, char** argv )
 {
+  // Special case for command line training helper utility
+  if( argc == 2 && argv[1] == "CNN_TRAINING_UTIL" )
+  {
+    runCNNTrainingHelper();
+  }
+
   // Variables as defined in definitions.h
   SystemParameters settings;
   string mode, input, output, config, classifier;
