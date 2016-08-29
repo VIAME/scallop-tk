@@ -133,6 +133,9 @@ struct AlgorithmArgs {
 
   // Pointer to GT input data if in training mode
   GTEntryList *GTData;
+
+  // Output final detections
+  std::vector< Detection > FinalDetections;
 };
 
 // Our Core Detection Algorithm - performs classification for a single image
@@ -1149,6 +1152,9 @@ CoreDetector::processFrame( const cv::Mat& image,
     benchmarkingOutput << executionTimes[i] << " ";
   benchmarkingOutput << endl;
 #endif
+
+   // Get output from input args
+  return data->inputArgs->FinalDetections;
 }
 
 std::vector< Detection >

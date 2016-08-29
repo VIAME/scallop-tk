@@ -12,7 +12,7 @@ set(ScallopTK_INCLUDE_DIRS
   "@ScallopTK_BINARY_DIR@" "@ScallopTK_BINARY_DIR@")
 
 if( WIN32 )
-  set(ScallopTK_LIBRARY_DIR    "@ScallopTK_BINARY_DIR@/bin")
+  set(ScallopTK_LIBRARY_DIR    "@ScallopTK_BINARY_DIR@/bin" "@ScallopTK_BINARY_DIR@/lib")
 else()
   set(ScallopTK_LIBRARY_DIR    "@ScallopTK_BINARY_DIR@/lib")
 endif()
