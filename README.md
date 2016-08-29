@@ -26,11 +26,15 @@ Code quality varies greatly file to file.
 Build Requirements
 ------------------
 
-Requirements:
-
 Cmake
 
 OpenCV
 
 Caffe (optional)
 
+Build Instructions
+------------------
+
+Build using [CMake](https://cmake.org/runningcmake/)
+
+A manual is [provided](Documentation/Manual.pdf) though it is need of updating.
