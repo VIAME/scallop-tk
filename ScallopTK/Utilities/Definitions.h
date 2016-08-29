@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <limits>
 
 // OpenCV Includes
 #include <cv.h>
@@ -413,7 +414,7 @@ struct Candidate
 
     for( unsigned i = 0; i < MAX_CLASSIFIERS; i++ )
     {
-      classMagnitudes[i] == 0.0;
+      classMagnitudes[i] = -std::numeric_limits<double>::max();
     }
   }
 };
