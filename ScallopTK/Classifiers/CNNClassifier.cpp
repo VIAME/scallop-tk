@@ -293,6 +293,7 @@ void CNNClassifier::classifyCandidates(
         if( maxInd != 0 && maxValue >= threshold )
         {
           candidates[cid]->classification = maxInd;
+          positive.push_back( candidates[cid] );
         }
         else
         {

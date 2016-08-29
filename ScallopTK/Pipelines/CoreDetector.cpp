@@ -484,7 +484,10 @@ void *processImage( void *InputArgs ) {
     Options->Model->classifyCandidates( imgRGB8u, cdsAllUnordered, interestingCds );
   
     // Calculate expensive edges around each interesting candidate point
-    expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
+    if( Options->Model->requiresFeatures() )
+    {
+      expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
+    }
   
     // Perform cleanup by removing interest points which are part of another interest point
     removeInsidePoints( interestingCds, likelyObjects );
