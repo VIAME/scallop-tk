@@ -23,22 +23,14 @@ touched the code in a few years and it was created when I was a student.
 Code quality varies greatly file to file.
 
 
-Build Instructions
+Build Requirements
 ------------------
 
 Requirements:
 
-Windows/Linux
+Cmake
 
 OpenCV
 
-CMake
-
 Caffe (optional)
 
-(1) TODO: Make build instructions
-
-Run Instructions
-----------------
-
-TODO: Make run instructions
