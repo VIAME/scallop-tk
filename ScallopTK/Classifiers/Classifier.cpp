@@ -463,12 +463,13 @@ void deallocateDetections( DetectionPtrVector& vec )
   }
 }
 
-DetectionPtrVector interpolateResults( CandidatePtrVector& input, Classifier* Classifiers, string Filename )
+DetectionPtrVector interpolateResults( CandidatePtrVector& input,
+  Classifier* Classifiers, string Filename )
 {
   DetectionPtrVector output;
   
-/*  int MainSize = Classifiers->MainClassifiers.size();
-  int SuppSize = Classifiers->SuppressionClassifiers.size();
+  int MainSize = Classifiers->outputClassCount();
+  int SuppSize = Classifiers->suppressionClassCount();
 
   for( int i = 0; i < input.size(); i++ )
   {
@@ -481,23 +482,23 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input, Classifier* Cl
     obj->minor = input[i]->minor;
     obj->cntr = NULL; // todo: check for and display
     
-    Classifier* clfr;
+    ClassifierIDLabel* labelInfo;
     int best_class = input[i]->classification;
 
     if( best_class < MainSize )
-      clfr = &(Classifiers->MainClassifiers[best_class]);
+      labelInfo = Classifiers->getLabel( best_class );
     else
-      clfr = &(Classifiers->SuppressionClassifiers[best_class-MainSize]);
+      labelInfo = Classifiers->getSuppressionLabel( best_class-MainSize );
 
-    obj->isBrownScallop = clfr->isScallop || clfr->isBrown;
-    obj->isWhiteScallop = clfr->isWhite;
-    obj->isSandDollar = clfr->isSandDollar;
-    obj->isBuriedScallop = clfr->isBuried;
+    obj->isBrownScallop = labelInfo->isScallop || labelInfo->isBrown;
+    obj->isWhiteScallop = labelInfo->isWhite;
+    obj->isSandDollar = labelInfo->isSandDollar;
+    obj->isBuriedScallop = labelInfo->isBuried;
 
     double best_main_class_val = -10.0;
     for( int j = 0; j < MainSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
-        obj->classIDs.push_back( Classifiers->MainClassifiers[j].ID );
+        obj->classIDs.push_back( Classifiers->getLabel( j )->id );
         obj->classProbabilities.push_back( input[i]->classMagnitudes[j] );
         if( input[i]->classMagnitudes[j] >= best_main_class_val )
           best_main_class_val = input[i]->classMagnitudes[j];
@@ -506,15 +507,14 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input, Classifier* Cl
     
     for( int j = MainSize; j < MainSize + SuppSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
-        obj->classIDs.push_back( Classifiers->SuppressionClassifiers[j].ID );
-        if( Classifiers->SuppressionClassifiers[j].Type != DESIRED_VS_OBJ )
-          obj->classProbabilities.push_back( input[i]->classMagnitudes[j] );
-        else
-          obj->classProbabilities.push_back( best_main_class_val * (1.0 + input[i]->classMagnitudes[j] ) );
+        obj->classIDs.push_back(
+          Classifiers->getSuppressionLabel( j )->id );
+        obj->classProbabilities.push_back(
+          best_main_class_val * ( 1.0 + input[i]->classMagnitudes[j] ) );
       }
     }    
     output.push_back( obj );
-  }*/
+  }
 
   return output;
 }

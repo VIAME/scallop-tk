@@ -35,9 +35,9 @@ CLASSIFIER_SUBDIR = CNN/
 ;                                
 
 
-C1IDS      =  UNKNOWN, SCALLOP
+C1IDS      =  UNKNOWN, LIVE_SCALLOP, DEAD_SCALLOP, FISH, CRAB
 C1FILES    =  DefaultCNN.prototxt, DefaultCNN.caffemodel
-C1CATEGORY =  NONE, ALL
+C1CATEGORY =  NONE, ALL, NONE, NONE, NONE
 
 
 ; Level 2 classifiers are applied to all points which pass the level 1 stage

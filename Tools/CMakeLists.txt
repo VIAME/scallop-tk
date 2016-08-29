@@ -37,6 +37,13 @@ function( AddTool BinName SourceFile InstallProp )
 endfunction()
 
 # Install files contained in some data directory
+function( AddDownloadedFile URL OutputLoc )
+  if( NOT EXISTS "${OutputLoc}" )
+    file( DOWNLOAD "${URL}" "${OutputLoc}")
+  endif()
+endfunction()
+
+# Install files contained in some data directory
 function( AddDataDir DirName OutputDirname TargetExec )
   install( DIRECTORY ${DirName} ${ScallopTK_BINARY_PREFIX}
     DESTINATION bin FILES_MATCHING PATTERN "*" )

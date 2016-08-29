@@ -21,6 +21,33 @@
 namespace ScallopTK
 {
 
+// Simple class for storing info about a classifier output
+class ClassifierIDLabel
+{
+public:
+
+  // ID of the target object
+  std::string id;
+
+  // Special cases:
+  //  - Is the classifier bin aimed at detecting background?
+  bool isBackground;
+  //  - Is the classifier bin aimed at sand dollars?
+  bool isSandDollar;
+  //  - Is the classifier bin aimed at ALL scallops?
+  bool isScallop;
+  //  - More specifically, is the classifier bin aimed at just white scallops?
+  bool isWhite;
+  //  - Is the classifier bin aimed at just brown scallops?
+  bool isBrown;
+  //  - Is the classifier bin aimed at just buried scallops
+  bool isBuried;
+
+  // Constructors
+  ClassifierIDLabel() {}
+  ~ClassifierIDLabel() {}
+};
+
 // Base class for arbitrary classifiers
 class Classifier
 {
@@ -57,6 +84,14 @@ public:
   virtual void extractSamples( cv::Mat image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& groundTruth ) = 0;
+
+  // Number of individual output classes this classifier has
+  virtual int outputClassCount() = 0;
+  virtual int suppressionClassCount() = 0;
+
+  // Get information about each bin that this classifier outputs
+  virtual ClassifierIDLabel* getLabel( int label ) = 0;
+  virtual ClassifierIDLabel* getSuppressionLabel( int label ) = 0;
 };
 
 //------------------------------------------------------------------------------

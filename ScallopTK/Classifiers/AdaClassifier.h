@@ -66,32 +66,31 @@ public:
     CandidatePtrVector& candidates,
     CandidatePtrVector& groundTruth );
 
+  // Number of individual output classes this classifier has
+  virtual int outputClassCount()
+    { return mainClassifiers.size(); }
+  virtual int suppressionClassCount()
+    { return suppressionClassifiers.size(); }
+
+  // Get information about each bin that this classifier outputs
+  ClassifierIDLabel* getLabel( int label )
+    { return &mainClassifiers[label]; }
+  ClassifierIDLabel* getSuppressionLabel( int label )
+    { return &suppressionClassifiers[label]; };
+
 private:
 
   typedef CBoostedCommittee SingleAdaTree;
   
-  struct SingleAdaClassifier
+  class SingleAdaClassifier : public ClassifierIDLabel
   {
-    // ID of the target object
-    std::string id;
-    
+  public:
+
     // The type of the classifier ( 0 - main, 1-3 suppression style )
     int type;
-    
+
     // The adaboost decesion tree itself
     SingleAdaTree adaTree;
-    
-    // Special cases:
-    //  - Is the classifier aimed at dollars?
-    bool isSandDollar;
-    //  - Is the classifier aimed at ALL scallops?
-    bool isScallop;
-    //  - More specifically, is the classifier aimed at just white scallops?
-    bool isWhite;
-    //  - Is the classifier aimed at just brown scallops?
-    bool isBrown;
-    //  - Is the classifier aimed at just buried scallops
-    bool isBuried;
   };
 
   typedef std::vector< SingleAdaClassifier > AdaVector;

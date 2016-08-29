@@ -47,10 +47,12 @@ public:
     CandidatePtrVector& positive );
 
   // Does this classifier require feature extraction?
-  bool requiresFeatures() { return false; }
+  bool requiresFeatures()
+    { return false; }
 
   // Does this classifier have anything to do with scallop detection?
-  bool detectsScallops() { return isScallopDirected; }
+  bool detectsScallops()
+    { return isScallopDirected; }
 
   // Extract training samples
   //
@@ -61,29 +63,21 @@ public:
     CandidatePtrVector& candidates,
     CandidatePtrVector& groundTruth );
 
+  // Number of individual output classes this classifier has
+  virtual int outputClassCount()
+    { return initialClfrLabels.size(); }
+  virtual int suppressionClassCount()
+    { return suppressionClfrLabels.size(); }
+
+  // Get information about each bin that this classifier outputs
+  ClassifierIDLabel* getLabel( int label )
+    { return &initialClfrLabels[label]; }
+  ClassifierIDLabel* getSuppressionLabel( int label )
+    { return &suppressionClfrLabels[label]; };
+
 private:
 
-  struct IDLabel
-  {
-    // ID of the target object
-    std::string id;
-
-    // Special cases:
-    //  - Is the classifier bin aimed at detecting background?
-    bool isBackground;
-    //  - Is the classifier bin aimed at dollars?
-    bool isSandDollar;
-    //  - Is the classifier bin aimed at ALL scallops?
-    bool isScallop;
-    //  - More specifically, is the classifier bin aimed at just white scallops?
-    bool isWhite;
-    //  - Is the classifier bin aimed at just brown scallops?
-    bool isBrown;
-    //  - Is the classifier bin aimed at just buried scallops
-    bool isBuried;
-  };
-
-  typedef std::vector< IDLabel > IDVector;
+  typedef std::vector< ClassifierIDLabel > IDVector;
   typedef caffe::Net< float > CNN;
   typedef caffe::Caffe::Brew DeviceMode;
 

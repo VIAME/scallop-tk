@@ -138,7 +138,7 @@ bool CNNClassifier::loadClassifiers(
   for( int i = 0; i < clsParams.L1Keys.size(); i++ )
   {
     // Declare new classifier
-    IDLabel label;
+    ClassifierIDLabel label;
     label.id = clsParams.L1Keys[i];
 
     // Set special conditions
@@ -163,7 +163,7 @@ bool CNNClassifier::loadClassifiers(
   for( int i = 0; i < clsParams.L2Keys.size(); i++ )
   {
     // Declare new classifier
-    IDLabel label;
+    ClassifierIDLabel label;
     label.id = clsParams.L2Keys[i];
 
     // Set special conditions

@@ -429,7 +429,7 @@ void *processImage( void *InputArgs ) {
 
     // Calculates size based features around each IP
     for( int i=0; i<cdsAllUnordered.size(); i++ ) {
-      calculateSizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor);
+      calculateSizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor );
     }
 
 #ifdef ENABLE_BENCHMARKING
