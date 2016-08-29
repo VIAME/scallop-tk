@@ -722,4 +722,16 @@ vector< string > tokenizeString( std::string s )
   return output;
 }
 
+DetectionVector convertVector( const DetectionPtrVector& v )
+{
+  DetectionVector output;
+
+  for( unsigned i = 0; i < v.size(); i++ )
+  {
+    Detection d = *v[i];
+  }
+
+  return output;
+}
+
 }

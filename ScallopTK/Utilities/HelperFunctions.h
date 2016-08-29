@@ -89,6 +89,7 @@ void cullNonImages( vector<string>& fn_list );
 vector<string> tokenizeString( std::string s );
 void filterCandidates( CandidatePtrVector& cds,
   float min, float max, bool dealloc = true );
+DetectionVector convertVector( const DetectionPtrVector& v );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions

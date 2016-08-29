@@ -480,8 +480,7 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
     obj->angle = input[i]->angle;
     obj->major = input[i]->major;
     obj->minor = input[i]->minor;
-    obj->cntr = NULL; // todo: check for and display
-    
+
     ClassifierIDLabel* labelInfo;
     int best_class = input[i]->classification;
 

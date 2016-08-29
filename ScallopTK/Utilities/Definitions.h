@@ -327,7 +327,7 @@ struct Contour
   int label;                  // Contour Identifier
   float mag;                  // Contour Magnitude (Confidence)
   bool coversOct[8];          // Contour Octant Coverage around IP center
-  std::vector<Point2D> pts; // Vector of points comprising Contour
+  std::vector<Point2D> pts;   // Vector of points comprising Contour
 };
 
 //------------------------------------------------------------------------------
@@ -418,7 +418,8 @@ struct Candidate
   }
 };
 
-// An actual Detection according to our algorithm, used just for post processing
+// An actual Detection according to our algorithm, used for output and
+// post processing. Contains less information than a candidate.
 struct Detection
 {
   // Image name
@@ -432,7 +433,7 @@ struct Detection
   double angle;
 
   // Object Contour (if it exists)
-  Contour *cntr;
+  Contour cntr;
 
   // Possible Object IDs and classification Detection values
   std::vector< std::string > classIDs;
@@ -443,8 +444,6 @@ struct Detection
   bool isWhiteScallop;
   bool isBuriedScallop;
   bool isSandDollar;
-
-  Detection() : cntr( NULL ) {}
 };
 
 typedef std::vector<Candidate*> CandidatePtrVector;

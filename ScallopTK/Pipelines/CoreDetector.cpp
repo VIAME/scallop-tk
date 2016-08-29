@@ -135,7 +135,7 @@ struct AlgorithmArgs {
   GTEntryList *GTData;
 
   // Output final detections
-  std::vector< Detection > FinalDetections;
+  DetectionVector FinalDetections;
 };
 
 // Our Core Detection Algorithm - performs classification for a single image
@@ -554,6 +554,9 @@ void *processImage( void *InputArgs ) {
     }
   }
 
+  // Copy final detections to class output
+  Options->FinalDetections = convertVector( objects );
+
 //-------------------------Clean Up------------------------------
   
   // Deallocate memory used by thread
@@ -561,6 +564,7 @@ void *processImage( void *InputArgs ) {
   deallocateDetections( objects );
   deallocateGradientChain( gradients );
   hfDeallocResults( color );
+
   cvReleaseImage( &imgRGB32f );
   cvReleaseImage( &imgRGB8u );
   cvReleaseImage( &imgGrey32f );
