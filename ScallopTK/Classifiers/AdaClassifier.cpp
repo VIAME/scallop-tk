@@ -177,6 +177,7 @@ int AdaClassifier::classifyCandidate( cv::Mat image, Candidate* cd )
     cd->classification = idx;
     return idx+1;
   }
+  
   cd->classification = UNCLASSIFIED;
   return UNCLASSIFIED;
 }

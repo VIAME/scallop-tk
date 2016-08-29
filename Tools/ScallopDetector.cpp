@@ -332,7 +332,7 @@ int main( int argc, char** argv )
 #endif
 
   // If in training mode...
-  if( settings.IsTrainingMode ) 
+  if( settings.IsTrainingMode )
   {
     cout << endl << "TRAINING MODE INITIALIZING" << endl;
 

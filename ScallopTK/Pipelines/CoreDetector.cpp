@@ -334,7 +334,7 @@ void *processImage( void *InputArgs ) {
 #endif
   
   // Template Approx Candidate Detection
-  //findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
+  findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
   filterCandidates( cdsTemplateAprx, minRadPixels, maxRadPixels, true );
     
 #ifdef ENABLE_BENCHMARKING
@@ -349,7 +349,8 @@ void *processImage( void *InputArgs ) {
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  std::cout << cdsColorBlob.size() << " " << cdsAdaptiveFilt.size() << " " << cdsTemplateAprx.size() << " " << cdsCannyEdge.size() << std::endl;
+  //std::cout << cdsColorBlob.size() << " " << cdsAdaptiveFilt.size() <<
+  // " " << cdsTemplateAprx.size() << " " << cdsCannyEdge.size() << std::endl;
 
 //---------------------Consolidate ROIs--------------------------
 
@@ -428,8 +429,12 @@ void *processImage( void *InputArgs ) {
 #endif
 
     // Calculates size based features around each IP
+    float sizeAdj = ( Options->UseMetadata ? 1.0 : 0.0008 );
+      // Above is a hack to make size features more comparable when we have/don't
+      // have input metadata used to compute size info
+
     for( int i=0; i<cdsAllUnordered.size(); i++ ) {
-      calculateSizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor );
+      calculateSizeFeatures( cdsAllUnordered[i], inputProp, resizeFactor, sizeAdj );
     }
 
 #ifdef ENABLE_BENCHMARKING
@@ -498,7 +503,7 @@ void *processImage( void *InputArgs ) {
 //-----------------------Update Stats----------------------------
 
   // Update Detection variables and mask
-  if( !Options->IsTrainingMode /*&& Options->Model->IsScallopDirected()*/ )
+  if( !Options->IsTrainingMode )
   {
     for( unsigned int i=0; i<objects.size(); i++ ) {
       Detection *cur = objects[i];
@@ -524,36 +529,11 @@ void *processImage( void *InputArgs ) {
     }
   }
 
-  // If in training mode use designations to distinguish
-  if( 0 && Options->IsTrainingMode )
-  {
-    for( unsigned int i=0; i<cdsAllUnordered.size(); i++ ) {
-      Candidate *cur = cdsAllUnordered[i];
-      int id = cur->classification;
-      if( id == 18028 || id == 18034 || id == 2 )
-      {
-        detections[SCALLOP_WHITE]++;
-        updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_WHITE );
-      }
-      else if( id >= 18004 && id <= 18035 || id == 1 )
-      {
-        detections[SCALLOP_BROWN]++;
-        updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
-      }
-      else if( id == 3 )
-      {
-        detections[SCALLOP_BURIED]++;
-        updateMaskRing( mask, cur->r, cur->c, cur->angle,
-          cur->major*0.8, cur->minor*0.8, cur->major, SCALLOP_BROWN );
-      }
-    }
-  }
-
   // Update color classifiers from mask and detections matrix
   CC->Update( imgRGB32f, mask, detections );
 
   // Update statistics
-  Stats->Update( detections, inputProp.getImgHeightMeters()*inputProp.getImgWidthMeters() );
+  Stats->Update( detections, inputProp.getImgHeightMeters() * inputProp.getImgWidthMeters() );
 
   // Output results to file(s)
   if( Options->OutputDetectionImages )

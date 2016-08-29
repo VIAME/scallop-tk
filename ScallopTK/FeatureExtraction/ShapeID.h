@@ -31,7 +31,8 @@ namespace ScallopTK
 {
 
 void calculateShapeFeatures( Candidate *cd, IplImage *unused );
-void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize );
+void calculateSizeFeatures( Candidate *cd, ImageProperties& ip,
+  float initResize, float sizeAdj = 1.0 );
 
 }
 

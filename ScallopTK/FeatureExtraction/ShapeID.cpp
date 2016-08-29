@@ -115,12 +115,12 @@ void calculateShapeFeatures( Candidate *cd, IplImage *unused ) {
    
 }*/
 
-void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize ) {
+void calculateSizeFeatures( Candidate *cd, ImageProperties& ip, float initResize, float sizeAdj ) {
 
   if( !cd->isActive )
     return;
   float majorAxisMeters, minor_meters, area_msq, perimeter_m;
-  float aPS = ip.getAvgPixelSizeMeters() / initResize;
+  float aPS = sizeAdj * ip.getAvgPixelSizeMeters() / initResize;
   majorAxisMeters = cd->major * aPS;
   minor_meters = cd->minor * aPS;
   cd->majorAxisMeters = majorAxisMeters;

@@ -76,7 +76,7 @@ const float RESIZE_FACTOR_REQUIRED = 0.975f;
 // radius should take up.
 const float MPFMR_COLOR_CLASS = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
 const float MPFMR_COLOR_DOG   = 2.0 * MAX_PIXELS_FOR_MIN_RAD;
-const float MPFMR_TEMPLATE    = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
+const float MPFMR_TEMPLATE    = 0.5 * MAX_PIXELS_FOR_MIN_RAD;
 const float MPFMR_ADAPTIVE    = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
 const float MPFMR_WATERSHED   = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
 const float MPFMR_CLUST       = 1.0 * MAX_PIXELS_FOR_MIN_RAD;
@@ -409,6 +409,11 @@ struct Candidate
     for( unsigned i = 0; i < NUM_HOG; i++ )
     {
       hogResults[i] = NULL;
+    }
+
+    for( unsigned i = 0; i < MAX_CLASSIFIERS; i++ )
+    {
+      classMagnitudes[i] == 0.0;
     }
   }
 };

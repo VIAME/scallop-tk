@@ -214,7 +214,7 @@ void CNNClassifier::classifyCandidates(
     // Iterate over all candidates, extracting chips and computing propabilities
     int entry = 0;
   
-    while( entry < candidates.size() )
+    while( entry < totalCandidates )
     {
       // Formate input data
       int batchPosition = 0;
@@ -228,12 +228,31 @@ void CNNClassifier::classifyCandidates(
   
         if( chip.rows == 0 || chip.cols == 0 )
         {
+          candidates[entry]->classification = UNCLASSIFIED;
           batchPosition--;
         }
         else
         {
           // Add chip to batch
-          batchIndices.push_back( entry );                  
+          batchIndices.push_back( entry );
+
+          for( int p = 0; p < channels; p++ )
+          {
+            float *rowStart = inputBlob->mutable_cpu_data() + inputBlob->offset( batchPosition, p );
+
+            const ptrdiff_t rowOffset = inputBlob->offset( 0, 0, 1, 0 );
+            const ptrdiff_t colOffset = inputBlob->offset( 0, 0, 0, 1 );
+
+            for( int r = 0; r < chipHeight; r++, rowStart += rowOffset )
+            {
+              float* colPos = rowStart;
+
+              for( int c = 0; c < chipWidth; c++, colPos += colOffset )
+              {
+                *colPos = float( chip.at< cv::Vec3b >( r, c ).val[ p ] ) - 128.0f;
+              }
+            }
+          }
         }
       }
   
@@ -253,7 +272,32 @@ void CNNClassifier::classifyCandidates(
 
       for( int i = 0; i < batchPosition; i++ )
       {
-        
+        unsigned categories = outputBlob->channels();
+        unsigned cid = batchIndices[i];
+
+        double maxValue = -1 * numeric_limits< double >::max();
+        int maxInd = 0;
+
+        for( int j = 0; j < categories; j++ )
+        {
+          double prop = outputBlob->data_at( i, j, 0, 0 );
+          candidates[cid]->classMagnitudes[j] = prop;
+
+          if( prop > maxValue )
+          {
+            maxValue = prop;
+            maxInd = j;
+          }
+        }
+
+        if( maxInd != 0 && maxValue >= threshold )
+        {
+          candidates[cid]->classification = maxInd;
+        }
+        else
+        {
+          candidates[cid]->classification = UNCLASSIFIED;
+        }
       }
     }
   }
@@ -266,7 +310,7 @@ void CNNClassifier::classifyCandidates(
   // Perform secondary classification
   if( suppressionClfr )
   {
-
+    // TODO
   }
 }
 

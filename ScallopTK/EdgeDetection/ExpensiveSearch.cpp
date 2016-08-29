@@ -369,6 +369,11 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     cvReleaseImage( &temp );
 #endif*/
 
+    if( best_ind <= cntrs.size() )
+    {
+      return;
+    }
+
     vector<Contour*> components;
     components.push_back( cntrs[best_ind] );
     bool oct_satisfied[8];
