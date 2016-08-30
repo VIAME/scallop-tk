@@ -40,7 +40,7 @@ First, install [CMake](https://cmake.org/runningcmake/) and build or install
 Next, checkout this repository, run CMake on it, and then build using your compiler
 of choice.
 
-Alternatively, ScallopTK can be build in [VIAME](https://github.com/Kitware/VIAME.git}
+Alternatively, ScallopTK can be build in [VIAME](https://github.com/Kitware/VIAME.git)
 via enabling it in the build settings.
 
 Run Instructions
