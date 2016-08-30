@@ -37,10 +37,8 @@ function( AddTool BinName SourceFile InstallProp )
 endfunction()
 
 # Install files contained in some data directory
-function( AddDownloadedFile URL OutputLoc )
-  if( NOT EXISTS "${OutputLoc}" )
-    file( DOWNLOAD "${URL}" "${OutputLoc}")
-  endif()
+function( AddDownloadedFile URL OutputLoc MD5 )
+  file( DOWNLOAD ${URL} ${OutputLoc} EXPECTED_MD5 ${MD5} )
 endfunction()
 
 # Install files contained in some data directory
@@ -62,6 +60,16 @@ endfunction()
 if( VC_TOOLNAMES )
 
   AddTool( scallop_tk_detector ScallopDetector.cpp ScallopTK )
+
+  if( ENABLE_CAFFE )
+  
+    AddDownloadedFile(
+      https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel 
+      ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/CNN/DefaultCNN.caffemodel
+      5f184c3c55b1cd738e37245982ee4bc5 )
+  
+  endif()
+
   AddDataDir( Models scallop_tk_models scallop_tk_detector )
   
   AddTool( fish_or_no_fish FishOrNoFish.cpp ScallopTK )
@@ -69,6 +77,16 @@ if( VC_TOOLNAMES )
 else()
 
   AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
+
+  if( ENABLE_CAFFE )
+  
+    AddDownloadedFile(
+      https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel
+      ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/CNN/DefaultCNN.caffemodel
+      5f184c3c55b1cd738e37245982ee4bc5 )
+  
+  endif()
+
   AddDataDir( Models Models ScallopDetector )
   
   AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
