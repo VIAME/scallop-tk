@@ -55,17 +55,15 @@ bool CNNClassifier::loadClassifiers(
   trainingPercentKeep = sysParams.TrainingPercentKeep;
 
   // Auto-detect which GPU to use based on highest memory count
-#ifdef CPU_ONLY
   deviceMode = Caffe::CPU;
-#else
+
+#ifndef CPU_ONLY
   int deviceCount = 0;
   cudaGetDeviceCount( &deviceCount );
+  deviceMode = Caffe::CPU;
+  deviceMem = 0;
 
-  if( deviceCount <= 0 )
-  {
-    deviceMode = Caffe::CPU;
-  }
-  else
+  if( deviceCount > 0 )
   {
     for( int i = 0; i < deviceCount; ++i )
     {
