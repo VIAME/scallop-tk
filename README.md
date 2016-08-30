@@ -23,18 +23,30 @@ touched the code in a few years and it was created when I was a student.
 Code quality varies greatly file to file.
 
 
-Build Requirements
-------------------
+Core Detection Pipeline
+-----------------------
 
-Cmake
+![Pipeline Image](Documentation/ExamplePipeline.png)
 
-OpenCV
-
-Caffe (optional)
 
 Build Instructions
 ------------------
 
-Build using [CMake](https://cmake.org/runningcmake/)
+Requirements: CMake, OpenCV, Caffe (Optional)
 
-A manual is [provided](Documentation/Manual.pdf) though it is need of updating.
+First, install [CMake](https://cmake.org/runningcmake/) and build or install
+[OpenCV](http://opencv.org/) and [Caffe](http://caffe.berkeleyvision.org/).
+
+Next, checkout this repository, run CMake on it, and then build using your compiler
+of choice.
+
+Alternatively, ScallopTK can be build in [VIAME}(https://github.com/Kitware/VIAME.git}
+via enabling it in the build settings.
+
+Run Instructions
+----------------
+
+A manual is [provided](Documentation/Manual.pdf), though it is out of date and in need of
+updating.
+
+![Pipeline Image](Documentation/ExampleResult.png)
