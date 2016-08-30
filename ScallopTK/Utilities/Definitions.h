@@ -165,7 +165,7 @@ const float CNN_EXPANSION_RATIO = 1.45f;
 const double SDSS_DIFFERENCE_FACTOR = 2.0;
 
 // Maximum number of classifiers in a single classification system
-const int MAX_CLASSIFIERS = 30;
+const unsigned MAX_CLASSIFIERS = 30;
 
 //------------------------------------------------------------------------------
 //          System Parameters - Set at Run-Time From Config Files
@@ -175,13 +175,13 @@ struct SystemParameters
 {
   // Input directory containing input images, if specified
   std::string InputDirectory;
-  
+
   // Input filename, if we're processing a list or using metadata from a list
   std::string InputFilename;
-  
+
   // Output directory to dump annotated images into
   std::string OutputDirectory;
-  
+
   // Output filename for detection list or training data in the above folder
   std::string OutputFilename;
 
@@ -193,7 +193,7 @@ struct SystemParameters
 
   // Root directory for color filters
   std::string RootColorDIR;
-  
+
   // Root directory for classifiers
   std::string RootClassifierDIR;
 
@@ -237,16 +237,16 @@ struct SystemParameters
 
   // Enable output GUI display?
   bool EnableOutputDisplay;
-  
+
   // Output Detection list?
   bool OutputList;
-  
+
   // If an IP falls into more than one category, output it multiple times?
   bool OutputDuplicateClass;
-  
+
   // Output images with proposals in output directory?
   bool OutputProposalImages;
-  
+
   // Output images with detections in output directory?
   bool OutputDetectionImages;
 
@@ -297,7 +297,7 @@ struct GTEntry
 {
   // Image name where object is
   std::string Name;
-  
+
   // ID code of object
   int ID;
 
@@ -306,7 +306,7 @@ struct GTEntry
 
   // X1, Y1
   double X1, Y1;
-  
+
   // X2, Y2
   double X2, Y2;
 };
@@ -339,7 +339,7 @@ struct Contour
 //
 // This object stores location, stats for classification, features extracted
 // around the candidate location, and preliminary classification results for
-// the candidate.        
+// the candidate.
 struct Candidate
 {
 
@@ -368,7 +368,7 @@ struct Candidate
   bool isCorner; //is the Candidate on an image boundary
   bool isSideBorder[8]; // which octants are outside the image
 
-  // Features for classification  
+  // Features for classification
   bool isActive;
   double colorFeatures[COLOR_FEATURES];
   double gaborFeatures[GABOR_FEATURES];
@@ -425,7 +425,7 @@ struct Detection
 {
   // Image name
   std::string img;
-  
+
   // Object Location
   double r;
   double c;
@@ -439,7 +439,7 @@ struct Detection
   // Possible Object IDs and classification Detection values
   std::vector< std::string > classIDs;
   std::vector< double > classProbabilities;
-  
+
   // Does the best match fall into any of these categories?
   bool isBrownScallop;
   bool isWhiteScallop;
