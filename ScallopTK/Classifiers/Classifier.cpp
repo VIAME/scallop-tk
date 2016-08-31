@@ -317,7 +317,7 @@ void getSortedIDs( vector<int>& indices, vector<double> values )
   }
 }
 
-bool appendInfoToFile( DetectionPtrVector& cds, const string& ListFilename, const string& this_fn, float resize_factor ) {
+bool appendInfoToFile( DetectionVector& cds, const string& ListFilename, const string& this_fn ) {
   
   // Get lock on file
   getListLock();
@@ -334,18 +334,18 @@ bool appendInfoToFile( DetectionPtrVector& cds, const string& ListFilename, cons
     
     // Sort possible classifications in descending value based on classification values
     vector<int> sorted_ind;
-    getSortedIDs( sorted_ind, cds[i]->classProbabilities );
+    getSortedIDs( sorted_ind, cds[i].classProbabilities );
     
     // Output all possible classifications if enabled    
-    for( unsigned int j=0; j<cds[i]->classIDs.size(); j++ )
+    for( unsigned int j=0; j<cds[i].classIDs.size(); j++ )
     {
       int cind = sorted_ind[j];
-      float r = cds[i]->r / resize_factor;
-      float c = cds[i]->c / resize_factor;
-      float maj = cds[i]->major / resize_factor;
-      float minor = cds[i]->minor / resize_factor;
-      fout << this_fn << "," << r << "," << c << "," << maj << "," << minor << "," << cds[i]->angle << ",";
-      fout << cds[i]->classIDs[cind] << "," << cds[i]->classProbabilities[cind] << "," << int(j+1) << endl;
+      float r = cds[i].r;
+      float c = cds[i].c;
+      float maj = cds[i].major;
+      float minor = cds[i].minor;
+      fout << this_fn << "," << r << "," << c << "," << maj << "," << minor << "," << cds[i].angle << ",";
+      fout << cds[i].classIDs[cind] << "," << cds[i].classProbabilities[cind] << "," << int(j+1) << endl;
     }
   }
   // so the full output string is (imagename y x major_axis minor_axis angle class class-confidence rank) 

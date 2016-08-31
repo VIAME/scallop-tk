@@ -734,4 +734,15 @@ DetectionVector convertVector( const DetectionPtrVector& v )
   return output;
 }
 
+void resizeDetections( DetectionVector& d, float f )
+{
+  for( unsigned i = 0; i < d.size(); i++ )
+  {
+    d[i].r = d[i].r * f;
+    d[i].c = d[i].c * f;
+    d[i].major = d[i].major * f;
+    d[i].minor = d[i].minor * f;
+  }
+}
+
 }

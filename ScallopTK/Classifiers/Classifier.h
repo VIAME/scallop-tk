@@ -119,8 +119,8 @@ void deallocateDetections( DetectionPtrVector& vec );
 bool appendInfoToFile( DetectionVector& Detections, const std::string& list_fn );
   
 // Append final Detections to some file
-bool appendInfoToFile( DetectionPtrVector& cds, const std::string& ListFilename,
-  const std::string& this_fn, float resize_factor );
+bool appendInfoToFile( DetectionVector& cds, const std::string& ListFilename,
+  const std::string& this_fn );
 
 }
 

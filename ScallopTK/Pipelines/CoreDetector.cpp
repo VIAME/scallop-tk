@@ -546,21 +546,31 @@ void *processImage( void *InputArgs ) {
   // Update statistics
   Stats->Update( detections, inputProp.getImgHeightMeters() * inputProp.getImgWidthMeters() );
 
-  // Output results to file(s)
+  // Output results to image files
   if( Options->OutputDetectionImages )
   {
     saveScallops( imgRGB32f, objects, Options->OutputFilename + ".detections.jpg" );
   }
+
+  // Resize results to input resolution, and output to text file
+  DetectionVector resizedObjects = convertVector( objects );
+
+  if( resizeFactor != 1.0f && resizeFactor != 0.0f )
+  {
+    resizeDetections( resizedObjects, 1.0f / resizeFactor );
+  }
+
   if( Options->EnableListOutput && !Options->IsTrainingMode )
   {
-    if( !appendInfoToFile( objects, Options->ListFilename, Options->InputFilenameNoDir, resizeFactor ) )
+    if( !appendInfoToFile( resizedObjects, Options->ListFilename,
+      Options->InputFilenameNoDir ) )
     {
       cerr << "CRITICAL ERROR: Could not write to output list!" << endl;
     }
   }
 
   // Copy final detections to class output
-  Options->FinalDetections = convertVector( objects );
+  Options->FinalDetections = resizedObjects;
 
 //-------------------------Clean Up------------------------------
   
