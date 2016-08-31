@@ -136,6 +136,11 @@ struct AlgorithmArgs {
 
   // Output final detections
   DetectionVector FinalDetections;
+
+  AlgorithmArgs()
+  : Model( NULL ),
+    GTData( NULL )
+  {}
 };
 
 // Our Core Detection Algorithm - performs classification for a single image
@@ -984,7 +989,7 @@ CoreDetector::Priv::Priv( const SystemParameters& sets )
   THREADS = settings.NumThreads;
 
   // Check to make sure we can open the output file (and flush contents)
-  if( settings.OutputList ) {
+  if( settings.OutputList && !listFilename.empty() ) {
     ofstream fout( listFilename.c_str() );
     if( !fout.is_open() ) {
       throw std::runtime_error( "Could not open output list for writing" );
@@ -1039,6 +1044,7 @@ CoreDetector::Priv::Priv( const SystemParameters& sets )
   {
     // Set thread output options
     inputArgs[i].IsTrainingMode = settings.IsTrainingMode;
+    inputArgs[i].Model = classifier;
     inputArgs[i].UseGTData = settings.UseFileForTraining;
     inputArgs[i].TrainingPercentKeep = settings.TrainingPercentKeep;
     inputArgs[i].ProcessBorderPoints = settings.LookAtBorderPoints;

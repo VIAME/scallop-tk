@@ -35,19 +35,19 @@ training_percent_keep = 0.001
 look_at_border_points = true
 
 ; Enable output GUI display?
-enable_output_display = true
+enable_output_display = false
   
 ; Output Detection list?
-output_list = true
+output_list = false
   
 ; If an IP falls into more than one category, output it multiple times?
 output_duplicate_class = true
   
 ; Output images with proposals in output directory?
-output_proposal_images = true
+output_proposal_images = false
   
 ; Output images with detections in output directory?
-output_detection_images = true
+output_detection_images = false
 
 ; Number of worker threads to allocate for processing images
 num_threads = 1
