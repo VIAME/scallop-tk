@@ -728,7 +728,7 @@ DetectionVector convertVector( const DetectionPtrVector& v )
 
   for( unsigned i = 0; i < v.size(); i++ )
   {
-    Detection d = *v[i];
+    output.push_back( *v[i] );
   }
 
   return output;
