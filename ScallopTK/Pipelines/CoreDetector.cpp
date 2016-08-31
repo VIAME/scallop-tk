@@ -549,7 +549,7 @@ void *processImage( void *InputArgs ) {
   // Output results to image files
   if( Options->OutputDetectionImages )
   {
-    saveScallops( imgRGB32f, objects, Options->OutputFilename + ".detections.jpg" );
+    saveScallops( imgRGB32f, objects, Options->OutputFilename + ".detections.png" );
   }
 
   // Resize results to input resolution, and output to text file

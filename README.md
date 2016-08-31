@@ -53,3 +53,6 @@ updating. The most basic way to run the core detector pipeline is to run:
 ./ScallopDetector PROCESS_DIR InputDirectoryWithImages OutputDetectionFile.txt
 
 You can switch between AdaBoost and CNN classifiers in the SYSTEM_SETTINGS file.
+
+Note: these models are currently old (and were trained on scenes where we had metadata)
+and are currently being re-trained on updated training data.
