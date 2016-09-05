@@ -29,7 +29,7 @@ classifier_to_use = CNN_COMBO
 
 ; If training from files, the percentage of false points outside of
 ; annotations to use as false examples.
-training_percent_keep = 0.001
+training_percent_keep = 1.0
 
 ; Should we consider classifying object proposals near image boundaries?
 look_at_border_points = true

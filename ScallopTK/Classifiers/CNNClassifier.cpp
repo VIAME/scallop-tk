@@ -540,7 +540,7 @@ void CNNClassifier::extractSamples(
 
     if( isBGSample )
     {
-      if( ( (double)rand() / (double)RAND_MAX ) < trainingPercentKeep )
+      if( ( (double)rand() / (double)RAND_MAX ) > trainingPercentKeep )
       {
         continue;
       }
