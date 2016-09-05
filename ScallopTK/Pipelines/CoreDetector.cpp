@@ -514,7 +514,7 @@ void *processImage( void *InputArgs ) {
 //-----------------------Update Stats----------------------------
 
   // Update Detection variables and mask
-  if( !Options->IsTrainingMode )
+  /*if( !Options->IsTrainingMode )
   {
     for( unsigned int i=0; i<objects.size(); i++ ) {
       Detection *cur = objects[i];
@@ -538,13 +538,13 @@ void *processImage( void *InputArgs ) {
       Detection *cur = objects[i];
       updateMask( mask, cur->r, cur->c, cur->angle, cur->major, cur->minor, SCALLOP_BROWN );
     }
-  }
+  }*/
 
   // Update color classifiers from mask and detections matrix
-  CC->Update( imgRGB32f, mask, detections );
+  //CC->Update( imgRGB32f, mask, detections );
 
   // Update statistics
-  Stats->Update( detections, inputProp.getImgHeightMeters() * inputProp.getImgWidthMeters() );
+  //Stats->Update( detections, inputProp.getImgHeightMeters() * inputProp.getImgWidthMeters() );
 
   // Output results to image files
   if( Options->OutputDetectionImages )
