@@ -107,8 +107,9 @@ private:
   // Is this system aimed at scallops or something entirely different?
   bool isScallopDirected;
 
-  // Detection threshold
-  double threshold;
+  // Detection thresholds
+  double initialThreshold;
+  double suppressionThreshold;
 
   // Training keep percent
   double trainingPercentKeep;

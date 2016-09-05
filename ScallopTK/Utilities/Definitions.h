@@ -285,7 +285,10 @@ struct ClassifierParameters
   bool EnableSDSS;
 
   // Classifier threshold
-  double Threshold;
+  double InitialThreshold;
+
+  // Classifier threshold
+  double SecondThreshold;
 };
 
 

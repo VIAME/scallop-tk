@@ -17,6 +17,7 @@
 //Scallop Includes
 #include "ScallopTK/Utilities/Definitions.h"
 #include "ScallopTK/Classifiers/Classifier.h"
+#include "ScallopTK/Classifiers/AdaClassifier.h"
 
 //------------------------------------------------------------------------------
 //                              Class Definitions
@@ -48,7 +49,7 @@ public:
 
   // Does this classifier require feature extraction?
   bool requiresFeatures()
-    { return false; }
+    { return ( preClass != NULL ); }
 
   // Does this classifier have anything to do with scallop detection?
   bool detectsScallops()
@@ -92,9 +93,13 @@ private:
   // Is this system aimed at scallops or something entirely different?
   bool isScallopDirected;
 
-  // Detection threshold
-  double threshold;
+  // Detection thresholds
+  double initialThreshold;
+  double secondThreshold;
   double trainingPercentKeep;
+
+  // Adaboost preclassifier
+  AdaClassifier* preClass;
 
   // Are we in training mode
   bool isTrainingMode;
@@ -107,7 +112,14 @@ private:
 
   // Helper functions
   void deallocCNNs();
-  cv::Mat getCandidateChip( cv::Mat image, Candidate* cd, int width, int height );
+  cv::Mat getCandidateChip( cv::Mat image,
+    Candidate* cd, int width, int height );
+
+  void classifyCandidates( cv::Mat image,
+    CandidatePtrVector& candidates,
+    CandidatePtrVector& positive,
+    CNN& classifier, double threshold );
+
 };
 
 }

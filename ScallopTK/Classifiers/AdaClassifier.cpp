@@ -14,7 +14,8 @@ bool AdaClassifier::loadClassifiers(
 {
   string dir = sysParams.RootClassifierDIR + clsParams.ClassifierSubdir;
   isScallopDirected = false;
-  threshold = clsParams.Threshold;
+  initialThreshold = clsParams.InitialThreshold;
+  suppressionThreshold = clsParams.SecondThreshold;
   trainingPercentKeep = sysParams.TrainingPercentKeep;
   outputList = sysParams.OutputList;
 
@@ -41,6 +42,7 @@ bool AdaClassifier::loadClassifiers(
     fclose(file_rdr);
 
     // Set special conditions
+    MainClass.isBackground = ( clsParams.L1SpecTypes[i] == BACKGROUND );
     MainClass.isSandDollar = ( clsParams.L1SpecTypes[i] == SAND_DOLLAR );
     MainClass.isScallop = ( clsParams.L1SpecTypes[i] == ALL_SCALLOP );
     MainClass.isWhite = ( clsParams.L1SpecTypes[i] == WHITE_SCALLOP );
@@ -83,6 +85,7 @@ bool AdaClassifier::loadClassifiers(
     fclose(file_rdr);
 
     // Set special conditions
+    SuppClass.isBackground = ( clsParams.L2SpecTypes[i] == BACKGROUND );
     SuppClass.isSandDollar = ( clsParams.L2SpecTypes[i] == SAND_DOLLAR );
     SuppClass.isScallop = ( clsParams.L2SpecTypes[i] == ALL_SCALLOP );
     SuppClass.isWhite = ( clsParams.L2SpecTypes[i] == WHITE_SCALLOP );
@@ -162,16 +165,18 @@ int AdaClassifier::classifyCandidate( cv::Mat image, Candidate* cd )
   }
 
   // If we passed any of the above, compute secondary classifiers
-  if( max >= threshold ) {
+  if( max >= initialThreshold ) {
 
     for( int i = 0; i < suppressionClassifiers.size(); i++ )
     {
       cd->classMagnitudes[pos] = suppressionClassifiers[i].adaTree.Predict( input );
+
       if( cd->classMagnitudes[pos] > max )
       {
         max = cd->classMagnitudes[pos];
         idx = pos;
       }
+
       pos++;
     }
     cd->classification = idx;

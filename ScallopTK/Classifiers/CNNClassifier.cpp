@@ -16,11 +16,17 @@ CNNClassifier::CNNClassifier()
   initialClfr = NULL;
   suppressionClfr = NULL;
   isScallopDirected = false;
+  preClass = NULL;
 }
 
 CNNClassifier::~CNNClassifier()
 {
   deallocCNNs();
+
+  if( preClass )
+  {
+    delete preClass;
+  }
 }
 
 void CNNClassifier::deallocCNNs()
@@ -49,7 +55,8 @@ bool CNNClassifier::loadClassifiers(
 
   std::string dir = sysParams.RootClassifierDIR + clsParams.ClassifierSubdir;
   isScallopDirected = false;
-  threshold = clsParams.Threshold;
+  initialThreshold = clsParams.InitialThreshold;
+  secondThreshold = clsParams.SecondThreshold;
   isTrainingMode = sysParams.IsTrainingMode;
   outputFolder = sysParams.OutputDirectory;
   trainingPercentKeep = sysParams.TrainingPercentKeep;
@@ -87,27 +94,71 @@ bool CNNClassifier::loadClassifiers(
     Caffe::SetDevice( deviceID );
   }
 
+  // Determine if an adaboost preclassifier is being used
+  if( clsParams.L1Files.size() >= 0 &&
+      clsParams.L1Files[0].substr( clsParams.L1Files[0].find_last_of( "." ) + 1 ) != "prototxt" )
+  {
+    ClassifierParameters modParams = clsParams;
+
+    modParams.L2Keys.clear();
+    modParams.L2Files.clear();
+    modParams.L2SpecTypes.clear();
+    modParams.L2SuppTypes.clear();
+
+    preClass = new AdaClassifier();
+
+    if( !preClass->loadClassifiers( sysParams, modParams ) )
+    {
+      return false;
+    }
+  }
+
   // Load CNN Classifiers
   if( isTrainingMode )
   {
-    if( clsParams.L1Files.size() == 0 )
+    if( !preClass )
     {
-      std::cerr << "CNN model definition must be listed in classifier config file" << std::endl;
-      return false;
-    }
+      if( clsParams.L1Files.size() == 0 )
+      {
+        std::cerr << "CNN model definition must be listed in classifier config file" << std::endl;
+        return false;
+      }
+      else if( clsParams.L1Files.size() == 2 && clsParams.L2Files.size() > 0 )
+      {
+        initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
+        initialClfr->CopyTrainedLayersFrom( clsParams.L1Files[1] );
 
-    initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
+        suppressionClfr = new CNN( clsParams.L2Files[0], caffe::TEST );
+      }
+      else
+      {
+        initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
+      }      
+    }
+    else
+    {
+      if( clsParams.L2Files.size() == 0 )
+      {
+        std::cerr << "Level 2 CNN model definition must be listed in classifier config file" << std::endl;
+        return false;
+      }
+
+      suppressionClfr = new CNN( clsParams.L2Files[0], caffe::TEST );
+    }
   }
   else
   {
-    if( clsParams.L1Files.size() != 2 )
+    if( !preClass )
     {
-      std::cerr << "CNN config file contains invalid number of files" << std::endl;
-      return false;
-    }
+      if( clsParams.L1Files.size() != 2 )
+      {
+        std::cerr << "CNN config file contains invalid number of files" << std::endl;
+        return false;
+      }
 
-    initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
-    initialClfr->CopyTrainedLayersFrom( clsParams.L1Files[1] );
+      initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
+      initialClfr->CopyTrainedLayersFrom( clsParams.L1Files[1] );
+    }
 
     if( clsParams.L2Files.size() == 2 )
     {
@@ -171,7 +222,7 @@ bool CNNClassifier::loadClassifiers(
     label.isWhite = ( clsParams.L2SpecTypes[i] == WHITE_SCALLOP );
     label.isBrown = ( clsParams.L2SpecTypes[i] == BROWN_SCALLOP );
     label.isBuried = ( clsParams.L2SpecTypes[i] == BURIED_SCALLOP );
-    
+
     // Set is scallop classifier flag
     if( label.isWhite || label.isBrown || label.isBuried || label.isScallop )
     {
@@ -188,13 +239,14 @@ bool CNNClassifier::loadClassifiers(
 void CNNClassifier::classifyCandidates(
   cv::Mat image,
   CandidatePtrVector& candidates,
-  CandidatePtrVector& positive )
+  CandidatePtrVector& positive,
+  CNN& classifier, double threshold )
 {
   // Perform initial classification
   if( image.cols > 0 && image.rows > 0 )
   {
     // Create pointer to input blob
-    Blob< float >* inputBlob = initialClfr->input_blobs()[0];
+    Blob< float >* inputBlob = classifier.input_blobs()[0];
 
     // Get batch size and input parameters from model
     const unsigned totalCandidates = candidates.size();
@@ -203,12 +255,6 @@ void CNNClassifier::classifyCandidates(
     const unsigned chipHeight = inputBlob->height();
     const unsigned chipWidth = inputBlob->width();
 
-    // Training mode subroutine
-    if( isTrainingMode )
-    {
-      return;
-    }
-  
     // Iterate over all candidates, extracting chips and computing propabilities
     int entry = 0;
   
@@ -263,10 +309,10 @@ void CNNClassifier::classifyCandidates(
       }
   
       // Process CNN
-      initialClfr->ForwardPrefilled();
+      classifier.ForwardPrefilled();
   
       // Receive output from CNN, inject back in candidate and threshold
-      Blob< float >* outputBlob = initialClfr->output_blobs()[0];
+      Blob< float >* outputBlob = classifier.output_blobs()[0];
 
       for( int i = 0; i < batchPosition; i++ )
       {
@@ -302,14 +348,33 @@ void CNNClassifier::classifyCandidates(
   }
   else
   {
-    std::cerr << "Classifier received invalid image" << std::endl;
-    return;
+    std::cerr << "Error: Classifier received invalid image" << std::endl;
+  }
+}
+
+void CNNClassifier::classifyCandidates(
+  cv::Mat image,
+  CandidatePtrVector& candidates,
+  CandidatePtrVector& positive )
+{
+  positive.clear();
+
+  if( preClass )
+  {
+    preClass->classifyCandidates( image, candidates, positive );
+  }
+  else
+  {
+    this->classifyCandidates( image, candidates, positive, *initialClfr, initialThreshold );
   }
 
-  // Perform secondary classification
   if( suppressionClfr )
   {
-    // TODO
+    CandidatePtrVector newPositives;
+
+    this->classifyCandidates( image, positive, newPositives, *suppressionClfr, secondThreshold );
+
+    positive = newPositives;
   }
 }
 
@@ -377,11 +442,30 @@ void CNNClassifier::extractSamples(
   CandidatePtrVector& candidates,
   CandidatePtrVector& groundTruth )
 {
+  CandidatePtrVector candidatesToUse;
+  CNN* classifier;
+
+  if( preClass )
+  {
+    preClass->classifyCandidates( image, candidates, candidatesToUse );
+    classifier = suppressionClfr;
+  }
+  else if( suppressionClfr )
+  {
+    this->classifyCandidates( image, candidates, candidatesToUse, *initialClfr, initialThreshold );
+    classifier = suppressionClfr;
+  }
+  else
+  {
+    candidatesToUse = candidates;
+    classifier = initialClfr;
+  }
+
   // Get pointer to input blob simply for chip properties
-  Blob< float >* inputBlob = initialClfr->input_blobs()[0];
+  Blob< float >* inputBlob = classifier->input_blobs()[0];
 
   // Get batch size and input parameters from model
-  const unsigned totalCandidates = candidates.size();
+  const unsigned totalCandidates = candidatesToUse.size();
   const unsigned channels = inputBlob->channels();
   const unsigned chipHeight = inputBlob->height();
   const unsigned chipWidth = inputBlob->width();
@@ -402,7 +486,7 @@ void CNNClassifier::extractSamples(
 
   for( unsigned i = 0; i < totalCandidates; i++ )
   {
-    cv::Rect cbox = getCandidateBox( candidates[i] );
+    cv::Rect cbox = getCandidateBox( candidatesToUse[i] );
 
     if( ( cbox & cv::Rect( 0, 0, image.cols, image.rows ) ).area() < 5 )
       continue;
@@ -465,7 +549,7 @@ void CNNClassifier::extractSamples(
     }
 
     // Extract chip
-    cv::Mat chip = getCandidateChip( image, candidates[i], chipWidth, chipHeight );
+    cv::Mat chip = getCandidateChip( image, candidatesToUse[i], chipWidth, chipHeight );
 
     if( isBGSample )
     {
