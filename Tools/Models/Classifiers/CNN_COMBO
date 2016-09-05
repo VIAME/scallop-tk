@@ -1,0 +1,74 @@
+; Scallop Detector - CNN Combo classifier
+
+; -------------------- CLASSIFIER SYSTEM DEFINITION -------------------------
+
+[classifiers]
+
+; Whether or not we are using a CNN or AdaBoost classifier
+USE_CNN_CLASSIFIER = true
+
+; The relative path w.r.t. the root classifier directory, where all of the 
+; classifier files below can be found. A slash should be placed at the end.
+
+CLASSIFIER_SUBDIR = Combo/
+
+; A level 1 classifier is applied to all detected interest points
+; within an image. Any interest point which passes any one of these
+; initial classifiers will have all level 2 (suppressor) classifiers
+; applied to it as an additional filter
+
+; Format - Items are stored in a csv list, each list MUST be the same length
+;
+;          C1IDs - Id of classifier to output if we detect one of these
+;                  categories (will appear in output list)
+;
+;          C1FILES - Classifier filename as it appears in the above subdir
+;
+;          C1CATEGORY - Does our classifier define one of below special
+;                       detection categories?
+;
+;                   Background (Uninteresting) = BACKGROUND
+;                             All Scallops = ALL
+;                        Brown Scallops Only = BROWN
+;                        White Scallops Only = WHITE
+;                       Buried Scallops Only = BURIED
+;                            Sand Dollars = DOLLAR
+;                          None of the Above = NONE
+;
+
+C1IDS      =  BROWN,                WHITE,                BURIED
+C1FILES    =  BrownScallopProposer, WhiteScallopProposer, BuriedScallopProposer
+C1CATEGORY =  BROWN,                WHITE,                BURIED
+
+; Default threshold for main classifiers [Default=0]
+
+INITIAL_THRESHOLD = 0.0
+
+; Level 2 classifiers are applied to all points which pass the level 1 stage
+;
+; Format - Same as above, with an additional C2CLFSTYLE field which should be 
+;          labeled as one of the following: WVO, OVO, or MIX for each entry
+;
+;          Class WVO - A classifier trained on everything (world) vs Distractor
+;          Class OVO - Trained on just our Object of Interest vs Distractor
+;          Class MIX - A mix of the above
+;
+;          Leave all entries blank if there are no supression classifiers enabled
+;
+
+C2IDS      =  BACKGROUND, LIVE_SCALLOP, DEAD_SCALLOP
+C2FILES    =  FinalSeperator.prototxt,  FinalSeperator.caffemodel
+C2CATEGORY =  BACKGROUND, ALL,          NONE
+C2CLFSTYLE =  WVO,        WVO,          WVO
+
+; Default threshold for level 2 classifiers [Default=0]
+
+SECOND_THRESHOLD = 0.0
+
+; Optional system for trying to detect sand dollar vs scallop clusters. If the
+; system is enabled, there should be 1 classifier that has the category "DOLLAR"
+; in the suppressors C2CATEGORY group
+
+ENABLE_SAND_DOLLAR_SUPPRESSION_SYS = false
+
+
