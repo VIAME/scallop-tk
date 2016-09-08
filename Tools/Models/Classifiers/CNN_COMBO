@@ -57,7 +57,7 @@ INITIAL_THRESHOLD = -0.025
 ;
 
 C2IDS      =  BACKGROUND, LIVE_SCALLOP, DEAD_SCALLOP
-C2FILES    =  FinalSeperator.prototxt,  FinalSeperator.caffemodel
+C2FILES    =  Seperator.prototxt,       Seperator.caffemodel
 C2CATEGORY =  BACKGROUND, ALL,          NONE
 C2CLFSTYLE =  WVO,        WVO,          WVO
 

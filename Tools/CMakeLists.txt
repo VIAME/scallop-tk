@@ -67,6 +67,11 @@ if( VC_TOOLNAMES )
       https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel 
       ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/CNN/DefaultCNN.caffemodel
       5f184c3c55b1cd738e37245982ee4bc5 )
+
+    AddDownloadedFile(
+      https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/Seperator.caffemodel
+      ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/Combo/Seperator.caffemodel
+      ae5fa68b0848fb56bd16598b8b53639d )
   
   endif()
 
@@ -84,6 +89,11 @@ else()
       https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel
       ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/CNN/DefaultCNN.caffemodel
       5f184c3c55b1cd738e37245982ee4bc5 )
+
+    AddDownloadedFile(
+      https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/Seperator.caffemodel
+      ${CMAKE_CURRENT_SOURCE_DIR}/Models/Classifiers/Combo/Seperator.caffemodel
+      ae5fa68b0848fb56bd16598b8b53639d )
   
   endif()
 
