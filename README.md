@@ -41,18 +41,16 @@ Next, checkout this repository, run CMake on it, point CMake to the installed
 dependencies, and then build using your compiler of choice.
 
 Alternatively, ScallopTK can be built in [VIAME](https://github.com/Kitware/VIAME.git)
-via enabling it in the build settings (VIAME_ENABLE_SCALLOP_TK=ON). This can be useful
-and easier since it also builds all of the dependencies of caffe.
+via enabling it in the build settings (set VIAME_ENABLE_CAFFE=ON and
+VIAME_ENABLE_SCALLOP_TK=ON). This can be useful and easier since it also builds all
+of the dependencies of caffe.
 
 Run Instructions
 ----------------
 
-A manual is [provided](Documentation/Manual.pdf), though it is out of date and in need of
+A manual is [provided](Documentation/Manual.pdf), though it is very out of date and in need of
 updating. The most basic way to run the core detector pipeline is to run:
 
 ./ScallopDetector PROCESS_DIR InputDirectoryWithImages OutputDetectionFile.txt
 
-You can switch between AdaBoost and CNN classifiers in the SYSTEM_SETTINGS file.
-
-Note: these models are currently old (and were trained on scenes where we had metadata)
-and are currently being re-trained on updated training data.
+You can switch between AdaBoost, CNN, and Combo classifiers in the SYSTEM_SETTINGS file.
