@@ -108,6 +108,10 @@ void removeInsidePoints( CandidatePtrVector& input,
 void removeInsidePoints( CandidatePtrVector& input,
   CandidatePtrVector& output );
 
+// Take the top candidates by magnitude
+void takeTopCandidates( CandidatePtrVector& input,
+  CandidatePtrVector& output, unsigned count );
+
 // Perform suppression and interpolation
 DetectionPtrVector interpolateResults( CandidatePtrVector& input,
   Classifier* Classifiers, std::string Filename );
@@ -117,7 +121,7 @@ void deallocateDetections( DetectionPtrVector& vec );
 
 // Append GT training results to some file
 bool appendInfoToFile( DetectionVector& Detections, const std::string& list_fn );
-  
+
 // Append final Detections to some file
 bool appendInfoToFile( DetectionVector& cds, const std::string& ListFilename,
   const std::string& this_fn );

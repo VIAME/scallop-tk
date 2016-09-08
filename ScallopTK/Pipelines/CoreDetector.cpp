@@ -62,7 +62,7 @@ int THREADS;
 
 // Struct to hold inputs to the single image algorithm (1 per thread is created)
 struct AlgorithmArgs {
-  
+
   // ID for this thread
   int ThreadID;
 
@@ -118,10 +118,10 @@ struct AlgorithmArgs {
 
   // Did we last see a scallop or sand dollar cluster?
   bool ScallopMode;
-  
+
   // Processing mode
   bool IsTrainingMode;
-  
+
   // Training style (GUI or GT) if in training mode
   bool UseGTData;
 
@@ -147,7 +147,7 @@ struct AlgorithmArgs {
 //   inputs - shown above
 //   outputs - returns NULL
 void *processImage( void *InputArgs ) {
-    
+
 //--------------------Get Pointers to Main Inputs---------------------
 
   // Read input arguments (pthread requires void* as argument type)
@@ -158,7 +158,7 @@ void *processImage( void *InputArgs ) {
 #ifdef ENABLE_BENCHMARKING
   executionTimes.clear();
   startTimer();
-#endif  
+#endif
 
   // Declare input image in assorted formats for later operations
   cv::Mat inputImgMat = Options->InputImage;
@@ -192,7 +192,7 @@ void *processImage( void *InputArgs ) {
       inputProp.calculateImageProperties( inputImgMat.cols, inputImgMat.rows,
          Options->Altitude, Options->Pitch, Options->Roll, Options->FocalLength );
     }
-  
+
     if( !inputProp.hasMetadata() )
     {
       cerr << "ERROR: Failure to read image metadata for file ";
@@ -205,7 +205,7 @@ void *processImage( void *InputArgs ) {
   {
     inputProp.calculateImageProperties( inputImgMat.cols, inputImgMat.rows);
   }
-  
+
   // Get the min and max Scallop size from combined image properties and input parameters
   float minRadPixels = ( Options->UseMetadata ? Options->MinSearchRadiusMeters
     : Options->MinSearchRadiusPixels ) / inputProp.getAvgPixelSizeMeters();
@@ -276,7 +276,7 @@ void *processImage( void *InputArgs ) {
   //  - rgb = sRGB (although beware OpenCV may load this as BGR in mem)
   IplImage *imgRGB32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
   IplImage *imgLab32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, inputImg->nChannels );
-  IplImage *imgGrey32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, 1 );  
+  IplImage *imgGrey32f = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_32F, 1 );
   IplImage *imgGrey8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 1 );
   IplImage *imgRGB8u = cvCreateImage( cvGetSize(inputImg), IPL_DEPTH_8U, 3 );
 
@@ -308,7 +308,7 @@ void *processImage( void *InputArgs ) {
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
-        
+
 //-----------------------Detect ROIs-----------------------------
 
   // Containers for initial interest points
@@ -316,12 +316,12 @@ void *processImage( void *InputArgs ) {
   CandidatePtrVector cdsAdaptiveFilt;
   CandidatePtrVector cdsTemplateAprx;
   CandidatePtrVector cdsCannyEdge;
-  
+
   // Perform Difference of Gaussian blob detection on our color classifications
   if( 1 || Stats->processed < 5 || !Options->Model->detectsScallops() )
   {
     detectSalientBlobs( color, cdsColorBlob ); //<-- Better for small # of images
-  }    
+  }
   else
   {
     detectColoredBlobs( color, cdsColorBlob ); //<-- Better for large # of images
@@ -332,19 +332,19 @@ void *processImage( void *InputArgs ) {
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
-  
+
   // Perform Adaptive Filtering
   performAdaptiveFiltering( color, cdsAdaptiveFilt, minRadPixels, false );
   filterCandidates( cdsAdaptiveFilt, minRadPixels, maxRadPixels, true );
-    
+
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
-  
+
   // Template Approx Candidate Detection
   findTemplateCandidates( gradients, cdsTemplateAprx, inputProp, mask );
   filterCandidates( cdsTemplateAprx, minRadPixels, maxRadPixels, true );
-    
+
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
@@ -369,7 +369,7 @@ void *processImage( void *InputArgs ) {
   // Consolidate interest points
   prioritizeCandidates( cdsColorBlob, cdsAdaptiveFilt, cdsTemplateAprx,
     cdsCannyEdge, cdsAllUnordered, cdsAllOrdered, Stats );
-    
+
 #ifdef ENABLE_BENCHMARKING
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
@@ -399,7 +399,7 @@ void *processImage( void *InputArgs ) {
 
   if( Options->EnableOutputDisplay )
   {
-    displayInterestPointImage( imgRGB32f, cdsAllUnordered );
+    //displayInterestPointImage( imgRGB32f, cdsAllUnordered );
   }
 
 //--------------------Extract Features---------------------------
@@ -490,16 +490,16 @@ void *processImage( void *InputArgs ) {
   {
     // Classify candidates, returning ones with positive classifications
     Options->Model->classifyCandidates( imgRGB8u, cdsAllUnordered, interestingCds );
-  
+
     // Calculate expensive edges around each interesting candidate point
     if( Options->Model->requiresFeatures() )
     {
       expensiveEdgeSearch( gradients, color, imgLab32f, imgRGB32f, interestingCds );
     }
-  
+
     // Perform cleanup by removing interest points which are part of another interest point
     removeInsidePoints( interestingCds, likelyObjects );
-  
+
     // Interpolate correct object categories
     objects = interpolateResults( likelyObjects, Options->Model, Options->InputFilename );
 
@@ -573,7 +573,7 @@ void *processImage( void *InputArgs ) {
   Options->FinalDetections = resizedObjects;
 
 //-------------------------Clean Up------------------------------
-  
+
   // Deallocate memory used by thread
   deallocateCandidates( cdsAllUnordered );
   deallocateDetections( objects );
@@ -586,11 +586,11 @@ void *processImage( void *InputArgs ) {
   cvReleaseImage( &imgLab32f );
   cvReleaseImage( &imgGrey8u );
   cvReleaseImage( &mask );
-  
+
   // Update thread status
   markThreadAsFinished( Options->ThreadID );
   threadExit();
-  return NULL; 
+  return NULL;
 }
 
 //--------------File system manager / algorithm caller------------------
@@ -621,10 +621,10 @@ int runCoreDetector( const SystemParameters& settings )
   {
     // Get a list of all files and sub directories in the input dir
     listAllFile( inputDir, inputFilenames, subdirsToCreate );
-    
+
     // Remove files that don't have an image extension (jpg/tif)
     cullNonImages( inputFilenames );
-    
+
     // Initialize classifier array
     inputClassifiers.resize( inputFilenames.size(), settings.ClassifierToUse );
   }
@@ -820,8 +820,8 @@ int runCoreDetector( const SystemParameters& settings )
         cout << "ERROR: Unabled to load classifier " << inputClassifiers[i] << endl;
         return 0;
       }
-    
-      classifiers[ inputClassifiers[i] ] = LoadedSystem;      
+
+      classifiers[ inputClassifiers[i] ] = LoadedSystem;
     }
   }
   cout << "FINISHED" << endl;

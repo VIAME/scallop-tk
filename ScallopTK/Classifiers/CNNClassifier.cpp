@@ -2,6 +2,7 @@
 #include "CNNClassifier.h"
 
 #include "ScallopTK/Utilities/HelperFunctions.h"
+#include "ScallopTK/Utilities/Display.h"
 #include "ScallopTK/Utilities/Filesystem.h"
 
 namespace ScallopTK
@@ -133,7 +134,7 @@ bool CNNClassifier::loadClassifiers(
       else
       {
         initialClfr = new CNN( clsParams.L1Files[0], caffe::TEST );
-      }      
+      }
     }
     else
     {
@@ -197,7 +198,7 @@ bool CNNClassifier::loadClassifiers(
     label.isWhite = ( clsParams.L1SpecTypes[i] == WHITE_SCALLOP );
     label.isBrown = ( clsParams.L1SpecTypes[i] == BROWN_SCALLOP );
     label.isBuried = ( clsParams.L1SpecTypes[i] == BURIED_SCALLOP );
-    
+
     // Set is scallop classifier flag
     if( label.isWhite || label.isBrown || label.isBuried || label.isScallop )
     {
@@ -205,7 +206,7 @@ bool CNNClassifier::loadClassifiers(
     }
 
     // Add classifier to system
-    initialClfrLabels.push_back( label );    
+    initialClfrLabels.push_back( label );
   }
 
   // Load Labels Vectors
@@ -230,7 +231,7 @@ bool CNNClassifier::loadClassifiers(
     }
 
     // Add classifier to system
-    suppressionClfrLabels.push_back( label );    
+    suppressionClfrLabels.push_back( label );
   }
 
   return true;
@@ -257,19 +258,19 @@ void CNNClassifier::classifyCandidates(
 
     // Iterate over all candidates, extracting chips and computing propabilities
     int entry = 0;
-  
+
     while( entry < totalCandidates )
     {
       // Formate input data
       int batchPosition = 0;
       std::vector< int > batchIndices;
-  
+
       for( ; entry < totalCandidates && batchPosition < batchSize;
            entry++, batchPosition++ )
       {
         // Extract image chip for candidate, if possible
         cv::Mat chip = getCandidateChip( image, candidates[entry], chipWidth, chipHeight );
-  
+
         if( chip.rows == 0 || chip.cols == 0 )
         {
           candidates[entry]->classification = UNCLASSIFIED;
@@ -299,18 +300,18 @@ void CNNClassifier::classifyCandidates(
           }
         }
       }
-  
+
       // Process latest compiled batch, starting with resetting operating mode
       Caffe::set_mode( deviceMode );
-    
+
       if( deviceMode == Caffe::GPU && deviceID >= 0 )
       {
         Caffe::SetDevice( deviceID );
       }
-  
+
       // Process CNN
       classifier.ForwardPrefilled();
-  
+
       // Receive output from CNN, inject back in candidate and threshold
       Blob< float >* outputBlob = classifier.output_blobs()[0];
 
@@ -361,7 +362,15 @@ void CNNClassifier::classifyCandidates(
 
   if( preClass )
   {
+    CandidatePtrVector tmp;
     preClass->classifyCandidates( image, candidates, positive );
+    removeInsidePoints( positive, tmp );
+    takeTopCandidates( tmp, positive, 256 );
+
+//    IplImage im = image;
+//    displayInterestPointImage( &im, positive );
+//    cout << "!! " << positive.size() << endl;
+
   }
   else
   {
@@ -394,7 +403,7 @@ cv::Rect sclCandidateBox( cv::Rect r, float expansion )
   float pixelsToAddH = ( expansion - 1.0 ) * r.height;
 
   return cv::Rect( r.x - pixelsToAddW/2, r.y - pixelsToAddH/2,
-    r.width + pixelsToAddW, r.height + pixelsToAddH ); 
+    r.width + pixelsToAddW, r.height + pixelsToAddH );
 }
 
 cv::Mat CNNClassifier::getCandidateChip( cv::Mat image, Candidate* cd, int width, int height )
@@ -577,7 +586,7 @@ void CNNClassifier::extractSamples(
 
       cv::Mat chip2, chip3, chip4;
 
-      cv::transpose( chip, chip2 );  
+      cv::transpose( chip, chip2 );
       cv::flip( chip, chip3, 1 );
       cv::flip( chip, chip4, 1 );
       cv::transpose( chip4, chip4 );

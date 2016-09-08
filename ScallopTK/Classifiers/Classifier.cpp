@@ -63,7 +63,7 @@ Classifier* loadClassifiers(
 bool compareCandidateSize( Candidate* cd1, Candidate* cd2  ) {
   float avg1 = /*cd1->minor +*/ cd1->major;
   float avg2 = /*cd2->minor +*/ cd2->major;
-  if( avg1 > avg2 ) 
+  if( avg1 > avg2 )
     return true;
   return false;
 }
@@ -183,20 +183,20 @@ void scallopCleanUp( CandidatePtrVector& input, CandidatePtrVector& output, int 
   }
 
   // Take local min overlapping maximas (method 1)
-  if( method == 1 ) { 
+  if( method == 1 ) {
     for( unsigned int i=0; i<ol.size(); i++ ) {
 
       // Sort entries by magnitude
-      sort( ol[i].begin(), ol[i].end(), sortByMag ); 
+      sort( ol[i].begin(), ol[i].end(), sortByMag );
       CandidatePtrVector toadd;
 
       // Take max non-overlapping entries
       for( unsigned int j=0; j<ol[i].size(); j++ ) {
-        
+
         // Compare entries to all of those already being added
         bool add_entry = true;
         for( unsigned int k=0; k<toadd.size(); k++ ) {
-          if( ellipseIntersectStatus( ol[i][j], ol[i][k] ) != 0 ) { 
+          if( ellipseIntersectStatus( ol[i][j], ol[i][k] ) != 0 ) {
             add_entry = false;
             break;
           }
@@ -206,14 +206,14 @@ void scallopCleanUp( CandidatePtrVector& input, CandidatePtrVector& output, int 
       }
 
       // Add entries
-      for( int j=0; j<toadd.size(); j++ ) 
+      for( int j=0; j<toadd.size(); j++ )
         output.push_back( toadd[j] );
     }
   }
 }
 
 /*void removeInsidePoints( CandidatePtrVector& input, CandidatePtrVector& output ) {
-  
+
   // Adjust elliptical ips
   for( int i=0; i<input.size(); i++ ) {
     input[i]->minor = (input[i]->major - input[i]->minor)*0.5 + input[i]->minor;
@@ -244,8 +244,8 @@ void scallopCleanUp( CandidatePtrVector& input, CandidatePtrVector& output, int 
   for( int i=0; i<ol.size(); i++ ) {
 
     // Sort entries by magnitude
-    //sort( ol[i].begin(), ol[i].end(), sortByFocus ); 
-    sort( ol[i].begin(), ol[i].end(), sortByMag ); 
+    //sort( ol[i].begin(), ol[i].end(), sortByFocus );
+    sort( ol[i].begin(), ol[i].end(), sortByMag );
     CandidatePtrVector toadd;
 
     // Take max non-overlapping entries
@@ -255,7 +255,7 @@ void scallopCleanUp( CandidatePtrVector& input, CandidatePtrVector& output, int 
       bool add_entry = true;
       for( int k=0; k<toadd.size(); k++ ) {
         float perc_overlap = ellipseIntersectStatus2( ol[i][j], ol[i][k] );
-        if( perc_overlap > 0.25 ) { 
+        if( perc_overlap > 0.25 ) {
           add_entry = false;
           break;
         }
@@ -272,7 +272,7 @@ void scallopCleanUp( CandidatePtrVector& input, CandidatePtrVector& output, int 
 }*/
 
 void removeInsidePoints( CandidatePtrVector& input, CandidatePtrVector& output ) {
-  
+
   // Adjust elliptical ips
   for( int i=0; i<input.size(); i++ ) {
     input[i]->minor = (input[i]->major - input[i]->minor)*0.5 + input[i]->minor;
@@ -288,7 +288,7 @@ void removeInsidePoints( CandidatePtrVector& input, CandidatePtrVector& output )
     bool add_entry = true;
     for( int j=0; j<output.size(); j++ ) {
       float perc_overlap = ellipseIntersectStatus2( output[j], input[i] );
-      if( perc_overlap > 0.25 ) { 
+      if( perc_overlap > 0.25 ) {
         add_entry = false;
         break;
       }
@@ -298,13 +298,28 @@ void removeInsidePoints( CandidatePtrVector& input, CandidatePtrVector& output )
   }
 }
 
+void takeTopCandidates( CandidatePtrVector& input,
+  CandidatePtrVector& output, unsigned count )
+{
+  output.clear();
+
+  // Sort input vector by Candidate size
+  sort( input.begin(), input.end(), sortByMag );
+
+  // Take local min count
+  for( int i=0; i<std::min(input.size(),std::size_t(count)); i++ ) {
+    output.push_back( input[i] );
+  }
+}
+
+
 void getSortedIDs( vector<int>& indices, vector<double> values )
 {
   for( int j = 0; j < values.size(); j++ )
   {
     double max = -10000;
     int maxind = -1;
-    for( int i = 0; i < values.size(); i++ ) 
+    for( int i = 0; i < values.size(); i++ )
     {
       if( values[i] > max )
       {
@@ -318,25 +333,25 @@ void getSortedIDs( vector<int>& indices, vector<double> values )
 }
 
 bool appendInfoToFile( DetectionVector& cds, const string& ListFilename, const string& this_fn ) {
-  
+
   // Get lock on file
   getListLock();
-  
+
   // Open file and output
   ofstream fout( ListFilename.c_str(), ios::app );
   if( !fout.is_open() ) {
     cout << "ERROR: Could not open output list for writing!\n";
     return false;
   }
-  
+
   // print out all results for every Candidate and every possible classification
   for( unsigned int i=0; i<cds.size(); i++ ) {
-    
+
     // Sort possible classifications in descending value based on classification values
     vector<int> sorted_ind;
     getSortedIDs( sorted_ind, cds[i].classProbabilities );
-    
-    // Output all possible classifications if enabled    
+
+    // Output all possible classifications if enabled
     for( unsigned int j=0; j<cds[i].classIDs.size(); j++ )
     {
       int cind = sorted_ind[j];
@@ -348,11 +363,11 @@ bool appendInfoToFile( DetectionVector& cds, const string& ListFilename, const s
       fout << cds[i].classIDs[cind] << "," << cds[i].classProbabilities[cind] << "," << int(j+1) << endl;
     }
   }
-  // so the full output string is (imagename y x major_axis minor_axis angle class class-confidence rank) 
+  // so the full output string is (imagename y x major_axis minor_axis angle class class-confidence rank)
 
   // Close output file
   fout.close();
-  
+
   // Remove lock on file
   unlockList();
   return true;
@@ -467,14 +482,14 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
   Classifier* Classifiers, string Filename )
 {
   DetectionPtrVector output;
-  
+
   int MainSize = Classifiers->outputClassCount();
   int SuppSize = Classifiers->suppressionClassCount();
 
   for( int i = 0; i < input.size(); i++ )
   {
     Detection* obj = new Detection;
-    
+
     obj->r = input[i]->r;
     obj->c = input[i]->c;
     obj->angle = input[i]->angle;
@@ -503,7 +518,7 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
           best_main_class_val = input[i]->classMagnitudes[j];
       }
     }
-    
+
     for( int j = MainSize; j < MainSize + SuppSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
         obj->classIDs.push_back(
@@ -511,7 +526,7 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
         obj->classProbabilities.push_back(
           best_main_class_val * ( 1.0 + input[i]->classMagnitudes[j] ) );
       }
-    }    
+    }
     output.push_back( obj );
   }
 

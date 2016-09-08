@@ -1,7 +1,7 @@
 name: "ScallopNet"
 input: "data"
 input_shape {
-  dim: 256
+  dim: 64
   dim: 3
   dim: 96
   dim: 96
