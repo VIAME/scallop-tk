@@ -45,6 +45,9 @@ via enabling it in the build settings (set VIAME_ENABLE_CAFFE=ON and
 VIAME_ENABLE_SCALLOP_TK=ON). This can be useful and easier since it also builds all
 of the dependencies of caffe.
 
+I also recommend installing CUDA >= 7.0 if you have an NVIDIA graphics card for
+the computational speed-up, prior to building Caffe.
+
 Run Instructions
 ----------------
 
