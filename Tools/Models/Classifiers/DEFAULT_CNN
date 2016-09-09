@@ -42,7 +42,7 @@ C1CATEGORY =  BACKGROUND, ALL, NONE, NONE, NONE
 
 ; Default threshold for main classifiers [Default=0]
 
-INITIAL_THRESHOLD = 0.0
+INITIAL_THRESHOLD = 0.25
 
 ; Level 2 classifiers are applied to all points which pass the level 1 stage
 ;
