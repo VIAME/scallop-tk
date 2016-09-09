@@ -381,6 +381,7 @@ void CNNClassifier::classifyCandidates(
   {
     CandidatePtrVector newPositives;
 
+    resetClassificationValues( candidates );
     this->classifyCandidates( image, positive, newPositives, *suppressionClfr, secondThreshold );
 
     positive = newPositives;
@@ -603,6 +604,16 @@ void CNNClassifier::extractSamples(
       imwrite( outputFile, chip4 );
     }
   }
+}
+
+int CNNClassifier::outputClassCount()
+{
+  return ( suppressionClfrLabels.empty() ? initialClfrLabels.size() : suppressionClfrLabels.size() );
+}
+
+ClassifierIDLabel* const CNNClassifier::getLabel( int label )
+{
+  return ( suppressionClfrLabels.empty() ? &initialClfrLabels[label] : &suppressionClfrLabels[label] );
 }
 
 }

@@ -213,4 +213,15 @@ void AdaClassifier::extractSamples(
   dumpCandidateFeatures( outputList, candidates );
 }
 
+int AdaClassifier::outputClassCount()
+{
+  return ( suppressionClassifiers.empty() ? mainClassifiers.size() : suppressionClassifiers.size() );
+}
+
+// Get information about each bin that this classifier outputs
+ClassifierIDLabel* const AdaClassifier::getLabel( int label )
+{
+  return ( suppressionClassifiers.empty() ? &mainClassifiers[label] : &suppressionClassifiers[label] );
+}
+
 }

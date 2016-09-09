@@ -87,11 +87,9 @@ public:
 
   // Number of individual output classes this classifier has
   virtual int outputClassCount() = 0;
-  virtual int suppressionClassCount() = 0;
 
   // Get information about each bin that this classifier outputs
-  virtual ClassifierIDLabel* getLabel( int label ) = 0;
-  virtual ClassifierIDLabel* getSuppressionLabel( int label ) = 0;
+  virtual ClassifierIDLabel* const getLabel( int label ) = 0;
 };
 
 //------------------------------------------------------------------------------

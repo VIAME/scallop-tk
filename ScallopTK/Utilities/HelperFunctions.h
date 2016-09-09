@@ -13,6 +13,7 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+#include <limits>
 
 // OpenCV Includes
 #include <cv.h>
@@ -91,6 +92,7 @@ void filterCandidates( CandidatePtrVector& cds,
   float min, float max, bool dealloc = true );
 DetectionVector convertVector( const DetectionPtrVector& v );
 void resizeDetections( DetectionVector& d, float f );
+void resetClassificationValues( CandidatePtrVector& cds );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions

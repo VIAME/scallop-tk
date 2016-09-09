@@ -484,7 +484,6 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
   DetectionPtrVector output;
 
   int MainSize = Classifiers->outputClassCount();
-  int SuppSize = Classifiers->suppressionClassCount();
 
   for( int i = 0; i < input.size(); i++ )
   {
@@ -501,8 +500,6 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
 
     if( best_class < MainSize )
       labelInfo = Classifiers->getLabel( best_class );
-    else
-      labelInfo = Classifiers->getSuppressionLabel( best_class-MainSize );
 
     obj->isBrownScallop = labelInfo->isScallop || labelInfo->isBrown;
     obj->isWhiteScallop = labelInfo->isWhite;
@@ -510,6 +507,7 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
     obj->isBuriedScallop = labelInfo->isBuried;
 
     double best_main_class_val = -10.0;
+
     for( int j = 0; j < MainSize; j++ ) {
       if( input[i]->classMagnitudes[j] >= 0 ) {
         obj->classIDs.push_back( Classifiers->getLabel( j )->id );
@@ -519,14 +517,6 @@ DetectionPtrVector interpolateResults( CandidatePtrVector& input,
       }
     }
 
-    for( int j = MainSize; j < MainSize + SuppSize; j++ ) {
-      if( input[i]->classMagnitudes[j] >= 0 ) {
-        obj->classIDs.push_back(
-          Classifiers->getSuppressionLabel( j )->id );
-        obj->classProbabilities.push_back(
-          best_main_class_val * ( 1.0 + input[i]->classMagnitudes[j] ) );
-      }
-    }
     output.push_back( obj );
   }
 

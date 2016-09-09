@@ -745,4 +745,17 @@ void resizeDetections( DetectionVector& d, float f )
   }
 }
 
+void resetClassificationValues( CandidatePtrVector& cds )
+{
+  for( unsigned i = 0; i < cds.size(); i++ )
+  {
+    cds[i]->classification = 0;
+
+    for( unsigned j = 0; j < MAX_CLASSIFIERS; j++ )
+    {
+       cds[i]->classMagnitudes[j] = -std::numeric_limits<double>::max();
+    }
+  }
+}
+
 }

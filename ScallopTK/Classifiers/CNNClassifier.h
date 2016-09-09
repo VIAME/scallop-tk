@@ -65,16 +65,10 @@ public:
     CandidatePtrVector& groundTruth );
 
   // Number of individual output classes this classifier has
-  virtual int outputClassCount()
-    { return initialClfrLabels.size(); }
-  virtual int suppressionClassCount()
-    { return suppressionClfrLabels.size(); }
+  virtual int outputClassCount();
 
   // Get information about each bin that this classifier outputs
-  ClassifierIDLabel* getLabel( int label )
-    { return &initialClfrLabels[label]; }
-  ClassifierIDLabel* getSuppressionLabel( int label )
-    { return &suppressionClfrLabels[label]; };
+  virtual ClassifierIDLabel* const getLabel( int label );
 
 private:
 
