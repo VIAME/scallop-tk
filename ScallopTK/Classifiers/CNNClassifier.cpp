@@ -237,12 +237,14 @@ bool CNNClassifier::loadClassifiers(
   return true;
 }
 
-void CNNClassifier::classifyCandidates(
+unsigned CNNClassifier::classifyCandidates(
   cv::Mat image,
   CandidatePtrVector& candidates,
   CandidatePtrVector& positive,
   CNN& classifier, double threshold )
 {
+  unsigned good_count = 0;
+
   // Perform initial classification
   if( image.cols > 0 && image.rows > 0 )
   {
@@ -323,19 +325,34 @@ void CNNClassifier::classifyCandidates(
         double maxValue = -1 * numeric_limits< double >::max();
         int maxInd = 0;
 
+        bool criteria1 = false; // Exceeds threshold requirement
+        bool criteria2 = false; // Non-background category is top
+
         for( int j = 0; j < categories; j++ )
         {
           double prop = outputBlob->data_at( i, j, 0, 0 );
-          candidates[cid]->classMagnitudes[j] = prop;
+          candidates[cid]->classMagnitudes[j] = ( j == 0 ? -1.0 : prop );
 
           if( prop > maxValue )
           {
             maxValue = prop;
             maxInd = j;
           }
+
+          if( prop >= threshold && j != 0 )
+          {
+            criteria1 = true;
+          }
         }
 
-        if( maxInd != 0 && maxValue >= threshold )
+        criteria2 = ( maxInd != 0 );
+
+        if( criteria2 )
+        {
+          good_count++;
+        }
+
+        if( criteria1 || criteria2 )
         {
           candidates[cid]->classification = maxInd;
           positive.push_back( candidates[cid] );
@@ -351,6 +368,8 @@ void CNNClassifier::classifyCandidates(
   {
     std::cerr << "Error: Classifier received invalid image" << std::endl;
   }
+
+  return good_count;
 }
 
 void CNNClassifier::classifyCandidates(
@@ -366,11 +385,6 @@ void CNNClassifier::classifyCandidates(
     preClass->classifyCandidates( image, candidates, positive );
     removeInsidePoints( positive, tmp );
     takeTopCandidates( tmp, positive, 256 );
-
-//    IplImage im = image;
-//    displayInterestPointImage( &im, positive );
-//    cout << "!! " << positive.size() << endl;
-
   }
   else
   {
@@ -382,7 +396,12 @@ void CNNClassifier::classifyCandidates(
     CandidatePtrVector newPositives;
 
     resetClassificationValues( candidates );
-    this->classifyCandidates( image, positive, newPositives, *suppressionClfr, secondThreshold );
+    
+    if( this->classifyCandidates( image, positive, newPositives, *suppressionClfr, secondThreshold ) > 20 )
+    {
+      newPositives.clear();
+      thresholdClassificationMag( positive, newPositives, 10e-8 );
+    }
 
     positive = newPositives;
   }

@@ -45,16 +45,20 @@ void displayInterestPointImage( IplImage* img, CandidatePtrVector& cds ) {
   for( unsigned int i=0; i<cds.size(); i++ ) {
     if( cds[i] == NULL ) continue;
     CvScalar colour;
+
+    double hghVal = ( img->depth == 8 ? 255.0 : 1.0 );
+    double lowVal = 0.0;
+
     if( cds[i]->method == ADAPTIVE ) {
-      colour = cvScalar( 1.0, 1.0, 0 );
+      colour = cvScalar( hghVal, hghVal, lowVal );
     } else if ( cds[i]->method == DOG ) {
-      colour = cvScalar( 0.0, 1.0, 0 );
+      colour = cvScalar( lowVal, hghVal, lowVal );
     } else if ( cds[i]->method == TEMPLATE ) { 
-      colour = cvScalar( 1.0, 0.0, 0.0 );
+      colour = cvScalar( hghVal, lowVal, lowVal );
     } else if ( cds[i]->method == CANNY ) {
-      colour = cvScalar( 1.0, 0, 1.0 );
+      colour = cvScalar( hghVal, lowVal, hghVal );
     } else {
-      colour = cvScalar( 0.0, 0.0, 1.0 );
+      colour = cvScalar( lowVal, lowVal, hghVal );
     }
     cvEllipse(local, cvPoint( (int)cds[i]->c, (int)cds[i]->r ), 
       cvSize( cds[i]->minor, cds[i]->major ), 

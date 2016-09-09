@@ -758,4 +758,20 @@ void resetClassificationValues( CandidatePtrVector& cds )
   }
 }
 
+void thresholdClassificationMag( CandidatePtrVector& input,
+  CandidatePtrVector& output, double thresh )
+{
+  for( unsigned i = 0; i < input.size(); i++ )
+  {
+    for( unsigned j = 0; j < MAX_CLASSIFIERS; j++ )
+    {
+       if( input[i]->classMagnitudes[j] > thresh )
+       {
+         output.push_back( input[i] );
+         break;
+       }
+    }
+  }
+}
+
 }

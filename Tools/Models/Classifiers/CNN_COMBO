@@ -63,7 +63,7 @@ C2CLFSTYLE =  WVO,        WVO,          WVO
 
 ; Default threshold for level 2 classifiers [Default=0]
 
-SECOND_THRESHOLD = 0.0
+SECOND_THRESHOLD = 0.33
 
 ; Optional system for trying to detect sand dollar vs scallop clusters. If the
 ; system is enabled, there should be 1 classifier that has the category "DOLLAR"

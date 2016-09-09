@@ -93,6 +93,8 @@ void filterCandidates( CandidatePtrVector& cds,
 DetectionVector convertVector( const DetectionPtrVector& v );
 void resizeDetections( DetectionVector& d, float f );
 void resetClassificationValues( CandidatePtrVector& cds );
+void thresholdClassificationMag( CandidatePtrVector& input,
+  CandidatePtrVector& output, double thresh );
 
 //------------------------------------------------------------------------------
 //                               Inline Definitions

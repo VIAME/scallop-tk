@@ -109,7 +109,7 @@ private:
   cv::Mat getCandidateChip( cv::Mat image,
     Candidate* cd, int width, int height );
 
-  void classifyCandidates( cv::Mat image,
+  unsigned classifyCandidates( cv::Mat image,
     CandidatePtrVector& candidates,
     CandidatePtrVector& positive,
     CNN& classifier, double threshold );
