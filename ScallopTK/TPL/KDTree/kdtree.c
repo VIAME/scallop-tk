@@ -30,6 +30,10 @@ OF SUCH DAMAGE.
 #include <string.h>
 #include <math.h>
 
+#ifdef WIN32
+#include <malloc.h>
+#endif
+
 #include "kdtree.h"
 
 #ifdef USE_LIST_NODE_ALLOCATOR
