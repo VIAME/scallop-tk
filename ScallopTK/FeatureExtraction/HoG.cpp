@@ -41,8 +41,9 @@ HoGFeatureGenerator::HoGFeatureGenerator( IplImage *img_gs, float minR,
 }
 
 HoGFeatureGenerator::~HoGFeatureGenerator() {
-  for (int k = 0; k < 9; k++) 
+  for (int k = 0; k < 9; k++)
     cvReleaseImage(&integrals[k]);
+  free(integrals);
 }
 
 void HoGFeatureGenerator::Generate( CandidatePtrVector& cds ) {
@@ -79,7 +80,7 @@ bool HoGFeatureGenerator::GenerateSingle( Candidate* cd ) {
 
   // Calculate HoG Windows
   cd->hogResults[output_index] = calculateHOG_window(integrals,
-    cvRect(lower_c, lower_r, window_width, window_height), 
+    cvRect(lower_c, lower_r, window_width, window_height),
     HOG_NORMALIZATION_METHOD, bins );
 
   return true;
@@ -92,7 +93,7 @@ bool HoGFeatureGenerator::GenerateSingle( Candidate* cd ) {
   assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
   IplImage **integrals = calculateIntegralHOG(cd->stats->imgAdj64);
   cd->stats->RHoG = calculateHOG_window(integrals, cvRect(0, 0, 64, 64), CV_L2, 8, 8);
-  for (int k = 0; k < 9; k++) 
+  for (int k = 0; k < 9; k++)
     cvReleaseImage(&integrals[k]);
 }
 
@@ -102,7 +103,7 @@ void calculateRHoG16( Candidate *cd, IplImage *base ) {
   assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
   IplImage **integrals = calculateIntegralHOG(cd->stats->imgAdj64);
   cd->stats->RHoG16 = calculateHOG_window(integrals, cvRect(0, 0, 64, 64), CV_L2, 16, 16);
-  for (int k = 0; k < 9; k++) 
+  for (int k = 0; k < 9; k++)
     cvReleaseImage(&integrals[k]);
 }
 
@@ -112,16 +113,16 @@ void calculateCHoG( Candidate *cd, IplImage *base ) {
   assert( cd->stats->imgAdj64->width == 64 && cd->stats->imgAdj64->height == 64 );
   IplImage **integrals = calculateIntegralHOG(cd->stats->imgAdj64);
   cd->stats->CHoG = calculateHOG_window(integrals, cvRect(0, 0, 64, 64), -1, 8, 8);
-  for (int k = 0; k < 9; k++) 
+  for (int k = 0; k < 9; k++)
     cvReleaseImage(&integrals[k]);
 }
 
 void HoGTest( IplImage *gs, CandidatePtrVector cds ) {
   IplImage **integrals = calculateIntegralHOG(gs);
-  for( int i=0; i<cds.size(); i++ ) {    
+  for( int i=0; i<cds.size(); i++ ) {
     calculateHOG_window(integrals, cvRect(-40, 0, 124, 64), -1, 8, 8);
   }
-  for (int k = 0; k < 9; k++) 
+  for (int k = 0; k < 9; k++)
     cvReleaseImage(&integrals[k]);
 }*/
 
@@ -138,7 +139,7 @@ IplImage** calculateIntegralHOG(IplImage* in) {
   //cvEqualizeHist(img_gray,img_gray);
   IplImage* img_gray = in;
 
-  /* Calculate the derivates of the grayscale image in the x and y directions using a sobel operator and obtain 2 
+  /* Calculate the derivates of the grayscale image in the x and y directions using a sobel operator and obtain 2
   gradient images for the x and y directions*/
 
   IplImage *xsobel = cvCreateImage( cvGetSize( img_gray ), img_gray->depth, 1 );
@@ -147,9 +148,9 @@ IplImage** calculateIntegralHOG(IplImage* in) {
   cvSobel(img_gray, ysobel, 0, 1, 3);
   //cvReleaseImage(&img_gray);
 
-  /* Create an array of 9 images (9 because I assume bin size 20 degrees and unsigned gradient ( 180/20 = 9), 
-  one for each bin which will have zeroes for all pixels, except for the pixels in the original image for which 
-  the gradient values correspond to the particular bin. These will be referred to as bin images. These bin images 
+  /* Create an array of 9 images (9 because I assume bin size 20 degrees and unsigned gradient ( 180/20 = 9),
+  one for each bin which will have zeroes for all pixels, except for the pixels in the original image for which
+  the gradient values correspond to the particular bin. These will be referred to as bin images. These bin images
   will be then used to calculate the integral histogram, which will quicken the calculation of HOG descriptors */
 
   IplImage** bins = (IplImage**) malloc(9 * sizeof(IplImage*));
@@ -159,8 +160,8 @@ IplImage** calculateIntegralHOG(IplImage* in) {
   }
 
 
-  /* Create an array of 9 images ( note the dimensions of the image, the cvIntegral() function requires the size 
-  to be that), to store the integral images calculated from the above bin images. These 9 integral images together 
+  /* Create an array of 9 images ( note the dimensions of the image, the cvIntegral() function requires the size
+  to be that), to store the integral images calculated from the above bin images. These 9 integral images together
   constitute the integral histogram */
 
   IplImage** integrals = (IplImage**) malloc(9 * sizeof(IplImage*)); for (int i = 0; i < 9 ; i++) {
@@ -168,8 +169,8 @@ IplImage** calculateIntegralHOG(IplImage* in) {
       IPL_DEPTH_64F,1);
   }
 
-  /* Calculate the bin images. The magnitude and orientation of the gradient at each pixel is calculated using the 
-  xsobel and ysobel images.{Magnitude = sqrt(sq(xsobel) + sq(ysobel) ), gradient = itan (ysobel/xsobel) }. Then 
+  /* Calculate the bin images. The magnitude and orientation of the gradient at each pixel is calculated using the
+  xsobel and ysobel images.{Magnitude = sqrt(sq(xsobel) + sq(ysobel) ), gradient = itan (ysobel/xsobel) }. Then
   according to the orientation of the gradient, the value of the corresponding pixel in the corresponding image is set */
 
 
@@ -177,7 +178,7 @@ IplImage** calculateIntegralHOG(IplImage* in) {
   float temp_gradient, temp_magnitude;
   for (y = 0; y <in->height; y++) {
 
-    /* ptr1 and ptr2 point to beginning of the current row in the xsobel and ysobel images respectively. ptrs[i] 
+    /* ptr1 and ptr2 point to beginning of the current row in the xsobel and ysobel images respectively. ptrs[i]
     point to the beginning of the current rows in the bin images */
 
     float* ptr1 = (float*) (xsobel->imageData + y * (xsobel->widthStep));
@@ -187,14 +188,14 @@ IplImage** calculateIntegralHOG(IplImage* in) {
       ptrs[i] = (float*) (bins[i]->imageData + y * (bins[i]->widthStep));
     }
 
-    /*For every pixel in a row gradient orientation and magnitude are calculated and corresponding values set for 
+    /*For every pixel in a row gradient orientation and magnitude are calculated and corresponding values set for
     the bin images. */
 
     for (x = 0; x <in->width; x++) {
 
-      /* if the xsobel derivative is zero for a pixel, a small value is added to it, to avoid division by zero. 
-      atan returns values in radians, which on being converted to degrees, correspond to values between -90 and 90 degrees. 
-      90 is added to each orientation, to shift the orientation values range from {-90-90} to {0-180}. This is just 
+      /* if the xsobel derivative is zero for a pixel, a small value is added to it, to avoid division by zero.
+      atan returns values in radians, which on being converted to degrees, correspond to values between -90 and 90 degrees.
+      90 is added to each orientation, to shift the orientation values range from {-90-90} to {0-180}. This is just
       a matter of convention. {-90-90} values can also be used for the calculation. */
 
       if (ptr1[x] == 0){
@@ -205,7 +206,7 @@ IplImage** calculateIntegralHOG(IplImage* in) {
       }
       temp_magnitude = sqrt((ptr1[x] * ptr1[x]) + (ptr2[x] * ptr2[x]));
 
-      /*The bin image is selected according to the gradient values. The corresponding pixel value is made equal to 
+      /*The bin image is selected according to the gradient values. The corresponding pixel value is made equal to
       the gradient magnitude at that pixel in the corresponding bin image */
 
       if (temp_gradient <= 20) {
@@ -243,13 +244,15 @@ IplImage** calculateIntegralHOG(IplImage* in) {
 
   /*Integral images for each of the bin images are calculated*/
 
-  for (int i = 0; i <9 ; i++){
+  for (int i = 0; i < 9 ; i++){
     cvIntegral(bins[i], integrals[i]);
   }
 
-  for (int i = 0; i <9 ; i++){
+  for (int i = 0; i < 9 ; i++){
     cvReleaseImage(&bins[i]);
   }
+
+  free( bins );
 
   /*The function returns an array of 9 images which consitute the integral histogram*/
 
@@ -257,8 +260,8 @@ IplImage** calculateIntegralHOG(IplImage* in) {
 
 }
 
-/* The following function takes as input the rectangular cell for which the histogram of oriented gradients has to be 
-calculated, a matrix hog_cell of dimensions 1x9 to store the bin values for the histogram, the integral histogram, 
+/* The following function takes as input the rectangular cell for which the histogram of oriented gradients has to be
+calculated, a matrix hog_cell of dimensions 1x9 to store the bin values for the histogram, the integral histogram,
 and the normalization scheme to be used. No normalization is done if normalization = -1 */
 
 void calculateHOG_rect(CvRect cell, CvMat* hog_cell,
@@ -297,11 +300,11 @@ obtained vectors for each cell and then normalizing over
 the concatenated vector to obtain the hog features for a
 block */
 
-void calculateHOG_block(CvRect block, CvMat* hog_block, 
+void calculateHOG_block(CvRect block, CvMat* hog_block,
   IplImage** integrals, int normalization) {
 
-  CvMat vector_cell;    
-  
+  CvMat vector_cell;
+
   int centerx = block.x + block.width / 2;
   int centery = block.y + block.height / 2;
   int width1 = centerx - block.x;
@@ -310,23 +313,23 @@ void calculateHOG_block(CvRect block, CvMat* hog_block,
   int height2 = block.height - height1;
 
   cvGetCols(hog_block, &vector_cell, 0, 9);
-  calculateHOG_rect(cvRect(block.x, block.y, width1, height1), 
+  calculateHOG_rect(cvRect(block.x, block.y, width1, height1),
         &vector_cell, integrals, -1);
   cvGetCols(hog_block, &vector_cell, 9, 18);
-  calculateHOG_rect(cvRect(centerx, block.y, width2, height1), 
+  calculateHOG_rect(cvRect(centerx, block.y, width2, height1),
         &vector_cell, integrals, -1);
   cvGetCols(hog_block, &vector_cell, 18, 27);
-  calculateHOG_rect(cvRect(block.x, centery, width1, height2), 
+  calculateHOG_rect(cvRect(block.x, centery, width1, height2),
         &vector_cell, integrals, -1);
   cvGetCols(hog_block, &vector_cell, 27, 36);
-  calculateHOG_rect(cvRect(centerx, centery, width2, height2), 
+  calculateHOG_rect(cvRect(centerx, centery, width2, height2),
         &vector_cell, integrals, -1);
 
   if (normalization != -1)
     cvNormalize(hog_block, hog_block, 1, 0, normalization);
 }
 
-/*void calculateHOG_block(CvRect block, CvMat* hog_block, 
+/*void calculateHOG_block(CvRect block, CvMat* hog_block,
   IplImage** integrals, int normalization) {
 
   CvMat vector_cell;
@@ -337,12 +340,12 @@ void calculateHOG_block(CvRect block, CvMat* hog_block,
   for( int i=0; i<2; i++ ) {
     double cell_start_x = block.x;
     for( int j=0; j<2; j++ ) {
-      
-      cvGetCols(hog_block, &vector_cell, startcol, 
+
+      cvGetCols(hog_block, &vector_cell, startcol,
         startcol + 9);
 
       calculateHOG_rect(cvRect(round(cell_start_x),
-        round(cell_start_y), cellWidth, cellHeight), 
+        round(cell_start_y), cellWidth, cellHeight),
         &vector_cell, integrals, -1);
 
       startcol += 9;
@@ -352,14 +355,14 @@ void calculateHOG_block(CvRect block, CvMat* hog_block,
   }
 
   if (normalization != -1)
-    cvNormalize(hog_block, hog_block, 1, 0, 
+    cvNormalize(hog_block, hog_block, 1, 0,
     normalization);
 }*/
 
 /* This function takes in a window(64x128 pixels,
 but can be easily modified for other window sizes)
 and calculates the hog features for the window. It
-can be used to calculate the feature vector for a 
+can be used to calculate the feature vector for a
 64x128 pixel image as well. This window/image is the
 training/detection window which is used for training
 or on which the final detection is done. The hog
@@ -370,7 +373,7 @@ concatenating the so obtained vectors to obtain the
 hog feature vector for the window*/
 
 CvMat* calculateHOG_window(IplImage** integrals,
-  CvRect window, int normalization, int bins) 
+  CvRect window, int normalization, int bins)
 {
   int imHeight = integrals[0]->height;
   int imWidth = integrals[0]->width;
@@ -379,13 +382,13 @@ CvMat* calculateHOG_window(IplImage** integrals,
 
   double cell_height = (double)window.height / bins;
   double cell_width = (double)window.width / bins;
-  
+
   CvMat vector_block;
   int startcol = 0;
   double block_start_y = window.y;
   for (int i=0; i<bins-1; i++) {
     double block_start_x = window.x;
-    for (int j=0; j<bins-1; j++ ) { 
+    for (int j=0; j<bins-1; j++ ) {
 
       // Reference position to insert this blocks features
       cvGetCols(window_feature_vector, &vector_block,
@@ -403,10 +406,10 @@ CvMat* calculateHOG_window(IplImage** integrals,
 
       // Process block
       } else {
-        
+
         calculateHOG_block(cvRect(dround(block_start_x),
-          dround(block_start_y), dround(cell_width * 2), 
-          dround(cell_height * 2)), &vector_block, integrals, 
+          dround(block_start_y), dround(cell_width * 2),
+          dround(cell_height * 2)), &vector_block, integrals,
           normalization);
       }
 
@@ -424,7 +427,7 @@ CvMat* calculateHOG_window(IplImage** integrals,
 CvMat* train_64x128(char *prefix, char *suffix, CvSize cell,
   CvSize window, int number_samples, int start_index,
   int end_index, char *savexml = NULL, int canny = 0,
-  int block = 1, int normalization = 4) 
+  int block = 1, int normalization = 4)
 {
 
   char filename[50] = "\0", number[8];
@@ -464,7 +467,7 @@ CvMat* train_64x128(char *prefix, char *suffix, CvSize cell,
   /* Loop to calculate hog features for each
   image one by one */
 
-  for (i = start_index; i <= end_index; i++) 
+  for (i = start_index; i <= end_index; i++)
   {
     cvtInt(number, i);
     strcat(filename, number);
@@ -483,12 +486,12 @@ CvMat* train_64x128(char *prefix, char *suffix, CvSize cell,
     j++;
     printf("%s\n", filename);
     filename[prefix_length] = '\0';
-    for (int k = 0; k < 9; k++) 
+    for (int k = 0; k < 9; k++)
     {
       cvReleaseImage(&integrals[k]);
     }
   }
-  if (savexml != NULL) 
+  if (savexml != NULL)
   {
     cvSave(savexml, training);
   }
@@ -575,7 +578,7 @@ CvMat* train_large(char *prefix, char *suffix,
     /* Loop to calculate hog features for each
     image one by one */
 
-    for (i = start_index; i <= end_index; i++) 
+    for (i = start_index; i <= end_index; i++)
     {
       cvtInt(number, i);
       strcat(filename, number);
@@ -684,12 +687,12 @@ as neg_mat*/
 
 
 void trainSVM(CvMat* pos_mat, CvMat* neg_mat, char *savexml,
-  char *pos_file = NULL, char *neg_file = NULL) 
+  char *pos_file = NULL, char *neg_file = NULL)
 {
 
 
   /* Read the feature vectors for positive samples */
-  if (pos_file != NULL) 
+  if (pos_file != NULL)
   {
     printf("positive loading...\n");
     pos_mat = (CvMat*) cvLoad(pos_file);

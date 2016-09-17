@@ -41,7 +41,7 @@ class HoGFeatureGenerator {
 public:
 
   // Calculates required integral images
-  HoGFeatureGenerator( IplImage *img_gs, float minR, float maxR, int index );
+  explicit HoGFeatureGenerator( IplImage *img_gs, float minR, float maxR, int index );
 
   // Performs necessary deallocations
   ~HoGFeatureGenerator();

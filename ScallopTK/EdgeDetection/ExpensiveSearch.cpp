@@ -9,7 +9,7 @@ namespace ScallopTK
 //------------------------------------------------------------------------------
 
 inline double dirDistance( float& dir1, float& dir2 ) {
-  
+
   float d1 = abs( dir1 - dir2 );
   if( d1 < 0 )
     d1 + 360;
@@ -21,7 +21,7 @@ inline double dirDistance( float& dir1, float& dir2 ) {
 }
 
 inline float dirFactor( float& dir1, float& dir2 ) {
-  
+
   float d1 = dirDistance( dir1, dir2 );
   if( d1 < 50 )
     return 1.0;
@@ -48,7 +48,7 @@ inline float dirActFunc( const float& normalizedDirOffset ) {
     return 0.4f;
 }
 
-void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color, 
+void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
   IplImage *ImgLab32f, IplImage *img_rgb_32f, CandidatePtrVector cds ) {
 
   assert( color->SaliencyMap->width == ImgLab32f->width );
@@ -129,7 +129,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
         ptr_mag++;
       }
       cvReleaseImage( &color_dx );
-      cvReleaseImage( &color_dy );*/    
+      cvReleaseImage( &color_dy );*/
     }
 
     // Create cost function
@@ -150,7 +150,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
       for( int r = rel_r; r < r_range + rel_r; r++ ) {
         for( int c = rel_c; c < c_range + rel_c; c++ ) {
 
-          float dist = sqrt( (float)r*r + (float)c*c ) - rad;  
+          float dist = sqrt( (float)r*r + (float)c*c ) - rad;
           float drad = dist / rad;
           float ang = cvFastArctan(r, c);
           float dird = dirDistance( ang, *grddir );
@@ -169,7 +169,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
       for( int r = rel_r; r < r_range + rel_r; r++ ) {
         for( int c = rel_c; c < c_range + rel_c; c++ ) {
 
-          float dist = sqrt( (float)r*r + (float)c*c ) - rad;  
+          float dist = sqrt( (float)r*r + (float)c*c ) - rad;
           float drad = dist / rad;
           float ang = cvFastArctan(r, c);
           float dird = dirDistance( ang, *grddir );
@@ -195,7 +195,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
     // Non-max suppression and selection
     IplImage *bin = cvCreateImage( cvGetSize( cost ), IPL_DEPTH_8U, 1 );
-    cvZero(bin);
+    cvZero( bin );
 
     // Containers for max selection
     const char EDGEL = 255;
@@ -229,7 +229,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
             (bin->imageData + bin->widthStep*r)[c] = EDGEL;
           }
         } else if ( ang <= 112.5 ) {
-          float v1 = *(pos+step_up); 
+          float v1 = *(pos+step_up);
           float v2 = *(pos+step_down);
           if( v1 < val && v2 < val ) {
             (bin->imageData + bin->widthStep*r)[c] = EDGEL;
@@ -269,7 +269,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     }
 
     // Link/Select Edges
-    vector< Contour* > cntrs;
+    vector< Contour > cntrs;
     int label = 2;
     int bin_step = bin->widthStep / sizeof(char);
     step_dia_1 = -bin_step - 1;
@@ -296,7 +296,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
           stack<Point2D> sq;
           Point2D pt(r,c);
-          Contour *ctr = new Contour;
+          Contour ctr;
           sq.push( pt );
 
           while( sq.size() != 0 ) {
@@ -306,7 +306,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
             int ic = pt.c;
             char* pos = (bin->imageData + bin->widthStep*ir)+ic;
             *pos = label;
-            ctr->pts.push_back( pt );
+            ctr.pts.push_back( pt );
             sq.pop();
 
             // Check 8-connectedness
@@ -326,38 +326,38 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
               sq.push( Point2D( ir+1, ic+1 ) );
             if( *(pos+step_dia_3) == EDGEL )
               sq.push( Point2D( ir+1, ic-1 ) );
-          }  
+          }
 
-          ctr->label = label;
+          ctr.label = label;
 
           // Init quadrant
           for( int p = 0; p<8; p++ )
-            ctr->coversOct[p] = false;
+            ctr.coversOct[p] = false;
 
           // Calculate edge weight and what quadrants cntr is in
           float costsum = 0.0f;
-          for( int k = 0; k < ctr->pts.size(); k++ ) {
-            int r = ctr->pts[k].r;
-            int c = ctr->pts[k].c;
+          for( int k = 0; k < ctr.pts.size(); k++ ) {
+            int r = ctr.pts[k].r;
+            int c = ctr.pts[k].c;
             int ra = r + rel_r;
             int ca = c + rel_c;
             costsum += ((float*)(cost->imageData + cost->widthStep*r))[c];
             int oct = determine8quads( c+rel_c, r+rel_r );
-            ctr->coversOct[oct] = true;
+            ctr.coversOct[oct] = true;
           }
-          ctr->mag = costsum;
+          ctr.mag = costsum;
           if( costsum > best_mag ) {
             best_mag = costsum;
             best_ind = cntrs.size();
           }
-          cntrs.push_back( ctr );          
+          cntrs.push_back( ctr );
         }
       }
     }
 
     // ~~~~~ Basic Selection ~~~~~
 
-/*#ifdef SS_DISPLAY 
+/*#ifdef SS_DISPLAY
     IplImage *temp = cvCloneImage( img_rgb_32f );
 
     for( int j = 0; j < cntrs.size(); j++ ) {
@@ -371,14 +371,19 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
     if( best_ind <= cntrs.size() )
     {
+      if( color != NULL )
+        cvReleaseImage( &color );
+      cvReleaseImage( &cost );
+      cvReleaseImage( &bin );
+
       return;
     }
 
-    vector<Contour*> components;
+    vector<Contour> components;
     components.push_back( cntrs[best_ind] );
     bool oct_satisfied[8];
     for( int q = 0; q < 8; q++ ) {
-      oct_satisfied[q] = cntrs[best_ind]->coversOct[q] || cd->isSideBorder[q];
+      oct_satisfied[q] = cntrs[best_ind].coversOct[q] || cd->isSideBorder[q];
     }
     cntrs.erase( cntrs.begin() + best_ind );
 
@@ -391,18 +396,18 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
         for( int c = 0; c < cntrs.size(); c++ ) {
 
-          if( cntrs[c]->coversOct[q] && cntrs[c]->mag > max_val ) {
-            max_val = cntrs[c]->mag;
+          if( cntrs[c].coversOct[q] && cntrs[c].mag > max_val ) {
+            max_val = cntrs[c].mag;
             max_ind = c;
           }
         }
 
         if( max_ind != -1 ) {
-          Contour *ct = cntrs[max_ind];
+          Contour ct = cntrs[max_ind];
           components.push_back( ct );
           cntrs.erase( cntrs.begin() + max_ind );
           for( int o = 0; o < 8; o++ ) {
-            oct_satisfied[o] = oct_satisfied[o] || ct->coversOct[o];
+            oct_satisfied[o] = oct_satisfied[o] || ct.coversOct[o];
           }
         }
       }
@@ -412,23 +417,22 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     if( components.size() > 2 ) {
       float min = INF;
       int ind = -1;
-      Contour *outlier;
+      Contour outlier;
       for( unsigned int i=0; i<components.size(); i++ ) {
-        Contour *ct = components[i];
-        if( ct->mag < min ) {
-          min = ct->mag;
+        Contour ct = components[i];
+        if( ct.mag < min ) {
+          min = ct.mag;
           ind = i;
           outlier = ct;
         }
       }
       components.erase( components.begin() + ind );
-      delete outlier;
     }
-    
+
     // Calculate total pts in identified Contours
     int total_pts = 0;
     for( int j = 0; j < components.size(); j++ )
-      total_pts += components[j]->pts.size();
+      total_pts += components[j].pts.size();
 
     // Regress ellipse if possible
     if( total_pts > 6 ) {
@@ -436,10 +440,10 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
       CvPoint2D32f* input = (CvPoint2D32f*)malloc(total_pts*sizeof(CvPoint2D32f));
       int pos = 0;
       for( int j = 0; j < components.size(); j++ ) {
-        for( int k = 0; k < components[j]->pts.size(); k++ ) {
-          input[pos].x = components[j]->pts[k].c;
-          input[pos].y = components[j]->pts[k].r;
-          pos++;        
+        for( int k = 0; k < components[j].pts.size(); k++ ) {
+          input[pos].x = components[j].pts[k].c;
+          input[pos].y = components[j].pts[k].r;
+          pos++;
         }
       }
       CvBox2D* box = (CvBox2D*)malloc(sizeof(CvBox2D));
@@ -466,17 +470,17 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
       cd->hasEdgeFeatures = false;
     }
 
-#ifdef SS_DISPLAY 
+#ifdef SS_DISPLAY
     IplImage *temp = cvCloneImage( img_rgb_32f );
 
     for( int j = 0; j < components.size(); j++ ) {
-      for( int k = 0; k < components[j]->pts.size(); k++ ) {
-        cvSetAt( temp, cvScalar( 1, 0, 0 ), components[j]->pts[k].r+lr,  components[j]->pts[k].c+lc );
+      for( int k = 0; k < components[j].pts.size(); k++ ) {
+        cvSetAt( temp, cvScalar( 1, 0, 0 ), components[j].pts[k].r+lr,  components[j].pts[k].c+lc );
       }
     }
     CvScalar colour = cvScalar( 0.0, 0.0, 1.0 );
-    cvEllipse(temp, cvPoint( (int)cd->nc, (int)cd->nr ), 
-      cvSize( cd->nminor, cd->nmajor ), 
+    cvEllipse(temp, cvPoint( (int)cd->nc, (int)cd->nr ),
+      cvSize( cd->nminor, cd->nmajor ),
       cd->nangle, 0, 360, colour, 1 );
 
     showIP( img_rgb_32f, temp, cds[i] );
@@ -484,18 +488,14 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 #endif
 
 
-        
+
     // Deallocations for this cd
-    for( int a = 0; a < cntrs.size(); a++ )
-      delete cntrs[a];
-    for( int a = 0; a < components.size(); a++ )
-      delete components[a];
     if( color != NULL )
       cvReleaseImage( &color );
     cvReleaseImage( &cost );
     cvReleaseImage( &bin );
 
-  }  
+  }
 }
 
 }
