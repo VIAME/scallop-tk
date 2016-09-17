@@ -183,7 +183,9 @@ IplImage** calculateIntegralHOG(IplImage* in) {
 
     float* ptr1 = (float*) (xsobel->imageData + y * (xsobel->widthStep));
     float* ptr2 = (float*) (ysobel->imageData + y * (ysobel->widthStep));
-    float** ptrs = (float**) malloc(9 * sizeof(float*));
+
+    float* ptrs[9];
+
     for (int i = 0; i < 9 ;i++){
       ptrs[i] = (float*) (bins[i]->imageData + y * (bins[i]->widthStep));
     }
@@ -245,18 +247,18 @@ IplImage** calculateIntegralHOG(IplImage* in) {
   /*Integral images for each of the bin images are calculated*/
 
   for (int i = 0; i < 9 ; i++){
-    cvIntegral(bins[i], integrals[i]);
+    cvIntegral( bins[i], integrals[i] );
   }
 
   for (int i = 0; i < 9 ; i++){
-    cvReleaseImage(&bins[i]);
+    cvReleaseImage( &bins[i] );
   }
 
   free( bins );
 
   /*The function returns an array of 9 images which consitute the integral histogram*/
 
-  return (integrals);
+  return( integrals );
 
 }
 
