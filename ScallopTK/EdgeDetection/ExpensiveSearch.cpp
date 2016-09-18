@@ -369,10 +369,11 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     cvReleaseImage( &temp );
 #endif*/
 
-    if( best_ind <= cntrs.size() )
+    if( best_ind < 0 || best_ind >= cntrs.size() )
     {
       if( color != NULL )
         cvReleaseImage( &color );
+
       cvReleaseImage( &cost );
       cvReleaseImage( &bin );
 
@@ -381,6 +382,7 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
 
     vector<Contour> components;
     components.push_back( cntrs[best_ind] );
+
     bool oct_satisfied[8];
     for( int q = 0; q < 8; q++ ) {
       oct_satisfied[q] = cntrs[best_ind].coversOct[q] || cd->isSideBorder[q];
@@ -492,9 +494,9 @@ void expensiveEdgeSearch( GradientChain& Gradients, hfResults* color,
     // Deallocations for this cd
     if( color != NULL )
       cvReleaseImage( &color );
+
     cvReleaseImage( &cost );
     cvReleaseImage( &bin );
-
   }
 }
 
