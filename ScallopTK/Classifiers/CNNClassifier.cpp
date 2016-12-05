@@ -384,7 +384,7 @@ void CNNClassifier::classifyCandidates(
     CandidatePtrVector tmp;
     preClass->classifyCandidates( image, candidates, positive );
     removeInsidePoints( positive, tmp );
-    takeTopCandidates( tmp, positive, 256 );
+    takeTopCandidates( tmp, positive, 1024 );
   }
   else
   {
