@@ -565,10 +565,10 @@ void saveCandidates( IplImage *img, CandidatePtrVector& cds, const string& fn ) 
     }
     cvEllipse(local, cvPoint( (int)cds[i]->c, (int)cds[i]->r ), 
       cvSize( cds[i]->minor, cds[i]->major ), 
-      cds[i]->angle, 0, 360, colour, 3 );
+      cds[i]->angle, 0, 360, colour, 1 );
   }
   IplImage *toOut = cvCreateImage( cvGetSize( local ), IPL_DEPTH_8U, 3 );
-  cvScale( local, toOut, 1.0 );
+  cvScale( local, toOut, 255.0 );
   cvSaveImage( fn.c_str(), toOut );
   cvReleaseImage( &toOut );
   cvReleaseImage( &local );

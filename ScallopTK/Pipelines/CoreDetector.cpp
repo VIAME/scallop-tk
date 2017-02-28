@@ -16,6 +16,8 @@
 #include <time.h>
 
 // OpenCV
+#include <cv.h>
+#include <cxcore.h>
 #include <highgui.h>
 
 // Internal Scallop Includes
@@ -357,9 +359,6 @@ void *processImage( void *InputArgs ) {
   executionTimes.push_back( getTimeSinceLastCall() );
 #endif
 
-  //std::cout << cdsColorBlob.size() << " " << cdsAdaptiveFilt.size() <<
-  // " " << cdsTemplateAprx.size() << " " << cdsCannyEdge.size() << std::endl;
-
 //---------------------Consolidate ROIs--------------------------
 
   // Containers for sorted IPs
@@ -399,7 +398,13 @@ void *processImage( void *InputArgs ) {
 
   if( Options->EnableOutputDisplay )
   {
-    //displayInterestPointImage( imgRGB32f, cdsAllUnordered );
+    displayInterestPointImage( imgRGB32f, cdsAllUnordered );
+  }
+
+  if( Options->OutputProposalImages )
+  {
+    saveCandidates( imgRGB32f, cdsAllUnordered,
+      Options->OutputFilename + ".proposals.png" );
   }
 
 //--------------------Extract Features---------------------------
@@ -1146,7 +1151,10 @@ CoreDetector::processFrame( const cv::Mat& image,
   data->counter++;
   std::string frameID = "streaming_frame_" + INT_2_STR( data->counter );
 
-  data->inputArgs[0].InputImage = image;
+  cv::Mat corrected;
+  cv::cvtColor( image, corrected, cv::COLOR_RGB2BGR );
+
+  data->inputArgs[0].InputImage = corrected;
   data->inputArgs[0].InputFilename = frameID;
   data->inputArgs[0].OutputFilename = frameID;
   data->inputArgs[0].InputFilenameNoDir = frameID;
