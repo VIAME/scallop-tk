@@ -77,8 +77,6 @@ if( VC_TOOLNAMES )
 
   AddDataDir( Models scallop_tk_models scallop_tk_detector )
   
-  AddTool( fish_or_no_fish FishOrNoFish.cpp ScallopTK )
-
 else()
 
   AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
@@ -99,6 +97,4 @@ else()
 
   AddDataDir( Models Models ScallopDetector )
   
-  AddTool( FishOrNoFish FishOrNoFish.cpp ScallopTK )
-
 endif()

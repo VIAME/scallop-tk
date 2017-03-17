@@ -15,8 +15,7 @@ as well, such as the ability to run convolutional neural networks on top of the
 described object proposal framework. It is useful as a general detector
 for detecting any ellipsoidal objects, though it also contains specialized
 subroutines targetting benthic organisms such as clams, scallops, urchins,
-and others. Also included in the repository is a frame level classifier aimed
-at detecting whether or not there are any fish present in an image.
+and others.
 
 WARNING: This repository is still a little bit of a WIP because I haven't
 touched the code in a few years and it was created when I was a student.
