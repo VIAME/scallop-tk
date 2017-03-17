@@ -81,6 +81,7 @@ option( BUILD_TESTS "Build and install ScallopTK tests" ON )
 option( VC_TOOLNAMES "Install ScallopTK tools with viper_case names" OFF )
 
 if( BUILD_TOOLS )
+  set( MODEL_INSTALL_DIR "" CACHE PATH "Custom location to install model files" )
   add_subdirectory( Tools )
 endif()
 
@@ -98,12 +99,6 @@ configure_file(
   "${ScallopTK_EXPORT_INSTALL_FILE}"
   @ONLY
 )
-
-# On windows include dependency dlls in installer
-#if( WIN32 )
-#  install( FILES ${Caffe_LIBRARIES} ${OpenCV_LIBS}
-#    DESTINATION bin FILES_MATCHING PATTERN "*.dll" )
-#endif()
 
 # Options to build a CPack driven installer package
 set( CPACK_SYSTEM_NAME           "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )

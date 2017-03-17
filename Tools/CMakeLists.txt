@@ -44,13 +44,13 @@ endfunction()
 # Install files contained in some data directory
 function( AddDataDir DirName OutputDirname TargetExec )
   install( DIRECTORY ${DirName}/
-    DESTINATION bin/${OutputDirname}
+    DESTINATION ${OutputDirname}
     FILES_MATCHING PATTERN "*" )
 
   add_custom_command(TARGET ${TargetExec} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/${DirName}
-    ${CMAKE_BINARY_DIR}/bin/${OutputDirname} )
+    ${CMAKE_BINARY_DIR}/${OutputDirname} )
 endfunction()
 
 # =================================================================
@@ -75,8 +75,12 @@ if( VC_TOOLNAMES )
   
   endif()
 
-  AddDataDir( Models scallop_tk_models scallop_tk_detector )
-  
+  if( MODEL_INSTALL_DIR )
+    AddDataDir( Models ${MODEL_INSTALL_DIR} ScallopDetector )
+  else()
+    AddDataDir( Models bin/scallop_tk_models scallop_tk_detector )
+  endif()
+
 else()
 
   AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
@@ -95,6 +99,10 @@ else()
   
   endif()
 
-  AddDataDir( Models Models ScallopDetector )
-  
+  if( MODEL_INSTALL_DIR )
+    AddDataDir( Models ${MODEL_INSTALL_DIR} ScallopDetector )
+  else()
+    AddDataDir( Models bin/Models ScallopDetector )
+  endif()
+
 endif()
