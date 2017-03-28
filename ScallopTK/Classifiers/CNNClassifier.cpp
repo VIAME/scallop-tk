@@ -5,6 +5,8 @@
 #include "ScallopTK/Utilities/Display.h"
 #include "ScallopTK/Utilities/Filesystem.h"
 
+#include <limits>
+
 namespace ScallopTK
 {
 
@@ -322,7 +324,10 @@ unsigned CNNClassifier::classifyCandidates(
         unsigned categories = outputBlob->channels();
         unsigned cid = batchIndices[i];
 
-        double maxValue = -1 * numeric_limits< double >::max();
+#ifdef max
+  #undef max
+#endif
+        double maxValue = -1 * std::numeric_limits< double >::max();
         int maxInd = 0;
 
         bool criteria1 = false; // Exceeds threshold requirement
@@ -412,7 +417,7 @@ cv::Rect getCandidateBox( Candidate* cd )
   if( !cd )
     return cv::Rect();
 
-  int axis = std::max( cd->major, cd->minor );
+  int axis = (std::max)( cd->major, cd->minor );
 
   return cv::Rect( cd->c - axis, cd->r - axis, 2 * axis, 2 * axis );
 }
@@ -461,6 +466,10 @@ float boxIntersection( cv::Rect r1, cv::Rect r2 )
 
   float areaR1 = r1.area();
   float areaR2 = r2.area();
+
+#ifdef min
+  #undef min
+#endif
 
   return std::min( ( areaR1 > 0.0f ? areaInt / areaR1 : 0.0f ),
                    ( areaR2 > 0.0f ? areaInt / areaR2 : 0.0f ) );
