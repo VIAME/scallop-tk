@@ -292,6 +292,14 @@ inline void removeOverlapAndMerge( CandidatePtrVector& Base,
   }
 }
 
+template <typename T>
+std::string INT_2_STR( T Number )
+{
+  std::ostringstream ss;
+  ss << Number;
+  return ss.str();
+}
+
 }
 
 #endif
