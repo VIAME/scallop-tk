@@ -36,7 +36,7 @@ CLASSIFIER_SUBDIR = CNN/
 ;                          None of the Above = NONE
 ;
 
-C1IDS      =  BACKGROUND, LIVE_SCALLOP, DEAD_SCALLOP, FISH, CRAB
+C1IDS      =  background, live_scallop, dead_scallop, fish, crab
 C1FILES    =  DefaultCNN.prototxt, DefaultCNN.caffemodel
 C1CATEGORY =  BACKGROUND, ALL, NONE, NONE, NONE
 
