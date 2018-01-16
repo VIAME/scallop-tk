@@ -36,9 +36,9 @@ CLASSIFIER_SUBDIR = AdaBoost/
 ;                          None of the Above = NONE
 ;
 
-C1IDS      =  BROWN,        WHITE,        BURIED
-C1FILES    =  BrownScallop, WhiteScallop, BuriedScallop
-C1CATEGORY =  BROWN,        WHITE,        BURIED
+C1IDS      =  brown_scallop, white_scallop, buried_scallop
+C1FILES    =  BrownScallop,  WhiteScallop,  BuriedScallop
+C1CATEGORY =  BROWN,         WHITE,         BURIED
 
 ; Default threshold for main classifiers [Default=0]
 

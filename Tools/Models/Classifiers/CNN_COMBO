@@ -36,7 +36,7 @@ CLASSIFIER_SUBDIR = Combo/
 ;                          None of the Above = NONE
 ;
 
-C1IDS      =  BROWN,                WHITE,                BURIED
+C1IDS      =  brown_scallop,        white_scallop,        buried_scallop
 C1FILES    =  BrownScallopProposer, WhiteScallopProposer, BuriedScallopProposer
 C1CATEGORY =  BROWN,                WHITE,                BURIED
 
@@ -56,7 +56,7 @@ INITIAL_THRESHOLD = -0.075
 ;          Leave all entries blank if there are no supression classifiers enabled
 ;
 
-C2IDS      =  BACKGROUND, LIVE_SCALLOP, DEAD_SCALLOP
+C2IDS      =  background, live_scallop, dead_scallop
 C2FILES    =  Seperator.prototxt,       Seperator.caffemodel
 C2CATEGORY =  BACKGROUND, ALL,          NONE
 C2CLFSTYLE =  WVO,        WVO,          WVO
