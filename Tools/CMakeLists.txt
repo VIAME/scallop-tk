@@ -61,7 +61,7 @@ if( VC_TOOLNAMES )
 
   AddTool( scallop_tk_detector ScallopDetector.cpp ScallopTK )
 
-  if( ENABLE_CAFFE )
+  if( ENABLE_CAFFE AND DOWNLOAD_MODELS )
   
     AddDownloadedFile(
       https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel 
@@ -76,7 +76,7 @@ if( VC_TOOLNAMES )
   endif()
 
   if( MODEL_INSTALL_DIR )
-    AddDataDir( Models ${MODEL_INSTALL_DIR} ScallopDetector )
+    AddDataDir( Models ${MODEL_INSTALL_DIR} scallop_tk_detector )
   else()
     AddDataDir( Models bin/scallop_tk_models scallop_tk_detector )
   endif()
@@ -85,7 +85,7 @@ else()
 
   AddTool( ScallopDetector ScallopDetector.cpp ScallopTK )
 
-  if( ENABLE_CAFFE )
+  if( ENABLE_CAFFE AND DOWNLOAD_MODELS )
   
     AddDownloadedFile(
       https://github.com/mattdawkins/scallop-tk-models/raw/master/CNN/DefaultCNN.caffemodel

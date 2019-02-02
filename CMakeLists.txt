@@ -44,6 +44,7 @@ if( OpenCV_VERSION VERSION_GREATER "3.0" )
 endif()
 
 option( ENABLE_CAFFE "Build with Caffe support enabled" ON )
+option( DOWNLOAD_MODELS "Downloads and installs default models" ON )
 
 if( ENABLE_CAFFE )
   find_package( Caffe REQUIRED )
